@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<title>Nauticworx Partner Network — Mapbox POC</title>
+
 <!--
   NAUTICWORX PARTNER PROGRAM — MAPBOX PROOF OF CONCEPT (Batch 1 + Batch 2 refinement)
   Standalone POC. Does NOT replace index.html and is NOT wired into production.
@@ -26,7 +28,7 @@
     --nwx-water: #06192f;
     --nwx-land: #eef2f0;
     --nwx-border: rgba(206, 226, 235, 0.14);
-    --rail-width: 300px;
+    --rail-width: 320px;
   }
 
   * { box-sizing: border-box; }
@@ -44,11 +46,23 @@
 
   #app {
     display: flex;
+    flex-direction: row;
     width: 100%;
     height: 100vh;
     height: 100dvh;
     overflow: hidden;
     background: var(--nwx-navy);
+  }
+
+  /* Column holding the map plus its own KPI strip footer. Kept separate
+     from #rail so the KPI strip sits ONLY below the map — it must never
+     extend beneath the left rail (rail runs its own full height). */
+  #map-column {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 auto;
+    min-width: 0;
+    height: 100%;
   }
 
   /* ---------- LEFT RAIL (desktop) ---------- */
@@ -60,7 +74,7 @@
     padding: 20px 18px;
     display: flex;
     flex-direction: column;
-    gap: 18px;
+    gap: 16px;
     overflow-y: auto;
   }
 
@@ -71,7 +85,7 @@
 }
 
 .partner-program-logo-desktop {
-  width: 230px;
+  width: 190px;
   max-width: 100%;
 }
 
@@ -117,25 +131,128 @@
     opacity: 0.4;
   }
 
-  /* Single contextual stat — deliberately not a metrics dashboard.
-     Shows the global total in world view, or the selected region's
-     total when drilled in. */
-  .context-stat {
-    background: rgba(255,255,255,0.035);
+  .rail-top { display: flex; flex-direction: column; }
+
+  /* ---------- RAIL: search (presentational — not yet wired to the
+     Partner Directory; the Region/Country drill-down below it is the
+     real, functional navigation) ---------- */
+  .rail-search {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255,255,255,0.04);
     border: 1px solid var(--nwx-border);
     border-radius: 8px;
-    padding: 12px 14px;
+    padding: 8px 10px;
   }
-  .context-stat .num {
-    font-size: 26px;
+  .rail-search svg { flex: 0 0 auto; opacity: 0.45; }
+  .rail-search input {
+    flex: 1 1 auto;
+    min-width: 0;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--nwx-name);
+    font-size: 12.5px;
+    font-family: inherit;
+  }
+  .rail-search input::placeholder { color: rgba(206,226,235,0.4); }
+
+  /* ---------- RAIL: filter pills (presentational layout shell — these
+     four map to CRM-confirmed fields (Region, Country, Category,
+     Subcategory) but are left unwired until Partner Directory data is
+     deliberately connected in a future pass) ---------- */
+  .filter-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .filter-pill {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 4px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--nwx-border);
+    border-radius: 7px;
+    padding: 7px 9px;
+    font-size: 11px;
+    color: rgba(206,226,235,0.72);
+    cursor: default;
+  }
+  .filter-pill .chev { opacity: 0.5; font-size: 9px; flex: 0 0 auto; }
+
+  .rail-result-row {
+    font-size: 10.5px;
+    color: rgba(206,226,235,0.45);
+    letter-spacing: 0.2px;
+  }
+
+  /* ---------- RAIL: partner-card area ----------
+     Layout shell only. No Partner Directory data is connected this pass,
+     so this renders an explicit empty state rather than fabricated
+     partner records. */
+  .partner-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 4px;
+    padding: 20px 14px;
+    border: 1px dashed var(--nwx-border);
+    border-radius: 10px;
+    color: rgba(206,226,235,0.4);
+    font-size: 11px;
+    line-height: 1.5;
+  }
+  .partner-empty-state .t1 { color: rgba(206,226,235,0.6); font-weight: 700; font-size: 11.5px; }
+
+  /* ---------- RAIL: region/country browse (de-emphasized — the mockup's
+     search/filter/result-card hierarchy is the primary rail content now;
+     this is the same functional region drill-down as before, just no
+     longer the dominant default view) ---------- */
+  .rail-browse {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding-top: 12px;
+    border-top: 1px solid var(--nwx-border);
+  }
+  .rail-browse-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .rail-browse #region-list {
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  /* ---------- BOTTOM KPI STRIP (desktop) ----------
+     Full-width footer below the rail+map row. Deliberately not a metrics
+     dashboard — shows the same contextual Unique Network Accounts figure
+     that used to live in the rail (same calculation, just relocated),
+     structured so additional real KPI tiles can be appended later. */
+  #kpi-strip {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    background: var(--nwx-navy-soft);
+    border-top: 1px solid var(--nwx-border);
+    padding: 12px 24px;
+  }
+  .kpi-tile { display: flex; flex-direction: column; }
+  .kpi-tile .num {
+    font-size: 22px;
     font-weight: 800;
     color: var(--nwx-orange);
     line-height: 1.1;
   }
-  .context-stat .lbl {
+  .kpi-tile .lbl {
     font-size: 11px;
     color: rgba(206,226,235,0.6);
-    margin-top: 3px;
+    margin-top: 2px;
     text-transform: uppercase;
     letter-spacing: 0.4px;
   }
@@ -212,23 +329,79 @@
     position: relative;
     flex: 1 1 auto;
     min-width: 0;
-    height: 100%;
+    min-height: 0;
   }
   #map { position: absolute; inset: 0; }
 
-  /* mobile top bar */
+  /* ---------- FLOATING SELECTED-PARTNER CARD ----------
+     Presentational shell only (Section 6). Hidden by default and never
+     triggered this pass — no Partner Directory data is connected, so no
+     JS opens it yet. Built now so the layout/CSS exists for a later,
+     deliberate data-wiring pass. */
+  #partner-profile-card {
+    display: none;
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    z-index: 6;
+    width: 260px;
+    max-width: calc(100% - 36px);
+    background: var(--nwx-navy-soft);
+    border: 1px solid var(--nwx-border);
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.5);
+  }
+  #partner-profile-card.visible { display: block; }
+  .ppc-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--nwx-border);
+    margin-bottom: 10px;
+  }
+  .ppc-name { font-size: 14px; font-weight: 800; color: var(--nwx-name); margin-bottom: 2px; }
+  .ppc-meta { font-size: 10.5px; color: var(--nwx-orange); text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 10px; }
+  .ppc-desc { font-size: 11.5px; color: rgba(206,226,235,0.6); line-height: 1.5; margin-bottom: 12px; }
+  .ppc-contact {
+    width: 100%;
+    background: var(--nwx-orange);
+    border: none;
+    color: #fff;
+    font-weight: 700;
+    font-size: 12px;
+    padding: 8px 10px;
+    border-radius: 6px;
+  }
+
+  /* mobile top bar — logo/back row, then a compact Map/List toggle row
+     directly beneath it (mirrors the mockup's mobile hierarchy). */
   #mobile-bar {
     display: none;
+    flex-direction: column;
+    gap: 8px;
     position: absolute;
     top: 0; left: 0; right: 0;
     z-index: 5;
     padding: 12px 14px;
     background: linear-gradient(180deg, rgba(2,18,41,0.92) 0%, rgba(2,18,41,0.0) 100%);
-    align-items: center;
-    justify-content: space-between;
     pointer-events: none;
   }
+  .mobile-bar-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
   #mobile-bar > * { pointer-events: auto; }
+  .view-toggle-mobile {
+    align-self: flex-start;
+    width: auto;
+  }
+  .view-toggle-mobile button {
+    padding: 5px 12px;
+    font-size: 11.5px;
+  }
   #mobile-back {
     display: none;
     align-items: center;
@@ -242,6 +415,28 @@
     border-radius: 20px;
   }
   #mobile-back.visible { display: flex; }
+
+  /* mobile search — presentational, same as the desktop rail search */
+  .mobile-search {
+    display: flex;
+    align-items: center;
+    background: rgba(2,18,41,0.7);
+    border: 1px solid var(--nwx-border);
+    border-radius: 8px;
+    padding: 7px 10px;
+  }
+  .mobile-search svg { flex: 0 0 auto; opacity: 0.5; }
+  .mobile-search input {
+    flex: 1 1 auto;
+    min-width: 0;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--nwx-name);
+    font-size: 12px;
+    font-family: inherit;
+  }
+  .mobile-search input::placeholder { color: rgba(206,226,235,0.45); }
 
   /* mobile stat pill row */
   #mobile-stats {
@@ -437,6 +632,7 @@
   /* ---------- RESPONSIVE ---------- */
   @media (max-width: 860px) {
     #rail { display: none; }
+    #kpi-strip { display: none; }
     #mobile-bar, #mobile-stats { display: flex; }
     .nwx-marker { width: 38px; height: 38px; font-size: 13px; }
     .nwx-marker.country-marker { width: 26px; height: 26px; font-size: 10.5px; }
@@ -452,48 +648,109 @@
 
 <!-- ================= DESKTOP LEFT RAIL ================= -->
 <div id="rail">
-  <div>
+  <div class="rail-top">
     <img
       src="assets/Partner Program White (Horizontal).png"
       alt="Nauticworx Partner Program"
       class="partner-program-logo partner-program-logo-desktop"
     >
-    <div class="nwx-tagline">Partner Network — Mapbox POC</div>
-  </div>
-    <div class="view-toggle" role="tablist" aria-label="Map or List view">
-      <button id="toggle-map" class="active" type="button">Map</button>
-      <button id="toggle-list" type="button" title="List mode is out of scope for this POC">List</button>
-    </div>
-
-    <div class="context-stat" id="context-stat"></div>
-
-    <button id="back-btn" type="button">&#8592; World view</button>
-
-    <div id="breadcrumb"></div>
-
-    <div>
-      <div class="rail-section-title" id="list-title">Regions</div>
-      <div id="region-list"></div>
-    </div>
-
-    <div class="rail-footnote">
-      Proof of concept. Sample/demo data, canonical 16-region taxonomy. Not connected to CRM, Zoho Flow, or the live Partner Directory.
-    </div>
   </div>
 
-  <!-- ================= MAP ================= -->
+  <div class="view-toggle" role="tablist" aria-label="Map or List view">
+    <button id="toggle-map" class="active" type="button">Map</button>
+    <button id="toggle-list" type="button" title="List mode is out of scope for this POC">List</button>
+  </div>
+
+  <!-- Search — presentational layout shell, not yet wired (Partner
+       Directory search is a future data-integration pass). -->
+  <div class="rail-search">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.2" y2="16.2"></line></svg>
+    <input type="text" placeholder="Search partners..." aria-label="Search partners (preview layout — not yet connected)">
+  </div>
+
+  <!-- Filter pills — presentational layout shell mapping to the four
+       CRM-confirmed fields (Region, Country, Category, Subcategory).
+       Left unwired: filtering by these requires the Partner Directory
+       dataset, which this pass deliberately does not connect. -->
+  <div class="filter-grid" aria-label="Partner filters (preview layout — not yet connected)">
+    <div class="filter-pill"><span>All Regions</span><span class="chev">&#9662;</span></div>
+    <div class="filter-pill"><span>All Countries</span><span class="chev">&#9662;</span></div>
+    <div class="filter-pill"><span>All Categories</span><span class="chev">&#9662;</span></div>
+    <div class="filter-pill"><span>All Subcategories</span><span class="chev">&#9662;</span></div>
+  </div>
+
+  <div class="rail-result-row">Partner Directory preview — layout only, not yet connected</div>
+
+  <!-- Partner-card area — layout shell only; explicit empty state rather
+       than fabricated partner records (Section 2.6). -->
+  <div class="partner-card-list">
+    <div class="partner-empty-state">
+      <div class="t1">No partner cards yet</div>
+      <div>This area will show Partner Directory cards once it's connected.</div>
+    </div>
+  </div>
+
+  <!-- Region/Country browse — the same functional drill-down as before,
+       de-emphasized per Section 3 (search/filter/result hierarchy above
+       is now primary; this remains fully functional, just not dominant). -->
+  <div class="rail-browse">
+    <div class="rail-browse-header">
+      <button id="back-btn" type="button">&#8592; World view</button>
+      <div id="breadcrumb"></div>
+    </div>
+    <div class="rail-section-title" id="list-title">Browse by Region</div>
+    <div id="region-list"></div>
+  </div>
+
+  <div class="rail-footnote">
+    Proof of concept. Sample/demo data, canonical 16-region taxonomy. Not connected to CRM, Zoho Flow, or the live Partner Directory.
+  </div>
+</div>
+
+<!-- ================= MAP COLUMN ================= -->
+<div id="map-column">
   <div id="map-wrap">
     <div id="mobile-bar">
-  <img
-    src="assets/Partner Program White (Horizontal).png"
-    alt="Nauticworx Partner Program"
-    class="partner-program-logo partner-program-logo-mobile"
-  >
-  <button id="mobile-back" type="button">&#8592; World</button>
-</div>
+      <div class="mobile-bar-row">
+        <img
+          src="assets/Partner Program White (Horizontal).png"
+          alt="Nauticworx Partner Program"
+          class="partner-program-logo partner-program-logo-mobile"
+        >
+        <button id="mobile-back" type="button">&#8592; World</button>
+      </div>
+      <div class="view-toggle view-toggle-mobile" role="tablist" aria-label="Map or List view">
+        <button id="toggle-map-m" class="active" type="button">Map</button>
+        <button id="toggle-list-m" type="button" title="List mode is out of scope for this POC">List</button>
+      </div>
+      <div class="mobile-search">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.2" y2="16.2"></line></svg>
+        <input type="text" placeholder="Search partners..." aria-label="Search partners (preview layout — not yet connected)">
+      </div>
+    </div>
     <div id="map"></div>
+
+    <!-- Floating selected-partner card shell — hidden by default, never
+         triggered this pass (Section 6). -->
+    <div id="partner-profile-card">
+      <div class="ppc-avatar"></div>
+      <div class="ppc-name">Partner name</div>
+      <div class="ppc-meta">Category · Region</div>
+      <div class="ppc-desc">Partner details will appear here once the Partner Directory is connected.</div>
+      <button class="ppc-contact" type="button">View partner</button>
+    </div>
+
     <div id="mobile-stats"></div>
   </div>
+
+  <!-- ================= BOTTOM KPI STRIP (under map only) =================
+       Structured to hold more live KPI tiles later; only real, already-
+       computed Network Coverage data is shown here — no invented metrics
+       (vessels/vessel owners/clients/growth) are hard-coded. -->
+  <div id="kpi-strip">
+    <div class="kpi-tile" id="kpi-tile"></div>
+  </div>
+</div>
 
 </div>
 
@@ -673,13 +930,48 @@
   var currentRegion = null; // region object when drilled in, else null
   var markers = [];
 
-  var contextStat = document.getElementById("context-stat");
+  // Single managed popup reference — at most one popup exists at a time.
+  var activePopup = null;
+  function closeActivePopup() {
+    if (activePopup) {
+      activePopup.remove(); // triggers the popup's own "close" event below
+      activePopup = null;
+    }
+  }
+  // Clicking the map background (not a marker, not the popup itself —
+  // both stop propagation before this can fire) closes whatever popup is
+  // open. Marker elements are outside the canvas's own click-listened
+  // subtree in some Mapbox versions and inside it in others, so every
+  // marker/chip click handler explicitly calls e.stopPropagation() as the
+  // authoritative guard rather than relying on DOM nesting.
+  map.on("click", function () { closeActivePopup(); });
+
+  // Relocated from the rail into the bottom KPI strip (desktop) — same
+  // element role, same calculation, just a different mount point.
+  var contextStat = document.getElementById("kpi-tile");
   var regionList = document.getElementById("region-list");
   var listTitle = document.getElementById("list-title");
   var breadcrumb = document.getElementById("breadcrumb");
   var backBtn = document.getElementById("back-btn");
   var mobileBack = document.getElementById("mobile-back");
   var mobileStats = document.getElementById("mobile-stats");
+
+  // ---- Map/List toggle: desktop + mobile button pairs kept in sync ----
+  // List remains an intentional out-of-scope stub (existing behavior,
+  // unchanged) — this just gives mobile the same toggle the rail already
+  // had, per the mockup's mobile hierarchy.
+  var toggleMapBtns = [document.getElementById("toggle-map"), document.getElementById("toggle-map-m")];
+  var toggleListBtns = [document.getElementById("toggle-list"), document.getElementById("toggle-list-m")];
+  function setViewMode(mode) {
+    toggleMapBtns.forEach(function (b) { if (b) b.classList.toggle("active", mode === "map"); });
+    toggleListBtns.forEach(function (b) { if (b) b.classList.toggle("active", mode === "list"); });
+  }
+  toggleMapBtns.forEach(function (b) { if (b) b.addEventListener("click", function () { setViewMode("map"); }); });
+  toggleListBtns.forEach(function (b) {
+    if (b) b.addEventListener("click", function () {
+      alert("List mode is out of scope for this pass. Map view only.");
+    });
+  });
 
   fetch("data/network-coverage.json")
     .then(function (r) {
@@ -751,6 +1043,7 @@
 
   // ---------------- WORLD / REGION-LEVEL VIEW ----------------
   function showWorldView() {
+    closeActivePopup();
     currentRegion = null;
     clearMarkers();
 
@@ -805,6 +1098,7 @@
 
   // ---------------- COUNTRY-LEVEL VIEW ----------------
   function drillIntoRegion(region) {
+    closeActivePopup();
     currentRegion = region;
     clearMarkers();
 
@@ -929,7 +1223,12 @@
     );
   }
 
+  // Anchors to the region's real geographic coordinate (never a DOM/page
+  // offset) so the popup opens over the actual marker, not a top-left
+  // fallback. Also enforces the single-active-popup rule.
   function openRegionPopup(region, anchorEl) {
+    closeActivePopup();
+
     var html = popupHTML({
       title: region.name,
       sub: null,
@@ -948,8 +1247,15 @@
       .setLngLat(region.coordinates)
       .setHTML(html)
       .addTo(map);
+    popup.on("close", function () { if (activePopup === popup) activePopup = null; });
+    activePopup = popup;
 
     var el = popup.getElement();
+    // A click inside the popup (including its own close button, which
+    // Mapbox wires internally) must not bubble to the map's background
+    // click-to-close handler.
+    el.addEventListener("click", function (e) { e.stopPropagation(); });
+
     var actionBtn = el.querySelector('[data-action="drill"]');
     if (actionBtn) {
       actionBtn.addEventListener("click", function () {
@@ -959,7 +1265,11 @@
     }
   }
 
+  // Anchors to the country's real geographic coordinate — same rule as
+  // the region popup above.
   function openCountryPopup(country, region, anchorEl) {
+    closeActivePopup();
+
     var html = popupHTML({
       title: country.name,
       sub: region.name,
@@ -974,16 +1284,15 @@
       actionLabel: null
     });
 
-    new mapboxgl.Popup({ offset: 22, closeButton: true, maxWidth: "240px" })
+    var popup = new mapboxgl.Popup({ offset: 22, closeButton: true, maxWidth: "240px" })
       .setLngLat(country.coordinates)
       .setHTML(html)
       .addTo(map);
-  }
+    popup.on("close", function () { if (activePopup === popup) activePopup = null; });
+    activePopup = popup;
 
-  // ---------------- VIEW TOGGLE (List stubbed — out of scope) ----------------
-  document.getElementById("toggle-list").addEventListener("click", function () {
-    alert("List mode is out of scope for this pass. Map view only.");
-  });
+    popup.getElement().addEventListener("click", function (e) { e.stopPropagation(); });
+  }
 
   // ---------------- RESPONSIVE RE-CENTER ----------------
   window.addEventListener("resize", function () {
