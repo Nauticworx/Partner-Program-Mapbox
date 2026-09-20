@@ -6,7 +6,7 @@
 <title>Nauticworx Partner Network — Mapbox POC</title>
 
 <!--
-  NAUTICWORX PARTNER PROGRAM — MAPBOX PROOF OF CONCEPT (Batch 1)
+  NAUTICWORX PARTNER PROGRAM — MAPBOX PROOF OF CONCEPT (Batch 1 + Batch 2 refinement)
   Standalone POC. Does NOT replace index.html and is NOT wired into production.
   Repo: Partner-Program-Mapbox (separate from the live Partner-Program repo).
 
@@ -120,26 +120,24 @@
     opacity: 0.4;
   }
 
-  .global-stats {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-  }
-  .stat-tile {
+  /* Single contextual stat — deliberately not a metrics dashboard.
+     Shows the global total in world view, or the selected region's
+     total when drilled in. */
+  .context-stat {
     background: rgba(255,255,255,0.035);
     border: 1px solid var(--nwx-border);
     border-radius: 8px;
-    padding: 10px 12px;
+    padding: 12px 14px;
   }
-  .stat-tile .num {
-    font-size: 20px;
+  .context-stat .num {
+    font-size: 26px;
     font-weight: 800;
-    color: var(--nwx-name);
+    color: var(--nwx-orange);
     line-height: 1.1;
   }
-  .stat-tile .lbl {
-    font-size: 10.5px;
-    color: rgba(206,226,235,0.55);
+  .context-stat .lbl {
+    font-size: 11px;
+    color: rgba(206,226,235,0.6);
     margin-top: 3px;
     text-transform: uppercase;
     letter-spacing: 0.4px;
@@ -270,32 +268,43 @@
   }
   #mobile-stats .pill .num { font-size: 15px; font-weight: 800; color: var(--nwx-name); }
   #mobile-stats .pill .lbl { font-size: 8.5px; color: rgba(206,226,235,0.55); text-transform: uppercase; }
+  #mobile-stats { justify-content: flex-start; }
+  #mobile-stats .pill { flex: 0 0 auto; min-width: 150px; text-align: left; padding: 8px 14px; }
 
-  /* ---------- MARKERS ---------- */
+  /* ---------- MARKERS ----------
+     Two-tier brand palette only (navy + orange) — no cyan/blue.
+     Region = solid navy badge with an orange ring, "premium" flat look.
+     Country = smaller, visually lighter, sits clearly below region tier. */
   .nwx-marker {
-    width: 46px;
-    height: 46px;
+    width: 42px;
+    height: 42px;
     border-radius: 50%;
-    background: radial-gradient(circle at 32% 28%, #ff8a52 0%, var(--nwx-orange) 55%, var(--nwx-orange-dim) 100%);
-    border: 2px solid rgba(206,226,235,0.85);
-    box-shadow: 0 2px 10px rgba(0,0,0,0.45), 0 0 0 6px rgba(232,100,44,0.14);
+    background: var(--nwx-navy);
+    border: 2px solid var(--nwx-orange);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.5);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #fff;
+    color: var(--nwx-orange);
     font-weight: 800;
-    font-size: 15px;
+    font-size: 14px;
     cursor: pointer;
-    transition: transform 0.12s ease;
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
     font-family: inherit;
   }
-  .nwx-marker:hover { transform: scale(1.08); }
+  .nwx-marker:hover {
+    transform: scale(1.08);
+    box-shadow: 0 3px 12px rgba(0,0,0,0.55);
+  }
   .nwx-marker.country-marker {
-    width: 38px;
-    height: 38px;
-    font-size: 13px;
-    background: radial-gradient(circle at 32% 28%, #3aa0c9 0%, #1f7699 55%, #145672 100%);
-    box-shadow: 0 2px 10px rgba(0,0,0,0.45), 0 0 0 5px rgba(31,118,153,0.16);
+    width: 28px;
+    height: 28px;
+    font-size: 11px;
+    font-weight: 700;
+    background: rgba(238, 242, 240, 0.96);
+    color: var(--nwx-navy);
+    border: 1.5px solid var(--nwx-orange-dim);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.4);
   }
   .nwx-marker-label {
     position: absolute;
@@ -303,17 +312,21 @@
     left: 50%;
     transform: translateX(-50%);
     margin-top: 4px;
-    font-size: 10.5px;
+    font-size: 10px;
     font-weight: 700;
     color: var(--nwx-name);
-    background: rgba(2,18,41,0.8);
+    background: rgba(2,18,41,0.85);
     padding: 2px 7px;
     border-radius: 5px;
     white-space: nowrap;
     pointer-events: none;
     letter-spacing: 0.2px;
+    opacity: 0;
+    transition: opacity 0.12s ease;
   }
   .nwx-marker-wrap { position: relative; }
+  .nwx-marker-wrap:hover .nwx-marker-label,
+  .nwx-marker-wrap:focus-within .nwx-marker-label { opacity: 1; }
 
   /* ---------- POPUP ---------- */
   .mapboxgl-popup-content {
@@ -394,8 +407,8 @@
   @media (max-width: 860px) {
     #rail { display: none; }
     #mobile-bar, #mobile-stats { display: flex; }
-    .nwx-marker { width: 40px; height: 40px; font-size: 13px; }
-    .nwx-marker.country-marker { width: 34px; height: 34px; font-size: 11.5px; }
+    .nwx-marker { width: 38px; height: 38px; font-size: 13px; }
+    .nwx-marker.country-marker { width: 26px; height: 26px; font-size: 10.5px; }
   }
 </style>
 </head>
@@ -412,13 +425,10 @@
 
     <div class="view-toggle" role="tablist" aria-label="Map or List view">
       <button id="toggle-map" class="active" type="button">Map</button>
-      <button id="toggle-list" type="button" title="List mode is out of scope for Batch 1">List</button>
+      <button id="toggle-list" type="button" title="List mode is out of scope for this POC">List</button>
     </div>
 
-    <div>
-      <div class="rail-section-title">Global network</div>
-      <div class="global-stats" id="global-stats"></div>
-    </div>
+    <div class="context-stat" id="context-stat"></div>
 
     <button id="back-btn" type="button">&#8592; World view</button>
 
@@ -430,7 +440,7 @@
     </div>
 
     <div class="rail-footnote">
-      Batch 1 proof of concept. Sample/demo data. Not connected to CRM, Zoho Flow, or the live Partner Directory.
+      Proof of concept. Sample/demo data, canonical 16-region taxonomy. Not connected to CRM, Zoho Flow, or the live Partner Directory.
     </div>
   </div>
 
@@ -497,8 +507,16 @@
       if (map.getLayer("admin-0-boundary-disputed")) {
         map.setPaintProperty("admin-0-boundary-disputed", "line-color", "#8fa3ad");
       }
-      ["settlement-major-label", "settlement-minor-label", "settlement-subdivision-label", "country-label"].forEach(function (id) {
-        if (map.getLayer(id)) map.setPaintProperty(id, "text-opacity", 0.35);
+      // Keep major country/place labels legible; push everything else well
+      // into the background so Nauticworx markers and popups read first.
+      ["country-label"].forEach(function (id) {
+        if (map.getLayer(id)) map.setPaintProperty(id, "text-opacity", 0.55);
+      });
+      ["settlement-major-label"].forEach(function (id) {
+        if (map.getLayer(id)) map.setPaintProperty(id, "text-opacity", 0.45);
+      });
+      ["settlement-minor-label", "settlement-subdivision-label", "poi-label", "airport-label", "road-label", "water-point-label", "water-line-label", "natural-point-label", "natural-line-label"].forEach(function (id) {
+        if (map.getLayer(id)) map.setPaintProperty(id, "text-opacity", 0.12);
       });
     } catch (e) {
       console.warn("Style re-skin partial failure (non-fatal):", e);
@@ -510,7 +528,7 @@
   var currentRegion = null; // region object when drilled in, else null
   var markers = [];
 
-  var railStats = document.getElementById("global-stats");
+  var contextStat = document.getElementById("context-stat");
   var regionList = document.getElementById("region-list");
   var listTitle = document.getElementById("list-title");
   var breadcrumb = document.getElementById("breadcrumb");
@@ -542,7 +560,7 @@
   }
 
   function init() {
-    renderGlobalStats();
+    renderContextStat(); // world-view default
     if (map.isStyleLoaded()) {
       showWorldView();
     } else {
@@ -550,28 +568,23 @@
     }
   }
 
-  function renderGlobalStats() {
-    // NOTE: uniqueAccounts is authoritative per-record; the global headline sums
-    // each region's own uniqueAccounts (not the account-type breakdown fields).
-    var totalUnique = sumField(coverage.regions, "uniqueAccounts");
-    var totalCharterers = sumField(coverage.regions, "charterers");
-    var totalBrokers = sumField(coverage.regions, "brokers");
-    var totalFleet = sumField(coverage.regions, "fleetOwners");
-
-    railStats.innerHTML =
-      statTile(totalUnique, "Network Accounts") +
-      statTile(coverage.regions.length, "Regions") +
-      statTile(totalCharterers, "Charterers") +
-      statTile(totalBrokers + totalFleet, "Brokers + Fleet");
-
-    mobileStats.innerHTML =
-      mobilePill(totalUnique, "Accounts") +
-      mobilePill(coverage.regions.length, "Regions") +
-      mobilePill(totalCharterers, "Charterers");
+  // Single contextual stat — not a metrics dashboard. World view shows the
+  // network-wide unique-account total; drilling into a region shows that
+  // region's own unique-account total instead. uniqueAccounts is authoritative
+  // and is never derived by summing the account-type breakdown fields.
+  function renderContextStat(region) {
+    if (region) {
+      contextStat.innerHTML = statBlock(region.uniqueAccounts, region.name + " — Unique Accounts");
+      mobileStats.innerHTML = mobilePill(region.uniqueAccounts, region.name + " accounts");
+    } else {
+      var totalUnique = sumField(coverage.regions, "uniqueAccounts");
+      contextStat.innerHTML = statBlock(totalUnique, "Unique Network Accounts");
+      mobileStats.innerHTML = mobilePill(totalUnique, "Network accounts");
+    }
   }
 
-  function statTile(num, label) {
-    return '<div class="stat-tile"><div class="num">' + num + '</div><div class="lbl">' + label + "</div></div>";
+  function statBlock(num, label) {
+    return '<div class="num">' + num + '</div><div class="lbl">' + label + "</div>";
   }
   function mobilePill(num, label) {
     return '<div class="pill"><div class="num">' + num + '</div><div class="lbl">' + label + "</div></div>";
@@ -609,6 +622,7 @@
     breadcrumb.innerHTML = '<span class="crumb-current">World view</span>';
     backBtn.classList.remove("visible");
     mobileBack.classList.remove("visible");
+    renderContextStat();
 
     renderRegionList();
   }
@@ -657,6 +671,7 @@
 
     backBtn.classList.add("visible");
     mobileBack.classList.add("visible");
+    renderContextStat(region);
 
     renderCountryList(region);
   }
@@ -699,7 +714,7 @@
   }
 
   function popupHTML(opts) {
-    // opts: {title, sub, headlineNum, headlineLabel, rows: [[k,v], ...], actionLabel}
+    // opts: {title, sub (optional), headlineNum, headlineLabel, rows: [[k,v], ...], actionLabel}
     var rowsHtml = opts.rows.map(function (r) {
       return '<div class="nwx-popup-row"><span class="k">' + r[0] + '</span><span class="v">' + r[1] + "</span></div>";
     }).join("");
@@ -708,9 +723,11 @@
       ? '<button class="nwx-popup-action" type="button" data-action="drill">' + opts.actionLabel + "</button>"
       : "";
 
+    var subHtml = opts.sub ? '<div class="nwx-popup-sub">' + opts.sub + '</div>' : "";
+
     return (
       '<div class="nwx-popup-title">' + opts.title + '</div>' +
-      '<div class="nwx-popup-sub">' + opts.sub + '</div>' +
+      subHtml +
       '<div class="nwx-popup-headline"><span class="n">' + opts.headlineNum + '</span><span class="l">' + opts.headlineLabel + '</span></div>' +
       '<div class="nwx-popup-grid">' + rowsHtml + "</div>" +
       actionHtml
@@ -720,7 +737,7 @@
   function openRegionPopup(region, anchorEl) {
     var html = popupHTML({
       title: region.name,
-      sub: "Region network",
+      sub: null,
       headlineNum: region.uniqueAccounts,
       headlineLabel: "Unique Accounts",
       rows: [
@@ -770,7 +787,7 @@
 
   // ---------------- VIEW TOGGLE (List stubbed — out of scope) ----------------
   document.getElementById("toggle-list").addEventListener("click", function () {
-    alert("List mode is out of scope for Batch 1 of the Mapbox POC. Map view only.");
+    alert("List mode is out of scope for this pass. Map view only.");
   });
 
   // ---------------- RESPONSIVE RE-CENTER ----------------
