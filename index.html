@@ -38,7 +38,7 @@
     padding: 0;
     width: 100%;
     height: 100%;
-    overflow-x: hidden;
+    overflow: hidden;
     background: var(--nwx-navy);
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     color: var(--nwx-name);
@@ -54,9 +54,10 @@
     background: var(--nwx-navy);
   }
 
-  /* Column holding the map plus its own KPI strip footer. Kept separate
-     from #rail so the KPI strip sits ONLY below the map — it must never
-     extend beneath the left rail (rail runs its own full height). */
+  /* Column holding the map. Kept as its own flex column (rather than
+     folding #map-wrap directly into #app) so a future full-width element
+     under the map only — without ever extending beneath the rail — can be
+     added again without restructuring; currently holds #map-wrap alone. */
   #map-column {
     display: flex;
     flex-direction: column;
@@ -71,10 +72,10 @@
     flex: 0 0 var(--rail-width);
     background: linear-gradient(180deg, var(--nwx-navy) 0%, var(--nwx-navy-soft) 100%);
     border-right: 1px solid var(--nwx-border);
-    padding: 20px 18px;
+    padding: 18px 18px;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 14px;
     overflow-y: auto;
   }
 
@@ -198,7 +199,7 @@
     align-items: center;
     text-align: center;
     gap: 4px;
-    padding: 20px 14px;
+    padding: 16px 14px;
     border: 1px dashed var(--nwx-border);
     border-radius: 10px;
     color: rgba(206,226,235,0.4);
@@ -209,13 +210,13 @@
 
   /* ---------- RAIL: region/country browse (de-emphasized — the mockup's
      search/filter/result-card hierarchy is the primary rail content now;
-     this is the same functional region drill-down as before, just no
-     longer the dominant default view) ---------- */
+     this is the same functional region drill-down as before, collapsed
+     by default so it no longer forces rail scrolling — Task 3). ---------- */
   .rail-browse {
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    padding-top: 12px;
+    gap: 8px;
+    padding-top: 10px;
     border-top: 1px solid var(--nwx-border);
   }
   .rail-browse-header {
@@ -223,38 +224,31 @@
     align-items: center;
     gap: 10px;
   }
-  .rail-browse #region-list {
-    max-height: 200px;
-    overflow-y: auto;
-  }
-
-  /* ---------- BOTTOM KPI STRIP (desktop) ----------
-     Full-width footer below the rail+map row. Deliberately not a metrics
-     dashboard — shows the same contextual Unique Network Accounts figure
-     that used to live in the rail (same calculation, just relocated),
-     structured so additional real KPI tiles can be appended later. */
-  #kpi-strip {
-    flex: 0 0 auto;
+  .rail-browse-toggle {
     display: flex;
     align-items: center;
-    gap: 28px;
-    background: var(--nwx-navy-soft);
-    border-top: 1px solid var(--nwx-border);
-    padding: 12px 24px;
+    justify-content: space-between;
+    width: 100%;
+    background: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    font-family: inherit;
   }
-  .kpi-tile { display: flex; flex-direction: column; }
-  .kpi-tile .num {
-    font-size: 22px;
-    font-weight: 800;
-    color: var(--nwx-orange);
-    line-height: 1.1;
+  .rail-browse-toggle .rail-section-title { margin: 0; }
+  .rail-browse-toggle .browse-chev {
+    font-size: 9px;
+    color: rgba(206,226,235,0.4);
+    transition: transform 0.15s ease;
   }
-  .kpi-tile .lbl {
-    font-size: 11px;
-    color: rgba(206,226,235,0.6);
-    margin-top: 2px;
-    text-transform: uppercase;
-    letter-spacing: 0.4px;
+  .rail-browse-toggle.expanded .browse-chev { transform: rotate(180deg); }
+  .rail-browse-body { display: none; }
+  .rail-browse-body.expanded { display: block; }
+  .rail-browse-body #region-list {
+    max-height: 200px;
+    overflow-y: auto;
+    margin-top: 8px;
   }
 
   #breadcrumb {
@@ -632,7 +626,6 @@
   /* ---------- RESPONSIVE ---------- */
   @media (max-width: 860px) {
     #rail { display: none; }
-    #kpi-strip { display: none; }
     #mobile-bar, #mobile-stats { display: flex; }
     .nwx-marker { width: 38px; height: 38px; font-size: 13px; }
     .nwx-marker.country-marker { width: 26px; height: 26px; font-size: 10.5px; }
@@ -698,8 +691,13 @@
       <button id="back-btn" type="button">&#8592; World view</button>
       <div id="breadcrumb"></div>
     </div>
-    <div class="rail-section-title" id="list-title">Browse by Region</div>
-    <div id="region-list"></div>
+    <button class="rail-browse-toggle" id="browse-toggle" type="button" aria-expanded="false" aria-controls="browse-body">
+      <span class="rail-section-title" id="list-title">Browse by Region</span>
+      <span class="browse-chev">&#9662;</span>
+    </button>
+    <div class="rail-browse-body" id="browse-body">
+      <div id="region-list"></div>
+    </div>
   </div>
 
   <div class="rail-footnote">
@@ -742,14 +740,6 @@
 
     <div id="mobile-stats"></div>
   </div>
-
-  <!-- ================= BOTTOM KPI STRIP (under map only) =================
-       Structured to hold more live KPI tiles later; only real, already-
-       computed Network Coverage data is shown here — no invented metrics
-       (vessels/vessel owners/clients/growth) are hard-coded. -->
-  <div id="kpi-strip">
-    <div class="kpi-tile" id="kpi-tile"></div>
-  </div>
 </div>
 
 </div>
@@ -761,18 +751,15 @@
   // DEV public token — local/testing only. Do not use in production.
   mapboxgl.accessToken = "pk.eyJ1IjoibmF1dGljd29yeCIsImEiOiJjbXVhMHFraGgwcG9sMndwbTk1eWMzNWE4In0.bHiQw7FILprNHdzCvDjSTA";
 
-  // Atlantic-centered world view, tuned for flat Mercator (mid-Atlantic
-  // longitude preserved; latitude nudged down slightly so North
-  // America/Europe balance against Africa/South America instead of pushing
-  // them toward the top edge). Desktop zoom raised a touch from the prior
-  // pass so the map fills the frame rather than leaving it under-used —
-  // computed by checking, via the same Mercator projection math used for
-  // the chip-collision offsets, that North America, South America, Europe,
-  // Africa, and the Middle East all stay comfortably on-screen; Southeast
-  // Asia/Oceania fall off the right edge by design (reachable by pan).
+  // Atlantic-centered starting point, used only for the map's initial
+  // construction (before network-coverage.json has loaded). Once data is
+  // available, World view no longer uses a fixed center/zoom — it fits
+  // all 16 region anchors via fitWorldView()/map.fitBounds() below, so
+  // no region chip is clipped against the map edge regardless of which
+  // regions the taxonomy ends up covering.
   var ATLANTIC_CENTER = [-30, 18];
   var WORLD_ZOOM_DESKTOP = 2.3;
-  var WORLD_ZOOM_MOBILE = 1.35; // mobile framing left as-is — mobile UI is out of scope for this pass
+  var WORLD_ZOOM_MOBILE = 1.35;
   var REGION_ZOOM_DESKTOP = 3.6;
   var REGION_ZOOM_MOBILE = 2.9;
 
@@ -792,6 +779,32 @@
   };
 
   function isMobile() { return window.innerWidth <= 860; }
+
+  // ---- World-view fit-to-regions (Task 1) ----
+  // Replaces the old fixed ATLANTIC_CENTER/WORLD_ZOOM_* world-view framing
+  // with a computed fitBounds() over the real, unmodified region.coordinates
+  // of all 16 canonical regions. Region coordinates themselves are never
+  // touched — only the camera framing is computed from them. Padding is
+  // generous enough to keep each chip's rendered width/height (not just its
+  // point anchor) clear of the map edge and of the top-right nav control.
+  function fitWorldView(animate) {
+    if (!coverage || !coverage.regions || !coverage.regions.length) return;
+    var bounds = new mapboxgl.LngLatBounds();
+    coverage.regions.forEach(function (region) { bounds.extend(region.coordinates); });
+    var mobile = isMobile();
+    // Mobile: extra top padding clears the logo/toggle/search bar; extra
+    // bottom padding clears the stat pill. Desktop: extra top+right padding
+    // clears the top-right zoom/nav control; generous left/right padding
+    // covers a chip's own rendered width (~130px), not just its point anchor.
+    var padding = mobile
+      ? { top: 150, bottom: 100, left: 34, right: 34 }
+      : { top: 90, bottom: 60, left: 100, right: 110 };
+    map.fitBounds(bounds, {
+      padding: padding,
+      duration: animate === false ? 0 : 900,
+      maxZoom: mobile ? 2.1 : 2.9
+    });
+  }
 
   // ---- Defensive data validation (Task 1/6 hardening) ----
   // Confirms, for every region and every country, that id/name/uniqueAccounts
@@ -929,6 +942,7 @@
   var coverage = null;
   var currentRegion = null; // region object when drilled in, else null
   var markers = [];
+  var _lastIsMobile = isMobile(); // tracks desktop/mobile breakpoint for World-view re-fit on resize (Task 1)
 
   // Single managed popup reference — at most one popup exists at a time.
   var activePopup = null;
@@ -946,15 +960,27 @@
   // authoritative guard rather than relying on DOM nesting.
   map.on("click", function () { closeActivePopup(); });
 
-  // Relocated from the rail into the bottom KPI strip (desktop) — same
-  // element role, same calculation, just a different mount point.
-  var contextStat = document.getElementById("kpi-tile");
   var regionList = document.getElementById("region-list");
   var listTitle = document.getElementById("list-title");
   var breadcrumb = document.getElementById("breadcrumb");
   var backBtn = document.getElementById("back-btn");
   var mobileBack = document.getElementById("mobile-back");
   var mobileStats = document.getElementById("mobile-stats");
+
+  // ---- "Browse by Region" collapsible (Task 3) ----
+  // Same functional region/country list as before; now collapsed by
+  // default (World view) and auto-expanded on drill-down, so it no longer
+  // dominates the rail now that search/filters/result-card sit above it.
+  var browseToggleBtn = document.getElementById("browse-toggle");
+  var browseBody = document.getElementById("browse-body");
+  function setBrowseExpanded(expanded) {
+    browseBody.classList.toggle("expanded", expanded);
+    browseToggleBtn.classList.toggle("expanded", expanded);
+    browseToggleBtn.setAttribute("aria-expanded", expanded ? "true" : "false");
+  }
+  browseToggleBtn.addEventListener("click", function () {
+    setBrowseExpanded(!browseBody.classList.contains("expanded"));
+  });
 
   // ---- Map/List toggle: desktop + mobile button pairs kept in sync ----
   // List remains an intentional out-of-scope stub (existing behavior,
@@ -1006,24 +1032,20 @@
     }
   }
 
-  // Single contextual stat — not a metrics dashboard. World view shows the
-  // network-wide unique-account total; drilling into a region shows that
-  // region's own unique-account total instead. uniqueAccounts is authoritative
-  // and is never derived by summing the account-type breakdown fields.
+  // Single contextual stat, mobile-only now that the desktop KPI strip has
+  // been removed (Task 1) — World view shows the network-wide unique-
+  // account total; drilling into a region shows that region's own total
+  // instead. uniqueAccounts is authoritative and is never derived by
+  // summing the account-type breakdown fields.
   function renderContextStat(region) {
     if (region) {
-      contextStat.innerHTML = statBlock(region.uniqueAccounts, region.name + " — Unique Accounts");
       mobileStats.innerHTML = mobilePill(region.uniqueAccounts, region.name + " accounts");
     } else {
       var totalUnique = sumField(coverage.regions, "uniqueAccounts");
-      contextStat.innerHTML = statBlock(totalUnique, "Unique Network Accounts");
       mobileStats.innerHTML = mobilePill(totalUnique, "Network accounts");
     }
   }
 
-  function statBlock(num, label) {
-    return '<div class="num">' + num + '</div><div class="lbl">' + label + "</div>";
-  }
   function mobilePill(num, label) {
     return '<div class="pill"><div class="num">' + num + '</div><div class="lbl">' + label + "</div></div>";
   }
@@ -1069,11 +1091,8 @@
     console.assert(markers.length === coverage.regions.length,
       "World view marker count (" + markers.length + ") should equal region count (" + coverage.regions.length + ")");
 
-    map.flyTo({
-      center: ATLANTIC_CENTER,
-      zoom: isMobile() ? WORLD_ZOOM_MOBILE : WORLD_ZOOM_DESKTOP,
-      speed: 0.9
-    });
+    fitWorldView();
+    _lastIsMobile = isMobile();
 
     listTitle.textContent = "Regions";
     breadcrumb.innerHTML = '<span class="crumb-current">World view</span>';
@@ -1082,6 +1101,7 @@
     renderContextStat();
 
     renderRegionList();
+    setBrowseExpanded(false); // Task 3: collapsed by default in World view
   }
 
   function renderRegionList() {
@@ -1137,6 +1157,7 @@
     renderContextStat(region);
 
     renderCountryList(region);
+    setBrowseExpanded(true); // Task 3: auto-expand so countries are immediately visible
   }
 
   function renderCountryList(region) {
@@ -1295,12 +1316,24 @@
   }
 
   // ---------------- RESPONSIVE RE-CENTER ----------------
+  // Region/country (drill-down) framing: unchanged from before — re-applies
+  // the appropriate fixed zoom for the current breakpoint on every resize.
+  // World view: re-fit is deliberately restricted to a desktop<->mobile
+  // breakpoint crossing (Task 1's "viewport meaningfully changes" trigger),
+  // not every resize event, since fitWorldView() already recomputes a
+  // fresh camera fit from the real region anchors.
   window.addEventListener("resize", function () {
     if (!coverage) return;
-    var targetZoom = currentRegion
-      ? (isMobile() ? REGION_ZOOM_MOBILE : REGION_ZOOM_DESKTOP)
-      : (isMobile() ? WORLD_ZOOM_MOBILE : WORLD_ZOOM_DESKTOP);
-    map.easeTo({ zoom: targetZoom, duration: 200 });
+    if (currentRegion) {
+      var targetZoom = isMobile() ? REGION_ZOOM_MOBILE : REGION_ZOOM_DESKTOP;
+      map.easeTo({ zoom: targetZoom, duration: 200 });
+      return;
+    }
+    var mobileNow = isMobile();
+    if (mobileNow !== _lastIsMobile) {
+      fitWorldView();
+      _lastIsMobile = mobileNow;
+    }
   });
 
 })();
