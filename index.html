@@ -271,10 +271,44 @@
   #mobile-stats { justify-content: flex-start; }
   #mobile-stats .pill { flex: 0 0 auto; min-width: 150px; text-align: left; padding: 8px 14px; }
 
-  /* ---------- MARKERS ----------
-     Two-tier brand palette only (navy + orange) — no cyan/blue.
-     Region = solid navy badge with an orange ring, "premium" flat look.
-     Country = smaller, visually lighter, sits clearly below region tier. */
+  /* ---------- WORLD-VIEW REGION CHIPS ----------
+     Region name is always visible (no hover required). Navy fill, thin
+     orange border, white name, orange count. Flat — no glow, no gradient,
+     no oversized bubble. */
+  .nwx-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--nwx-navy);
+    border: 1.5px solid var(--nwx-orange);
+    border-radius: 8px;
+    padding: 6px 11px 6px 13px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.45);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: transform 0.12s ease, box-shadow 0.12s ease;
+    font-family: inherit;
+  }
+  .nwx-chip:hover {
+    transform: scale(1.05);
+    box-shadow: 0 3px 12px rgba(0,0,0,0.55);
+  }
+  .nwx-chip .chip-name {
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 11.5px;
+    letter-spacing: 0.2px;
+  }
+  .nwx-chip .chip-count {
+    color: var(--nwx-orange);
+    font-weight: 800;
+    font-size: 13px;
+  }
+
+  /* ---------- COUNTRY-LEVEL MARKERS ----------
+     Smaller, visually lighter, compact count-only — geographic meaning is
+     precise enough at this zoom that a name chip isn't needed; name is
+     still available via hover/focus label and the popup title. */
   .nwx-marker {
     width: 42px;
     height: 42px;
@@ -409,6 +443,9 @@
     #mobile-bar, #mobile-stats { display: flex; }
     .nwx-marker { width: 38px; height: 38px; font-size: 13px; }
     .nwx-marker.country-marker { width: 26px; height: 26px; font-size: 10.5px; }
+    .nwx-chip { padding: 5px 9px 5px 11px; gap: 6px; }
+    .nwx-chip .chip-name { font-size: 10.5px; }
+    .nwx-chip .chip-count { font-size: 12px; }
   }
 </style>
 </head>
@@ -463,17 +500,91 @@
   // DEV public token — local/testing only. Do not use in production.
   mapboxgl.accessToken = "pk.eyJ1IjoibmF1dGljd29yeCIsImEiOiJjbXVhMHFraGgwcG9sMndwbTk1eWMzNWE4In0.bHiQw7FILprNHdzCvDjSTA";
 
-  var ATLANTIC_CENTER = [-32, 22];
-  var WORLD_ZOOM_DESKTOP = 2.15;
-  var WORLD_ZOOM_MOBILE = 1.35;
+  // Atlantic-centered world view, tuned for flat Mercator (mid-Atlantic
+  // longitude preserved; latitude nudged down slightly so North
+  // America/Europe balance against Africa/South America instead of pushing
+  // them toward the top edge). Desktop zoom raised a touch from the prior
+  // pass so the map fills the frame rather than leaving it under-used —
+  // computed by checking, via the same Mercator projection math used for
+  // the chip-collision offsets, that North America, South America, Europe,
+  // Africa, and the Middle East all stay comfortably on-screen; Southeast
+  // Asia/Oceania fall off the right edge by design (reachable by pan).
+  var ATLANTIC_CENTER = [-30, 18];
+  var WORLD_ZOOM_DESKTOP = 2.3;
+  var WORLD_ZOOM_MOBILE = 1.35; // mobile framing left as-is — mobile UI is out of scope for this pass
   var REGION_ZOOM_DESKTOP = 3.6;
   var REGION_ZOOM_MOBILE = 2.9;
 
+  // Restrained PIXEL offsets (screen-space only) applied to a small number of
+  // region chips whose true geographic anchors sit close enough together at
+  // world-view zoom to visually crowd (computed via Web Mercator projection
+  // at zoom 2.15: Southern Europe/Southeastern Europe ~80px apart, Central
+  // Africa/East Africa ~107px apart — both under a chip's ~110px width).
+  // The underlying region.coordinates value is NEVER changed by this — the
+  // marker's true anchor stays geographically correct; only the rendered
+  // element is nudged. Regions not listed here get [0, 0] (no offset).
+  var REGION_CHIP_OFFSETS = {
+    "southern-europe": [-8, 16],
+    "southeastern-europe": [20, -6],
+    "central-africa": [-10, 10],
+    "east-africa": [14, -8]
+  };
+
   function isMobile() { return window.innerWidth <= 860; }
 
+  // ---- Defensive data validation (Task 1/6 hardening) ----
+  // Confirms, for every region and every country, that id/name/uniqueAccounts
+  // and [lng, lat] coordinates are all present on the SAME object and that
+  // the coordinate pair is in valid range. This exists specifically to catch
+  // — at load time, loudly, in the console — the failure class reported
+  // against the live deploy (a marker rendering at another region's
+  // location): a lat/lng reversal, a missing/malformed pair, or a record
+  // that got separated from its own coordinates during a hand-edit.
+  function validateCoverage(data) {
+    var problems = [];
+    (data.regions || []).forEach(function (region, i) {
+      var where = "regions[" + i + "] (" + (region.name || region.id || "?") + ")";
+      if (!region.id || !region.name) problems.push(where + ": missing id/name");
+      if (typeof region.uniqueAccounts !== "number") problems.push(where + ": uniqueAccounts is not a number");
+      if (!Array.isArray(region.coordinates) || region.coordinates.length !== 2) {
+        problems.push(where + ": coordinates missing or not a [lng,lat] pair");
+      } else {
+        var lng = region.coordinates[0], lat = region.coordinates[1];
+        if (typeof lng !== "number" || lng < -180 || lng > 180) problems.push(where + ": longitude out of range (" + lng + ") — check for lat/lng swap");
+        if (typeof lat !== "number" || lat < -90 || lat > 90) problems.push(where + ": latitude out of range (" + lat + ") — check for lat/lng swap");
+      }
+      (region.countries || []).forEach(function (country, j) {
+        var cwhere = where + " > countries[" + j + "] (" + (country.name || country.id || "?") + ")";
+        if (!Array.isArray(country.coordinates) || country.coordinates.length !== 2) {
+          problems.push(cwhere + ": coordinates missing or not a [lng,lat] pair");
+        } else {
+          var clng = country.coordinates[0], clat = country.coordinates[1];
+          if (typeof clng !== "number" || clng < -180 || clng > 180) problems.push(cwhere + ": longitude out of range (" + clng + ")");
+          if (typeof clat !== "number" || clat < -90 || clat > 90) problems.push(cwhere + ": latitude out of range (" + clat + ")");
+        }
+        if (typeof country.uniqueAccounts !== "number") problems.push(cwhere + ": uniqueAccounts is not a number");
+      });
+    });
+    if (problems.length) {
+      console.error("network-coverage.json validation failed:\n" + problems.join("\n"));
+    } else {
+      console.log("network-coverage.json: all " + data.regions.length + " regions validated (id/name/uniqueAccounts/coordinates all bound to the same record).");
+    }
+    return problems;
+  }
+
+  // Style engine: mapbox/light-v11 (classic style), kept deliberately rather
+  // than switching to Mapbox Standard — see the Batch 4 report for why
+  // (Standard's water/land colors are governed by its v3 config/lightPreset
+  // system, not freely repaintable via setPaintProperty the way a classic
+  // style is, and that couldn't be verified live in this sandbox since
+  // api.mapbox.com is blocked here). This is the Task 6 fallback path:
+  // same engine, flatter projection, more aggressively refined paint
+  // properties to kill the globe look and the leftover visual noise.
   var map = new mapboxgl.Map({
     container: "map",
     style: "mapbox://styles/mapbox/light-v11",
+    projection: "mercator", // flat 2D — no globe/sphere presentation
     center: ATLANTIC_CENTER,
     zoom: isMobile() ? WORLD_ZOOM_MOBILE : WORLD_ZOOM_DESKTOP,
     minZoom: 1,
@@ -488,8 +599,15 @@
   // ---- Nauticworx re-skin of the base Mapbox style ----
   map.on("style.load", function () {
     try {
+      // Belt-and-braces: force flat Mercator and strip any atmosphere/fog
+      // effect, in case a future style change (or a GL JS default) ever
+      // reintroduces globe/fog. No-ops harmlessly on light-v11, which has
+      // neither by default.
+      if (typeof map.setProjection === "function") map.setProjection("mercator");
+      if (typeof map.setFog === "function") map.setFog(null);
+
       if (map.getLayer("water")) {
-        map.setPaintProperty("water", "fill-color", "#06192f");
+        map.setPaintProperty("water", "fill-color", "#021229"); // Nauticworx navy
       }
       if (map.getLayer("background")) {
         map.setPaintProperty("background", "background-color", "#eef2f0");
@@ -498,7 +616,7 @@
         map.setPaintProperty("land", "background-color", "#eef2f0");
       }
       if (map.getLayer("admin-0-boundary")) {
-        map.setPaintProperty("admin-0-boundary", "line-color", "#8fa3ad");
+        map.setPaintProperty("admin-0-boundary", "line-color", "#8fa3ad"); // subtle blue-gray
         map.setPaintProperty("admin-0-boundary", "line-opacity", 0.45);
       }
       if (map.getLayer("admin-1-boundary")) {
@@ -507,16 +625,39 @@
       if (map.getLayer("admin-0-boundary-disputed")) {
         map.setPaintProperty("admin-0-boundary-disputed", "line-color", "#8fa3ad");
       }
-      // Keep major country/place labels legible; push everything else well
-      // into the background so Nauticworx markers and popups read first.
+
+      // Labels: soft navy/gray (not default black) at just enough contrast
+      // to read, so the Nauticworx chips/markers stay visually dominant.
+      var LABEL_INK = "#3a4a56";
       ["country-label"].forEach(function (id) {
-        if (map.getLayer(id)) map.setPaintProperty(id, "text-opacity", 0.55);
+        if (map.getLayer(id)) {
+          map.setPaintProperty(id, "text-color", LABEL_INK);
+          map.setPaintProperty(id, "text-opacity", 0.6);
+        }
       });
       ["settlement-major-label"].forEach(function (id) {
-        if (map.getLayer(id)) map.setPaintProperty(id, "text-opacity", 0.45);
+        if (map.getLayer(id)) {
+          map.setPaintProperty(id, "text-color", LABEL_INK);
+          map.setPaintProperty(id, "text-opacity", 0.45);
+        }
       });
-      ["settlement-minor-label", "settlement-subdivision-label", "poi-label", "airport-label", "road-label", "water-point-label", "water-line-label", "natural-point-label", "natural-line-label"].forEach(function (id) {
-        if (map.getLayer(id)) map.setPaintProperty(id, "text-opacity", 0.12);
+      // Minor/secondary labels: pushed near-invisible so they don't compete.
+      ["settlement-minor-label", "settlement-subdivision-label", "poi-label", "airport-label", "road-label", "transit-label", "water-point-label", "water-line-label", "natural-point-label", "natural-line-label"].forEach(function (id) {
+        if (map.getLayer(id)) map.setPaintProperty(id, "text-opacity", 0.1);
+      });
+      // POI icons (not just their text) — minimize per Task 2.
+      ["poi-label", "airport-label"].forEach(function (id) {
+        if (map.getLayer(id)) {
+          try { map.setPaintProperty(id, "icon-opacity", 0.1); } catch (e2) { /* icon-opacity may not apply to every version of this layer */ }
+        }
+      });
+      // Roads/rail/transit geometry: restrained, not emphasized — dim the
+      // actual line work, not just its labels.
+      ["road-motorway-trunk", "road-primary", "road-secondary-tertiary", "road-street", "road-minor",
+       "bridge-motorway-trunk", "bridge-primary", "bridge-secondary-tertiary", "bridge-street",
+       "tunnel-motorway-trunk", "tunnel-primary", "tunnel-secondary-tertiary", "tunnel-street",
+       "road-rail", "road-rail-tracks"].forEach(function (id) {
+        if (map.getLayer(id)) map.setPaintProperty(id, "line-opacity", 0.18);
       });
     } catch (e) {
       console.warn("Style re-skin partial failure (non-fatal):", e);
@@ -543,6 +684,7 @@
     })
     .then(function (json) {
       coverage = json;
+      validateCoverage(coverage);
       init();
     })
     .catch(function (err) {
@@ -590,9 +732,17 @@
     return '<div class="pill"><div class="num">' + num + '</div><div class="lbl">' + label + "</div></div>";
   }
 
+  // markerLevel tracks which tier is currently on the map ("region" |
+  // "country" | null). clearMarkers() always empties the map completely
+  // before either view repopulates it, so region and country markers can
+  // never coexist — this is what satisfies "hide all region markers during
+  // drill-down" / "no world markers left floating" (Task 3).
+  var markerLevel = null;
+
   function clearMarkers() {
     markers.forEach(function (m) { m.remove(); });
     markers = [];
+    markerLevel = null;
   }
 
   // ---------------- WORLD / REGION-LEVEL VIEW ----------------
@@ -601,16 +751,26 @@
     clearMarkers();
 
     coverage.regions.forEach(function (region) {
-      var el = buildMarkerEl(region.uniqueAccounts, region.name, false);
+      var el = buildRegionChipEl(region);
       el.addEventListener("click", function (e) {
         e.stopPropagation();
         openRegionPopup(region, el);
       });
-      var marker = new mapboxgl.Marker({ element: el, anchor: "center" })
+      var marker = new mapboxgl.Marker({
+        element: el,
+        anchor: "center",
+        // Screen-space-only nudge for a handful of geographically close
+        // regions (see REGION_CHIP_OFFSETS) — the LngLat anchor below is
+        // always the region's real, unmodified coordinates.
+        offset: REGION_CHIP_OFFSETS[region.id] || [0, 0]
+      })
         .setLngLat(region.coordinates)
         .addTo(map);
       markers.push(marker);
     });
+    markerLevel = "region";
+    console.assert(markers.length === coverage.regions.length,
+      "World view marker count (" + markers.length + ") should equal region count (" + coverage.regions.length + ")");
 
     map.flyTo({
       center: ATLANTIC_CENTER,
@@ -645,7 +805,7 @@
     clearMarkers();
 
     region.countries.forEach(function (country) {
-      var el = buildMarkerEl(country.uniqueAccounts, country.name, true);
+      var el = buildCountryMarkerEl(country.uniqueAccounts, country.name);
       el.addEventListener("click", function (e) {
         e.stopPropagation();
         openCountryPopup(country, region, el);
@@ -655,6 +815,11 @@
         .addTo(map);
       markers.push(marker);
     });
+    markerLevel = "country";
+    console.assert(markers.length === region.countries.length,
+      "Drill-down marker count (" + markers.length + ") should equal " + region.name + "'s country count (" + region.countries.length + ")");
+    console.assert(document.querySelectorAll(".nwx-chip").length === 0,
+      "No region chips should remain on the map while drilled into " + region.name);
 
     map.flyTo({
       center: region.coordinates,
@@ -694,12 +859,38 @@
   mobileBack.addEventListener("click", showWorldView);
 
   // ---------------- MARKER + POPUP BUILDERS ----------------
-  function buildMarkerEl(number, label, isCountry) {
+
+  // World-view region marker: a compact chip with the region name always
+  // visible (no hover required) and the uniqueAccounts count in orange.
+  function buildRegionChipEl(region) {
+    var chip = document.createElement("div");
+    chip.className = "nwx-chip";
+    chip.setAttribute("role", "button");
+    chip.setAttribute("data-region-id", region.id);
+    chip.setAttribute("aria-label", region.name + ": " + region.uniqueAccounts + " unique accounts");
+
+    var nameEl = document.createElement("span");
+    nameEl.className = "chip-name";
+    nameEl.textContent = region.name;
+
+    var countEl = document.createElement("span");
+    countEl.className = "chip-count";
+    countEl.textContent = region.uniqueAccounts;
+
+    chip.appendChild(nameEl);
+    chip.appendChild(countEl);
+    return chip;
+  }
+
+  // Drill-down country marker: smaller compact circle, name available via
+  // hover/focus label and the popup title (geographic meaning is precise
+  // enough at this zoom that a always-on name chip isn't necessary).
+  function buildCountryMarkerEl(number, label) {
     var wrap = document.createElement("div");
     wrap.className = "nwx-marker-wrap";
 
     var dot = document.createElement("div");
-    dot.className = "nwx-marker" + (isCountry ? " country-marker" : "");
+    dot.className = "nwx-marker country-marker";
     dot.textContent = number;
     dot.setAttribute("role", "button");
     dot.setAttribute("aria-label", label + ": " + number + " unique accounts");
