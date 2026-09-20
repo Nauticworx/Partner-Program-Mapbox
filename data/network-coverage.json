@@ -1,281 +1,174 @@
 {
   "_meta": {
-    "description": "SAMPLE / DEMO DATA for the Nauticworx Partner Program Mapbox POC (Batch 1). Not production values.",
+    "description": "SAMPLE / DEMO DATA for the Nauticworx Partner Program Mapbox POC (Batch 2 refinement pass). Not production values.",
     "headlineField": "uniqueAccounts",
     "note": "uniqueAccounts is authoritative and must NOT be derived by summing charterers + brokers + fleetOwners, because dualAccounts overlap other account types.",
-    "accountFields": ["charterers", "brokers", "fleetOwners", "dualAccounts", "uniqueAccounts"]
+    "accountFields": ["charterers", "brokers", "fleetOwners", "dualAccounts", "uniqueAccounts"],
+    "taxonomySource": "Canonical 16-region Nauticworx Partner Program taxonomy (Africa: 5 sub-regions, America: 2, Asia: 4, Europe: 3, Middle East: 1, Australia/Oceania: 1)"
   },
   "regions": [
     {
       "id": "north-america",
       "name": "North America",
-      "coordinates": [-90.0, 38.0],
-      "charterers": 14,
-      "brokers": 9,
-      "fleetOwners": 17,
-      "dualAccounts": 6,
-      "uniqueAccounts": 32,
+      "coordinates": [-98.0, 45.0],
+      "charterers": 10, "brokers": 7, "fleetOwners": 12, "dualAccounts": 4, "uniqueAccounts": 24,
       "countries": [
-        {
-          "id": "us",
-          "name": "United States",
-          "coordinates": [-97.0, 38.5],
-          "charterers": 9,
-          "brokers": 6,
-          "fleetOwners": 11,
-          "dualAccounts": 4,
-          "uniqueAccounts": 21
-        },
-        {
-          "id": "ca",
-          "name": "Canada",
-          "coordinates": [-96.0, 56.0],
-          "charterers": 3,
-          "brokers": 2,
-          "fleetOwners": 4,
-          "dualAccounts": 1,
-          "uniqueAccounts": 7
-        },
-        {
-          "id": "mx",
-          "name": "Mexico",
-          "coordinates": [-102.0, 23.0],
-          "charterers": 2,
-          "brokers": 1,
-          "fleetOwners": 2,
-          "dualAccounts": 1,
-          "uniqueAccounts": 4
-        }
+        { "id": "us", "name": "United States", "coordinates": [-98.0, 39.0], "charterers": 7, "brokers": 5, "fleetOwners": 8, "dualAccounts": 3, "uniqueAccounts": 16 },
+        { "id": "ca", "name": "Canada", "coordinates": [-96.0, 56.0], "charterers": 3, "brokers": 2, "fleetOwners": 4, "dualAccounts": 1, "uniqueAccounts": 8 }
       ]
     },
     {
       "id": "south-america",
       "name": "South America",
       "coordinates": [-58.0, -15.0],
-      "charterers": 8,
-      "brokers": 5,
-      "fleetOwners": 10,
-      "dualAccounts": 3,
-      "uniqueAccounts": 19,
+      "charterers": 6, "brokers": 4, "fleetOwners": 8, "dualAccounts": 2, "uniqueAccounts": 15,
       "countries": [
-        {
-          "id": "br",
-          "name": "Brazil",
-          "coordinates": [-51.9, -14.2],
-          "charterers": 4,
-          "brokers": 2,
-          "fleetOwners": 5,
-          "dualAccounts": 1,
-          "uniqueAccounts": 9
-        },
-        {
-          "id": "cl",
-          "name": "Chile",
-          "coordinates": [-71.5, -35.7],
-          "charterers": 2,
-          "brokers": 2,
-          "fleetOwners": 3,
-          "dualAccounts": 1,
-          "uniqueAccounts": 6
-        },
-        {
-          "id": "ar",
-          "name": "Argentina",
-          "coordinates": [-63.6, -38.4],
-          "charterers": 2,
-          "brokers": 1,
-          "fleetOwners": 2,
-          "dualAccounts": 1,
-          "uniqueAccounts": 4
-        }
+        { "id": "br", "name": "Brazil", "coordinates": [-51.9, -14.2], "charterers": 4, "brokers": 2, "fleetOwners": 5, "dualAccounts": 1, "uniqueAccounts": 9 },
+        { "id": "cl", "name": "Chile", "coordinates": [-71.5, -35.7], "charterers": 2, "brokers": 2, "fleetOwners": 3, "dualAccounts": 1, "uniqueAccounts": 6 }
       ]
     },
     {
-      "id": "europe",
-      "name": "Europe",
-      "coordinates": [10.0, 50.0],
-      "charterers": 22,
-      "brokers": 18,
-      "fleetOwners": 26,
-      "dualAccounts": 11,
-      "uniqueAccounts": 51,
+      "id": "northern-europe",
+      "name": "Northern Europe",
+      "coordinates": [8.0, 57.0],
+      "charterers": 9, "brokers": 8, "fleetOwners": 11, "dualAccounts": 5, "uniqueAccounts": 22,
       "countries": [
-        {
-          "id": "nl",
-          "name": "Netherlands",
-          "coordinates": [5.3, 52.1],
-          "charterers": 7,
-          "brokers": 6,
-          "fleetOwners": 8,
-          "dualAccounts": 4,
-          "uniqueAccounts": 16
-        },
-        {
-          "id": "gb",
-          "name": "United Kingdom",
-          "coordinates": [-2.0, 54.0],
-          "charterers": 6,
-          "brokers": 5,
-          "fleetOwners": 7,
-          "dualAccounts": 3,
-          "uniqueAccounts": 14
-        },
-        {
-          "id": "no",
-          "name": "Norway",
-          "coordinates": [10.7, 61.3],
-          "charterers": 5,
-          "brokers": 4,
-          "fleetOwners": 6,
-          "dualAccounts": 2,
-          "uniqueAccounts": 12
-        },
-        {
-          "id": "gr",
-          "name": "Greece",
-          "coordinates": [22.9, 39.5],
-          "charterers": 4,
-          "brokers": 3,
-          "fleetOwners": 5,
-          "dualAccounts": 2,
-          "uniqueAccounts": 9
-        }
+        { "id": "nl", "name": "Netherlands", "coordinates": [5.3, 52.1], "charterers": 4, "brokers": 4, "fleetOwners": 5, "dualAccounts": 2, "uniqueAccounts": 10 },
+        { "id": "no", "name": "Norway", "coordinates": [10.7, 61.3], "charterers": 3, "brokers": 2, "fleetOwners": 3, "dualAccounts": 1, "uniqueAccounts": 6 },
+        { "id": "gb", "name": "United Kingdom", "coordinates": [-2.0, 54.0], "charterers": 2, "brokers": 2, "fleetOwners": 3, "dualAccounts": 2, "uniqueAccounts": 6 }
       ]
     },
     {
-      "id": "africa",
-      "name": "Africa",
-      "coordinates": [17.0, 3.0],
-      "charterers": 9,
-      "brokers": 6,
-      "fleetOwners": 12,
-      "dualAccounts": 4,
-      "uniqueAccounts": 22,
+      "id": "southern-europe",
+      "name": "Southern Europe",
+      "coordinates": [12.0, 40.5],
+      "charterers": 7, "brokers": 5, "fleetOwners": 8, "dualAccounts": 3, "uniqueAccounts": 17,
       "countries": [
-        {
-          "id": "za",
-          "name": "South Africa",
-          "coordinates": [24.7, -30.6],
-          "charterers": 4,
-          "brokers": 3,
-          "fleetOwners": 5,
-          "dualAccounts": 2,
-          "uniqueAccounts": 10
-        },
-        {
-          "id": "ng",
-          "name": "Nigeria",
-          "coordinates": [8.7, 9.1],
-          "charterers": 3,
-          "brokers": 2,
-          "fleetOwners": 4,
-          "dualAccounts": 1,
-          "uniqueAccounts": 8
-        },
-        {
-          "id": "eg",
-          "name": "Egypt",
-          "coordinates": [30.8, 26.8],
-          "charterers": 2,
-          "brokers": 1,
-          "fleetOwners": 3,
-          "dualAccounts": 1,
-          "uniqueAccounts": 4
-        }
+        { "id": "gr", "name": "Greece", "coordinates": [22.9, 39.5], "charterers": 4, "brokers": 3, "fleetOwners": 4, "dualAccounts": 2, "uniqueAccounts": 9 },
+        { "id": "it", "name": "Italy", "coordinates": [12.5, 42.5], "charterers": 2, "brokers": 1, "fleetOwners": 2, "dualAccounts": 1, "uniqueAccounts": 5 },
+        { "id": "es", "name": "Spain", "coordinates": [-3.7, 40.4], "charterers": 1, "brokers": 1, "fleetOwners": 2, "dualAccounts": 0, "uniqueAccounts": 3 }
+      ]
+    },
+    {
+      "id": "southeastern-europe",
+      "name": "Southeastern Europe",
+      "coordinates": [24.0, 43.5],
+      "charterers": 3, "brokers": 2, "fleetOwners": 4, "dualAccounts": 1, "uniqueAccounts": 8,
+      "countries": [
+        { "id": "ro", "name": "Romania", "coordinates": [25.0, 46.0], "charterers": 2, "brokers": 1, "fleetOwners": 2, "dualAccounts": 1, "uniqueAccounts": 5 },
+        { "id": "bg", "name": "Bulgaria", "coordinates": [25.5, 42.7], "charterers": 1, "brokers": 1, "fleetOwners": 2, "dualAccounts": 0, "uniqueAccounts": 3 }
+      ]
+    },
+    {
+      "id": "north-africa",
+      "name": "North Africa",
+      "coordinates": [12.0, 27.0],
+      "charterers": 4, "brokers": 2, "fleetOwners": 5, "dualAccounts": 1, "uniqueAccounts": 10,
+      "countries": [
+        { "id": "eg", "name": "Egypt", "coordinates": [30.8, 26.8], "charterers": 2, "brokers": 1, "fleetOwners": 3, "dualAccounts": 1, "uniqueAccounts": 6 },
+        { "id": "ma", "name": "Morocco", "coordinates": [-7.0, 31.8], "charterers": 2, "brokers": 1, "fleetOwners": 2, "dualAccounts": 0, "uniqueAccounts": 4 }
+      ]
+    },
+    {
+      "id": "west-africa",
+      "name": "West Africa",
+      "coordinates": [-4.0, 9.0],
+      "charterers": 5, "brokers": 3, "fleetOwners": 6, "dualAccounts": 2, "uniqueAccounts": 13,
+      "countries": [
+        { "id": "ng", "name": "Nigeria", "coordinates": [8.7, 9.1], "charterers": 3, "brokers": 2, "fleetOwners": 4, "dualAccounts": 1, "uniqueAccounts": 8 },
+        { "id": "gh", "name": "Ghana", "coordinates": [-1.0, 7.9], "charterers": 2, "brokers": 1, "fleetOwners": 2, "dualAccounts": 1, "uniqueAccounts": 5 }
+      ]
+    },
+    {
+      "id": "central-africa",
+      "name": "Central Africa",
+      "coordinates": [20.0, 0.0],
+      "charterers": 2, "brokers": 1, "fleetOwners": 3, "dualAccounts": 1, "uniqueAccounts": 6,
+      "countries": [
+        { "id": "cd", "name": "DR Congo", "coordinates": [23.6, -2.9], "charterers": 1, "brokers": 1, "fleetOwners": 2, "dualAccounts": 0, "uniqueAccounts": 4 },
+        { "id": "cm", "name": "Cameroon", "coordinates": [12.7, 5.7], "charterers": 1, "brokers": 0, "fleetOwners": 1, "dualAccounts": 1, "uniqueAccounts": 2 }
+      ]
+    },
+    {
+      "id": "east-africa",
+      "name": "East Africa",
+      "coordinates": [37.0, 0.0],
+      "charterers": 3, "brokers": 2, "fleetOwners": 4, "dualAccounts": 1, "uniqueAccounts": 8,
+      "countries": [
+        { "id": "ke", "name": "Kenya", "coordinates": [37.9, -0.02], "charterers": 2, "brokers": 1, "fleetOwners": 2, "dualAccounts": 1, "uniqueAccounts": 5 },
+        { "id": "tz", "name": "Tanzania", "coordinates": [34.9, -6.4], "charterers": 1, "brokers": 1, "fleetOwners": 2, "dualAccounts": 0, "uniqueAccounts": 3 }
+      ]
+    },
+    {
+      "id": "southern-africa",
+      "name": "Southern Africa",
+      "coordinates": [24.0, -28.0],
+      "charterers": 5, "brokers": 3, "fleetOwners": 6, "dualAccounts": 2, "uniqueAccounts": 12,
+      "countries": [
+        { "id": "za", "name": "South Africa", "coordinates": [24.7, -30.6], "charterers": 4, "brokers": 3, "fleetOwners": 5, "dualAccounts": 2, "uniqueAccounts": 10 },
+        { "id": "na", "name": "Namibia", "coordinates": [17.1, -22.6], "charterers": 1, "brokers": 0, "fleetOwners": 1, "dualAccounts": 0, "uniqueAccounts": 2 }
       ]
     },
     {
       "id": "middle-east",
       "name": "Middle East",
       "coordinates": [50.0, 24.0],
-      "charterers": 7,
-      "brokers": 5,
-      "fleetOwners": 9,
-      "dualAccounts": 3,
-      "uniqueAccounts": 17,
+      "charterers": 7, "brokers": 5, "fleetOwners": 9, "dualAccounts": 3, "uniqueAccounts": 17,
       "countries": [
-        {
-          "id": "ae",
-          "name": "United Arab Emirates",
-          "coordinates": [54.3, 24.0],
-          "charterers": 4,
-          "brokers": 3,
-          "fleetOwners": 5,
-          "dualAccounts": 2,
-          "uniqueAccounts": 10
-        },
-        {
-          "id": "sa",
-          "name": "Saudi Arabia",
-          "coordinates": [45.1, 24.0],
-          "charterers": 2,
-          "brokers": 1,
-          "fleetOwners": 3,
-          "dualAccounts": 1,
-          "uniqueAccounts": 5
-        },
-        {
-          "id": "qa",
-          "name": "Qatar",
-          "coordinates": [51.2, 25.3],
-          "charterers": 1,
-          "brokers": 1,
-          "fleetOwners": 1,
-          "dualAccounts": 0,
-          "uniqueAccounts": 2
-        }
+        { "id": "ae", "name": "United Arab Emirates", "coordinates": [54.3, 24.0], "charterers": 4, "brokers": 3, "fleetOwners": 5, "dualAccounts": 2, "uniqueAccounts": 10 },
+        { "id": "sa", "name": "Saudi Arabia", "coordinates": [45.1, 24.0], "charterers": 2, "brokers": 1, "fleetOwners": 3, "dualAccounts": 1, "uniqueAccounts": 5 },
+        { "id": "qa", "name": "Qatar", "coordinates": [51.2, 25.3], "charterers": 1, "brokers": 1, "fleetOwners": 1, "dualAccounts": 0, "uniqueAccounts": 2 }
       ]
     },
     {
-      "id": "asia-pacific",
-      "name": "Asia Pacific",
-      "coordinates": [105.0, 15.0],
-      "charterers": 16,
-      "brokers": 11,
-      "fleetOwners": 19,
-      "dualAccounts": 7,
-      "uniqueAccounts": 36,
+      "id": "west-asia",
+      "name": "West Asia",
+      "coordinates": [40.0, 39.0],
+      "charterers": 3, "brokers": 2, "fleetOwners": 4, "dualAccounts": 1, "uniqueAccounts": 8,
       "countries": [
-        {
-          "id": "sg",
-          "name": "Singapore",
-          "coordinates": [103.8, 1.4],
-          "charterers": 6,
-          "brokers": 4,
-          "fleetOwners": 7,
-          "dualAccounts": 3,
-          "uniqueAccounts": 14
-        },
-        {
-          "id": "jp",
-          "name": "Japan",
-          "coordinates": [138.3, 36.2],
-          "charterers": 4,
-          "brokers": 3,
-          "fleetOwners": 5,
-          "dualAccounts": 2,
-          "uniqueAccounts": 9
-        },
-        {
-          "id": "au",
-          "name": "Australia",
-          "coordinates": [134.0, -25.0],
-          "charterers": 3,
-          "brokers": 2,
-          "fleetOwners": 4,
-          "dualAccounts": 1,
-          "uniqueAccounts": 7
-        },
-        {
-          "id": "kr",
-          "name": "South Korea",
-          "coordinates": [127.8, 35.9],
-          "charterers": 3,
-          "brokers": 2,
-          "fleetOwners": 3,
-          "dualAccounts": 1,
-          "uniqueAccounts": 6
-        }
+        { "id": "tr", "name": "Turkey", "coordinates": [35.0, 39.0], "charterers": 2, "brokers": 1, "fleetOwners": 3, "dualAccounts": 1, "uniqueAccounts": 6 },
+        { "id": "ge", "name": "Georgia", "coordinates": [43.4, 42.3], "charterers": 1, "brokers": 1, "fleetOwners": 1, "dualAccounts": 0, "uniqueAccounts": 2 }
+      ]
+    },
+    {
+      "id": "south-asia",
+      "name": "South Asia",
+      "coordinates": [78.0, 22.0],
+      "charterers": 5, "brokers": 3, "fleetOwners": 7, "dualAccounts": 2, "uniqueAccounts": 13,
+      "countries": [
+        { "id": "in", "name": "India", "coordinates": [78.9, 20.6], "charterers": 4, "brokers": 2, "fleetOwners": 5, "dualAccounts": 2, "uniqueAccounts": 10 },
+        { "id": "pk", "name": "Pakistan", "coordinates": [69.3, 30.4], "charterers": 1, "brokers": 1, "fleetOwners": 2, "dualAccounts": 0, "uniqueAccounts": 3 }
+      ]
+    },
+    {
+      "id": "east-asia",
+      "name": "East Asia",
+      "coordinates": [115.0, 33.0],
+      "charterers": 8, "brokers": 6, "fleetOwners": 10, "dualAccounts": 4, "uniqueAccounts": 19,
+      "countries": [
+        { "id": "jp", "name": "Japan", "coordinates": [138.3, 36.2], "charterers": 4, "brokers": 3, "fleetOwners": 5, "dualAccounts": 2, "uniqueAccounts": 9 },
+        { "id": "kr", "name": "South Korea", "coordinates": [127.8, 35.9], "charterers": 2, "brokers": 2, "fleetOwners": 3, "dualAccounts": 1, "uniqueAccounts": 6 },
+        { "id": "cn", "name": "China", "coordinates": [104.0, 35.0], "charterers": 2, "brokers": 1, "fleetOwners": 2, "dualAccounts": 1, "uniqueAccounts": 4 }
+      ]
+    },
+    {
+      "id": "southeast-asia",
+      "name": "Southeast Asia",
+      "coordinates": [108.0, 5.0],
+      "charterers": 7, "brokers": 5, "fleetOwners": 8, "dualAccounts": 3, "uniqueAccounts": 16,
+      "countries": [
+        { "id": "sg", "name": "Singapore", "coordinates": [103.8, 1.4], "charterers": 5, "brokers": 3, "fleetOwners": 6, "dualAccounts": 2, "uniqueAccounts": 12 },
+        { "id": "id", "name": "Indonesia", "coordinates": [113.9, -0.8], "charterers": 2, "brokers": 2, "fleetOwners": 2, "dualAccounts": 1, "uniqueAccounts": 4 }
+      ]
+    },
+    {
+      "id": "australia-oceania",
+      "name": "Australia/Oceania",
+      "coordinates": [134.0, -25.0],
+      "charterers": 4, "brokers": 3, "fleetOwners": 5, "dualAccounts": 1, "uniqueAccounts": 10,
+      "countries": [
+        { "id": "au", "name": "Australia", "coordinates": [134.0, -25.0], "charterers": 3, "brokers": 2, "fleetOwners": 4, "dualAccounts": 1, "uniqueAccounts": 8 },
+        { "id": "nz", "name": "New Zealand", "coordinates": [172.0, -41.0], "charterers": 1, "brokers": 1, "fleetOwners": 1, "dualAccounts": 0, "uniqueAccounts": 2 }
       ]
     }
   ]
