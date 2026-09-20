@@ -66,22 +66,21 @@
     overflow-y: auto;
   }
 
-  .nwx-wordmark {
-    display: flex;
-    align-items: baseline;
-    gap: 6px;
-    font-weight: 800;
-    font-size: 19px;
-    letter-spacing: 0.5px;
-  }
-  .nwx-wordmark .nautic { color: var(--nwx-name); }
-  .nwx-wordmark .worx { color: var(--nwx-orange); }
-  .nwx-tagline {
-    font-size: 11px;
-    color: rgba(206, 226, 235, 0.55);
-    letter-spacing: 0.4px;
-    text-transform: uppercase;
-  }
+.partner-program-logo {
+  display: block;
+  height: auto;
+  object-fit: contain;
+}
+
+.partner-program-logo-desktop {
+  width: 190px;
+  max-width: 100%;
+}
+
+.partner-program-logo-mobile {
+  width: 145px;
+  max-width: 55vw;
+}
 
   .rail-section-title {
     font-size: 11px;
@@ -453,13 +452,16 @@
 
 <div id="app">
 
-  <!-- ================= DESKTOP LEFT RAIL ================= -->
-  <div id="rail">
-    <div>
-      <div class="nwx-wordmark"><span class="nautic">NAUTIC</span><span class="worx">WORX</span></div>
-      <div class="nwx-tagline">Partner Network — Mapbox POC</div>
-    </div>
-
+<!-- ================= DESKTOP LEFT RAIL ================= -->
+<div id="rail">
+  <div>
+    <img
+      src="assets/Partner Program White (Horizontal).png"
+      alt="Nauticworx Partner Program"
+      class="partner-program-logo partner-program-logo-desktop"
+    >
+    <div class="nwx-tagline">Partner Network — Mapbox POC</div>
+  </div>
     <div class="view-toggle" role="tablist" aria-label="Map or List view">
       <button id="toggle-map" class="active" type="button">Map</button>
       <button id="toggle-list" type="button" title="List mode is out of scope for this POC">List</button>
@@ -484,9 +486,13 @@
   <!-- ================= MAP ================= -->
   <div id="map-wrap">
     <div id="mobile-bar">
-      <div class="nwx-wordmark" style="font-size:15px;"><span class="nautic">NAUTIC</span><span class="worx">WORX</span></div>
-      <button id="mobile-back" type="button">&#8592; World</button>
-    </div>
+  <img
+    src="assets/Partner Program White (Horizontal).png"
+    alt="Nauticworx Partner Program"
+    class="partner-program-logo partner-program-logo-mobile"
+  >
+  <button id="mobile-back" type="button">&#8592; World</button>
+</div>
     <div id="map"></div>
     <div id="mobile-stats"></div>
   </div>
