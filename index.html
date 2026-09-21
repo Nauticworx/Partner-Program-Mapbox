@@ -1158,11 +1158,18 @@
   }
   #partner-list-view::-webkit-scrollbar-track { background: transparent; }
 
-  /* Partner names listed inside a Network Coverage region popup. */
+  /* Filter-aware Trusted Partner carousel inside region/country popups. */
   .nwx-popup-partners {
     margin-top: 12px;
     padding-top: 10px;
     border-top: 1px solid rgba(206,226,235,0.14);
+  }
+  .nwx-popup-partners-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 7px;
   }
   .nwx-popup-partners-title {
     color: rgba(206,226,235,0.58);
@@ -1170,23 +1177,103 @@
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.55px;
-    margin-bottom: 6px;
   }
-  .nwx-popup-partner-list {
+  .nwx-popup-partner-count {
+    color: rgba(206,226,235,0.45);
+    font-size: 9.5px;
+    font-weight: 700;
+  }
+  .nwx-popup-partner-viewport {
+    overflow: hidden;
+    border: 1px solid rgba(206,226,235,0.13);
+    border-radius: 8px;
+    background: rgba(255,255,255,0.025);
+  }
+  .nwx-popup-partner-track {
     display: flex;
-    flex-direction: column;
-    gap: 5px;
-    max-height: 126px;
-    overflow-y: auto;
-    scrollbar-color: rgba(206,226,235,0.22) transparent;
-    scrollbar-width: thin;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    scroll-behavior: smooth;
   }
-  .nwx-popup-partner-list::-webkit-scrollbar-track { background: transparent; }
-  .nwx-popup-partner-link,
-  .nwx-popup-partner-plain {
+  .nwx-popup-partner-track::-webkit-scrollbar { display: none; }
+  .nwx-popup-partner-card {
+    flex: 0 0 100%;
+    scroll-snap-align: start;
+    min-width: 0;
+    padding: 10px 11px;
+    cursor: pointer;
+  }
+  .nwx-popup-partner-card:hover { background: rgba(255,255,255,0.04); }
+  .nwx-popup-partner-card-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .nwx-popup-partner-icon {
+    width: 32px;
+    height: 32px;
+    object-fit: contain;
+    flex: 0 0 32px;
+  }
+  .nwx-popup-partner-copy { min-width: 0; }
+  .nwx-popup-partner-name {
     color: var(--nwx-name);
-    font-size: 11px;
+    font-size: 11.5px;
+    font-weight: 800;
+    line-height: 1.25;
+    text-decoration: none;
+  }
+  .nwx-popup-partner-category {
+    margin-top: 2px;
+    color: var(--nwx-orange);
+    font-size: 9.5px;
+    font-weight: 700;
+    line-height: 1.25;
+  }
+  .nwx-popup-partner-sub {
+    margin-top: 3px;
+    color: rgba(206,226,235,0.56);
+    font-size: 9.5px;
+    line-height: 1.25;
+  }
+  .nwx-popup-partner-geo {
+    margin-top: 7px;
+    color: rgba(206,226,235,0.55);
+    font-size: 9.5px;
     line-height: 1.3;
+  }
+  .nwx-popup-carousel-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: 6px;
+  }
+  .nwx-popup-carousel-btn {
+    width: 30px;
+    height: 26px;
+    border: 1px solid rgba(206,226,235,0.16);
+    border-radius: 6px;
+    background: rgba(255,255,255,0.04);
+    color: var(--nwx-name);
+    cursor: pointer;
+    font-weight: 900;
+  }
+  .nwx-popup-carousel-btn:hover { border-color: var(--nwx-orange); color: var(--nwx-orange); }
+  .nwx-popup-no-partners {
+    color: rgba(206,226,235,0.5);
+    font-size: 10px;
+    line-height: 1.35;
+    padding: 2px 0;
+  }
+  .nwx-chip.is-selected {
+    box-shadow: 0 0 0 2px rgba(232,100,44,0.28), 0 3px 12px rgba(0,0,0,0.55);
+  }
+  .nwx-marker.country-marker.is-selected {
+    background: var(--nwx-orange);
+    color: #fff;
+    border-color: #fff;
   }
 
   /* ---------- RESPONSIVE ---------- */
@@ -1693,7 +1780,12 @@
       var el = buildRegionChipEl(region);
       el.addEventListener("click", function (e) {
         e.stopPropagation();
-        openRegionPopup(region, el);
+        if (typeof window.nwxSetDirectoryRegionFilter === "function") {
+          window.nwxSetDirectoryRegionFilter(region.name);
+          setTimeout(function () { openRegionPopup(region, null); }, 0);
+        } else {
+          openRegionPopup(region, el);
+        }
       });
       var marker = new mapboxgl.Marker({
         element: el,
@@ -1737,47 +1829,76 @@
   }
 
   // ---------------- COUNTRY-LEVEL VIEW ----------------
-  function drillIntoRegion(region) {
+  function renderRegionContext(region, selectedCountryName, animate) {
     closeActivePopup();
     currentRegion = region;
     clearMarkers();
 
-    region.countries.forEach(function (country) {
+    // Keep the selected region chip visible while also showing its countries.
+    var regionEl = buildRegionChipEl(region);
+    regionEl.classList.add("is-selected");
+    regionEl.addEventListener("click", function (e) {
+      e.stopPropagation();
+      openRegionPopup(region, regionEl);
+    });
+    var regionMarker = new mapboxgl.Marker({
+      element: regionEl,
+      anchor: "center",
+      offset: REGION_CHIP_OFFSETS[region.id] || [0, 0]
+    }).setLngLat(region.coordinates).addTo(map);
+    markers.push(regionMarker);
+
+    (region.countries || []).forEach(function (country) {
       var el = buildCountryMarkerEl(country.uniqueAccounts, country.name);
+      if (selectedCountryName && country.name === selectedCountryName) {
+        var dot = el.querySelector('.country-marker');
+        if (dot) dot.classList.add('is-selected');
+      }
       el.addEventListener("click", function (e) {
         e.stopPropagation();
-        openCountryPopup(country, region, el);
+        if (typeof window.nwxSetDirectoryCountryFilter === "function") {
+          window.nwxSetDirectoryCountryFilter(country.name, region.name);
+        }
+        // The filter event re-renders the marker set. Open after that sync.
+        setTimeout(function () { openCountryPopup(country, region, null); }, 0);
       });
       var marker = new mapboxgl.Marker({ element: el, anchor: "center" })
         .setLngLat(country.coordinates)
         .addTo(map);
       markers.push(marker);
     });
-    markerLevel = "country";
-    console.assert(markers.length === region.countries.length,
-      "Drill-down marker count (" + markers.length + ") should equal " + region.name + "'s country count (" + region.countries.length + ")");
-    console.assert(document.querySelectorAll(".nwx-chip").length === 0,
-      "No region chips should remain on the map while drilled into " + region.name);
 
-    map.flyTo({
-      center: region.coordinates,
-      zoom: isMobile() ? REGION_ZOOM_MOBILE : REGION_ZOOM_DESKTOP,
-      speed: 1.1
-    });
+    markerLevel = "region+country";
+    if (animate !== false) {
+      map.flyTo({
+        center: region.coordinates,
+        zoom: isMobile() ? REGION_ZOOM_MOBILE : REGION_ZOOM_DESKTOP,
+        speed: 1.1
+      });
+    }
 
     listTitle.textContent = region.name + " — Countries";
-    breadcrumb.innerHTML =
-      '<span class="crumb-world" style="cursor:pointer;text-decoration:underline;">World</span>' +
+    breadcrumb.innerHTML = '<span class="crumb-world" style="cursor:pointer;text-decoration:underline;">World</span>' +
       ' / <span class="crumb-current">' + region.name + "</span>";
     var worldCrumb = breadcrumb.querySelector(".crumb-world");
-    if (worldCrumb) worldCrumb.addEventListener("click", showWorldView);
+    if (worldCrumb) worldCrumb.addEventListener("click", function () {
+      if (typeof window.nwxSetDirectoryRegionFilter === "function") window.nwxSetDirectoryRegionFilter("");
+      else showWorldView();
+    });
 
     backBtn.classList.add("visible");
     mobileBack.classList.add("visible");
     renderContextStat(region);
-
     renderCountryList(region);
-    setBrowseExpanded(true); // Task 3: auto-expand so countries are immediately visible
+    setBrowseExpanded(true);
+  }
+
+  function drillIntoRegion(region) {
+    if (typeof window.nwxSetDirectoryRegionFilter === "function") {
+      window.nwxSetDirectoryRegionFilter(region.name);
+    } else {
+      renderRegionContext(region, "", true);
+    }
   }
 
   function renderCountryList(region) {
@@ -1794,8 +1915,12 @@
     });
   }
 
-  backBtn.addEventListener("click", showWorldView);
-  mobileBack.addEventListener("click", showWorldView);
+  function clearMapGeoFilters() {
+    if (typeof window.nwxClearDirectoryGeoFilters === "function") window.nwxClearDirectoryGeoFilters();
+    else showWorldView();
+  }
+  backBtn.addEventListener("click", clearMapGeoFilters);
+  mobileBack.addEventListener("click", clearMapGeoFilters);
 
   // ---------------- MARKER + POPUP BUILDERS ----------------
 
@@ -1849,23 +1974,80 @@
     });
   }
 
-  function regionPartnersHTML(regionName) {
-    if (typeof window.nwxPartnerDirectoryForRegion !== "function") return "";
-    var partners = window.nwxPartnerDirectoryForRegion(regionName) || [];
-    if (!partners.length) return "";
-    var items = partners.map(function (p) {
+  function popupCategoryIconSrc(category) {
+    if (typeof window.nwxPartnerCategoryIconSrc === "function") {
+      return window.nwxPartnerCategoryIconSrc(category) || "";
+    }
+    return "";
+  }
+
+  function popupPartnersHTML(regionName, countryName) {
+    if (typeof window.nwxPartnerDirectoryForMapContext !== "function") return "";
+    var partners = window.nwxPartnerDirectoryForMapContext(regionName, countryName || "") || [];
+    if (!partners.length) {
+      return '<div class="nwx-popup-partners">' +
+        '<div class="nwx-popup-partners-title">Trusted Partners</div>' +
+        '<div class="nwx-popup-no-partners">No Trusted Partners match the current filters in this area.</div>' +
+        '</div>';
+    }
+
+    var cards = partners.map(function (p) {
       var name = popupEscapeHtml(p.name || "");
-      if (!name) return "";
-      if (p.partnerPageUrl) {
-        return '<a class="nwx-popup-partner-link" href="' + popupEscapeHtml(p.partnerPageUrl) + '">' + name + "</a>";
-      }
-      return '<span class="nwx-popup-partner-plain">' + name + "</span>";
-    }).filter(Boolean).join("");
-    if (!items) return "";
+      var category = popupEscapeHtml(p.category || "");
+      var subs = Array.isArray(p.subcategories) ? p.subcategories.filter(Boolean).join(", ") : "";
+      var iconSrc = popupCategoryIconSrc(p.category);
+      var icon = iconSrc ? '<img class="nwx-popup-partner-icon" src="' + popupEscapeHtml(iconSrc) + '" alt="" aria-hidden="true">' : "";
+      var geo = [p.country || "", p.regionsDisplay || ""].filter(Boolean).join(" · ");
+      return '<div class="nwx-popup-partner-card" data-partner-id="' + popupEscapeHtml(p.__id) + '">' +
+        '<div class="nwx-popup-partner-card-head">' + icon +
+          '<div class="nwx-popup-partner-copy">' +
+            '<div class="nwx-popup-partner-name">' + name + '</div>' +
+            (category ? '<div class="nwx-popup-partner-category">' + category + '</div>' : '') +
+            (subs ? '<div class="nwx-popup-partner-sub">' + popupEscapeHtml(subs) + '</div>' : '') +
+          '</div>' +
+        '</div>' +
+        (geo ? '<div class="nwx-popup-partner-geo">' + popupEscapeHtml(geo) + '</div>' : '') +
+      '</div>';
+    }).join("");
+
     return '<div class="nwx-popup-partners">' +
-      '<div class="nwx-popup-partners-title">Trusted Partners</div>' +
-      '<div class="nwx-popup-partner-list">' + items + "</div>" +
-      "</div>";
+      '<div class="nwx-popup-partners-head">' +
+        '<div class="nwx-popup-partners-title">Trusted Partners</div>' +
+        '<div class="nwx-popup-partner-count" data-carousel-count>1 / ' + partners.length + '</div>' +
+      '</div>' +
+      '<div class="nwx-popup-partner-viewport"><div class="nwx-popup-partner-track" data-carousel-track>' + cards + '</div></div>' +
+      (partners.length > 1 ? '<div class="nwx-popup-carousel-nav">' +
+        '<button class="nwx-popup-carousel-btn" type="button" data-carousel-prev aria-label="Previous partner">‹</button>' +
+        '<button class="nwx-popup-carousel-btn" type="button" data-carousel-next aria-label="Next partner">›</button>' +
+      '</div>' : '') +
+    '</div>';
+  }
+
+  function wirePopupPartnerCarousel(popupEl) {
+    if (!popupEl) return;
+    var track = popupEl.querySelector('[data-carousel-track]');
+    var count = popupEl.querySelector('[data-carousel-count]');
+    var cards = track ? Array.prototype.slice.call(track.querySelectorAll('.nwx-popup-partner-card')) : [];
+    if (track && cards.length) {
+      var updateCount = function () {
+        var width = track.clientWidth || 1;
+        var idx = Math.max(0, Math.min(cards.length - 1, Math.round(track.scrollLeft / width)));
+        if (count) count.textContent = (idx + 1) + ' / ' + cards.length;
+      };
+      track.addEventListener('scroll', updateCount, { passive: true });
+      var prev = popupEl.querySelector('[data-carousel-prev]');
+      var next = popupEl.querySelector('[data-carousel-next]');
+      if (prev) prev.addEventListener('click', function (e) { e.stopPropagation(); track.scrollBy({ left: -track.clientWidth, behavior: 'smooth' }); });
+      if (next) next.addEventListener('click', function (e) { e.stopPropagation(); track.scrollBy({ left: track.clientWidth, behavior: 'smooth' }); });
+    }
+    popupEl.querySelectorAll('.nwx-popup-partner-card').forEach(function (card) {
+      card.addEventListener('click', function (e) {
+        e.stopPropagation();
+        if (typeof window.nwxOpenPartnerPreviewById === 'function') {
+          window.nwxOpenPartnerPreviewById(card.getAttribute('data-partner-id'));
+        }
+      });
+    });
   }
 
   function popupHTML(opts) {
@@ -1907,8 +2089,8 @@
         ["Fleet Owners", region.fleetOwners],
         ["Dual Accounts", region.dualAccounts]
       ],
-      partnersHtml: regionPartnersHTML(region.name),
-      actionLabel: "View countries →"
+      partnersHtml: popupPartnersHTML(region.name, ""),
+      actionLabel: null
     });
 
     var popup = new mapboxgl.Popup({ offset: 26, closeButton: true, maxWidth: "300px" })
@@ -1923,6 +2105,7 @@
     // Mapbox wires internally) must not bubble to the map's background
     // click-to-close handler.
     el.addEventListener("click", function (e) { e.stopPropagation(); });
+    wirePopupPartnerCarousel(el);
 
     var actionBtn = el.querySelector('[data-action="drill"]');
     if (actionBtn) {
@@ -1949,10 +2132,11 @@
         ["Fleet Owners", country.fleetOwners],
         ["Dual Accounts", country.dualAccounts]
       ],
+      partnersHtml: popupPartnersHTML(region.name, country.name),
       actionLabel: null
     });
 
-    var popup = new mapboxgl.Popup({ offset: 22, closeButton: true, maxWidth: "240px" })
+    var popup = new mapboxgl.Popup({ offset: 22, closeButton: true, maxWidth: "300px" })
       .setLngLat(country.coordinates)
       .setHTML(html)
       .addTo(map);
@@ -1960,7 +2144,32 @@
     activePopup = popup;
 
     popup.getElement().addEventListener("click", function (e) { e.stopPropagation(); });
+    wirePopupPartnerCarousel(popup.getElement());
   }
+
+
+  // Partner Directory filters are the source of truth for geographic map state.
+  window.addEventListener("nwxpartnerfilterschange", function (e) {
+    if (!coverage) return;
+    var detail = (e && e.detail) || {};
+    var regionName = detail.region || "";
+    var countryName = detail.country || "";
+
+    var region = null;
+    if (regionName) {
+      region = coverage.regions.find(function (r) { return r.name === regionName; }) || null;
+    } else if (countryName) {
+      region = coverage.regions.find(function (r) {
+        return (r.countries || []).some(function (c) { return c.name === countryName; });
+      }) || null;
+    }
+
+    if (!region) {
+      showWorldView();
+      return;
+    }
+    renderRegionContext(region, countryName, true);
+  });
 
   // ---------------- RESPONSIVE RE-CENTER ----------------
   // Region/country (drill-down) framing: unchanged from before — re-applies
@@ -2133,7 +2342,7 @@
     chip.setAttribute("aria-label", "Remove " + key + " filter: " + label);
     chip.innerHTML = '<span>' + escapeHtml(label) + '</span><span class="filter-chip-x" aria-hidden="true">×</span>';
     chip.addEventListener("click", function () {
-      if (key === "region") { filters.region = ""; regionSelect.value = ""; }
+      if (key === "region") { filters.region = ""; filters.country = ""; regionSelect.value = ""; countrySelect.value = ""; }
       if (key === "country") { filters.country = ""; countrySelect.value = ""; }
       if (key === "category") {
         filters.category = "";
@@ -2312,16 +2521,64 @@
     renderInto(railList, filtered, "Try adjusting search or filters.", buildCompactCardEl);
     renderInto(listGrid, filtered, "Try adjusting search or filters.", buildCardEl);
     resultCount.textContent = filtered.length + (filtered.length === 1 ? " partner" : " partners") + " found";
+    dispatchPartnerFilterState();
   }
   // Read-only bridge used by the Network Coverage region popup. It keeps
   // the two datasets separate while allowing a region popup to list matching
   // Partner Directory companies beneath the account summary.
-  window.nwxPartnerDirectoryForRegion = function (regionName) {
-    return allPartners.filter(function (p) {
-      return partnerRegions(p).indexOf(regionName) !== -1;
+  window.nwxPartnerDirectoryForMapContext = function (regionName, countryName) {
+    return getFilteredPartners().filter(function (p) {
+      if (regionName && partnerRegions(p).indexOf(regionName) === -1) return false;
+      if (countryName && p.country !== countryName) return false;
+      return true;
     }).sort(function (a, b) {
       return String(a.name || "").localeCompare(String(b.name || ""));
     });
+  };
+
+  window.nwxPartnerCategoryIconSrc = function (category) {
+    var fileName = CATEGORY_ICON_FILES[category];
+    return fileName ? ("assets/" + encodeURIComponent(fileName).replace(/%2F/g, "/")) : "";
+  };
+
+  window.nwxOpenPartnerPreviewById = function (partnerId) {
+    var id = String(partnerId);
+    var partner = allPartners.find(function (p) { return String(p.__id) === id; });
+    if (partner) openPreviewOverlay(partner);
+  };
+
+  function dispatchPartnerFilterState() {
+    window.dispatchEvent(new CustomEvent("nwxpartnerfilterschange", {
+      detail: { region: filters.region || "", country: filters.country || "" }
+    }));
+  }
+
+  window.nwxSetDirectoryRegionFilter = function (regionName) {
+    filters.region = regionName || "";
+    regionSelect.value = filters.region;
+    if (!filters.region) {
+      filters.country = "";
+      countrySelect.value = "";
+    }
+    renderAll();
+  };
+
+  window.nwxSetDirectoryCountryFilter = function (countryName, regionName) {
+    if (regionName) {
+      filters.region = regionName;
+      regionSelect.value = regionName;
+    }
+    filters.country = countryName || "";
+    countrySelect.value = filters.country;
+    renderAll();
+  };
+
+  window.nwxClearDirectoryGeoFilters = function () {
+    filters.region = "";
+    filters.country = "";
+    regionSelect.value = "";
+    countrySelect.value = "";
+    renderAll();
   };
 
   function syncSelectedHighlight() {
@@ -2466,7 +2723,7 @@
       renderAll();
     });
   });
-  regionSelect.addEventListener("change", function () { filters.region = regionSelect.value; renderAll(); });
+  regionSelect.addEventListener("change", function () { filters.region = regionSelect.value; if (!filters.region) { filters.country = ""; countrySelect.value = ""; } renderAll(); });
   countrySelect.addEventListener("change", function () { filters.country = countrySelect.value; renderAll(); });
   categorySelect.addEventListener("change", function () {
     filters.category = categorySelect.value;
