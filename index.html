@@ -1043,10 +1043,10 @@
     padding: 4px 8px;
     border: 1px solid rgba(232,100,44,0.55);
     border-radius: 999px;
-    background: #e8642c;
+    background: #ffffff;
     color: #102033;
-    font-size: 9px;
-    font-weight: 700;
+    font-size: 10px;
+    font-weight: 900;
     line-height: 1.15;
     cursor: pointer;
     white-space: normal;
@@ -1064,43 +1064,6 @@
     font-weight: 900;
     line-height: 1;
     flex: 0 0 auto;
-  }
-
-  /* Global "Reset all filters" control -- same icon button, sizing, border,
-     radius and hover treatment as the current live Partner Program's
-     .nwx-clear-filters-button/.nwx-reset-filter-icon, adapted only in
-     placement (right-aligned below the filter-stack, since this rail is a
-     single full-width column rather than the live site's filter-bar row). */
-  #rail .nwx-clear-filters-wrap {
-    display: flex;
-    justify-content: flex-end;
-    width: 100%;
-  }
-  #rail .nwx-clear-filters-button {
-    width: 46px;
-    min-width: 46px;
-    height: 46px;
-    min-height: 46px;
-    padding: 0;
-    display: inline-grid;
-    place-items: center;
-    border: 1px solid var(--nwx-orange);
-    border-radius: 9px;
-    background: #ffffff;
-    color: var(--nwx-orange);
-    cursor: pointer;
-    box-shadow: none;
-  }
-  #rail .nwx-clear-filters-button:hover,
-  #rail .nwx-clear-filters-button:focus-visible {
-    background: rgba(232, 100, 44, 0.08);
-    border-color: var(--nwx-orange);
-    color: var(--nwx-orange);
-  }
-  #rail .nwx-reset-filter-icon {
-    width: 24px;
-    height: 24px;
-    display: block;
   }
 
   /* Partner names are clean by default; underline is an interaction cue only. */
@@ -1195,18 +1158,11 @@
   }
   #partner-list-view::-webkit-scrollbar-track { background: transparent; }
 
-  /* Filter-aware Trusted Partner carousel inside region/country popups. */
+  /* Partner names listed inside a Network Coverage region popup. */
   .nwx-popup-partners {
     margin-top: 12px;
     padding-top: 10px;
     border-top: 1px solid rgba(206,226,235,0.14);
-  }
-  .nwx-popup-partners-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    margin-bottom: 7px;
   }
   .nwx-popup-partners-title {
     color: rgba(206,226,235,0.58);
@@ -1214,103 +1170,23 @@
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.55px;
+    margin-bottom: 6px;
   }
-  .nwx-popup-partner-count {
-    color: rgba(206,226,235,0.45);
-    font-size: 9.5px;
-    font-weight: 700;
-  }
-  .nwx-popup-partner-viewport {
-    overflow: hidden;
-    border: 1px solid rgba(206,226,235,0.13);
-    border-radius: 8px;
-    background: rgba(255,255,255,0.025);
-  }
-  .nwx-popup-partner-track {
+  .nwx-popup-partner-list {
     display: flex;
-    overflow-x: auto;
-    scroll-snap-type: x mandatory;
-    scrollbar-width: none;
-    scroll-behavior: smooth;
+    flex-direction: column;
+    gap: 5px;
+    max-height: 126px;
+    overflow-y: auto;
+    scrollbar-color: rgba(206,226,235,0.22) transparent;
+    scrollbar-width: thin;
   }
-  .nwx-popup-partner-track::-webkit-scrollbar { display: none; }
-  .nwx-popup-partner-card {
-    flex: 0 0 100%;
-    scroll-snap-align: start;
-    min-width: 0;
-    padding: 10px 11px;
-    cursor: pointer;
-  }
-  .nwx-popup-partner-card:hover { background: rgba(255,255,255,0.04); }
-  .nwx-popup-partner-card-head {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .nwx-popup-partner-icon {
-    width: 32px;
-    height: 32px;
-    object-fit: contain;
-    flex: 0 0 32px;
-  }
-  .nwx-popup-partner-copy { min-width: 0; }
-  .nwx-popup-partner-name {
+  .nwx-popup-partner-list::-webkit-scrollbar-track { background: transparent; }
+  .nwx-popup-partner-link,
+  .nwx-popup-partner-plain {
     color: var(--nwx-name);
-    font-size: 11.5px;
-    font-weight: 800;
-    line-height: 1.25;
-    text-decoration: none;
-  }
-  .nwx-popup-partner-category {
-    margin-top: 2px;
-    color: var(--nwx-orange);
-    font-size: 9.5px;
-    font-weight: 700;
-    line-height: 1.25;
-  }
-  .nwx-popup-partner-sub {
-    margin-top: 3px;
-    color: rgba(206,226,235,0.56);
-    font-size: 9.5px;
-    line-height: 1.25;
-  }
-  .nwx-popup-partner-geo {
-    margin-top: 7px;
-    color: rgba(206,226,235,0.55);
-    font-size: 9.5px;
+    font-size: 11px;
     line-height: 1.3;
-  }
-  .nwx-popup-carousel-nav {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 8px;
-    margin-top: 6px;
-  }
-  .nwx-popup-carousel-btn {
-    width: 30px;
-    height: 26px;
-    border: 1px solid rgba(206,226,235,0.16);
-    border-radius: 6px;
-    background: rgba(255,255,255,0.04);
-    color: var(--nwx-name);
-    cursor: pointer;
-    font-weight: 900;
-  }
-  .nwx-popup-carousel-btn:hover { border-color: var(--nwx-orange); color: var(--nwx-orange); }
-  .nwx-popup-no-partners {
-    color: rgba(206,226,235,0.5);
-    font-size: 10px;
-    line-height: 1.35;
-    padding: 2px 0;
-  }
-  .nwx-chip.is-selected {
-    box-shadow: 0 0 0 2px rgba(232,100,44,0.28), 0 3px 12px rgba(0,0,0,0.55);
-  }
-  .nwx-marker.country-marker.is-selected {
-    background: var(--nwx-orange);
-    color: #fff;
-    border-color: #fff;
   }
 
   /* ---------- RESPONSIVE ---------- */
@@ -1372,18 +1248,6 @@
       <select class="filter-select" id="filter-subcategory" aria-label="Filter by subcategory"><option value="">All Subcategories</option></select>
       <div class="filter-selected" id="filter-subcategory-selected" aria-live="polite"></div>
     </div>
-  </div>
-
-  <!-- Global filter reset -- same control, icon, and behavior as the
-       current live Partner Program ("Reset all filters" / map_reset_filters),
-       positioned directly after the last filter field. -->
-  <div class="nwx-clear-filters-wrap">
-    <button class="nwx-clear-filters-button" type="button" id="filter-reset-all" aria-label="Reset all filters" title="Reset all filters">
-      <svg class="nwx-reset-filter-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
-        <path d="M20 11a8 8 0 1 0-2.34 5.66" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round"/>
-        <path d="M20 4v7h-7" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/>
-      </svg>
-    </button>
   </div>
 
   <div class="rail-result-row" id="partner-result-count">Loading Partner Directory…</div>
@@ -1696,7 +1560,7 @@
 
   // ---- state ----
   var coverage = null;
-  var currentRegions = []; // array of region objects currently shown (0, 1, or many)
+  var currentRegion = null; // region object when drilled in, else null
   var markers = [];
   var _lastIsMobile = isMobile(); // tracks desktop/mobile breakpoint for World-view re-fit on resize (Task 1)
 
@@ -1715,16 +1579,6 @@
   // marker/chip click handler explicitly calls e.stopPropagation() as the
   // authoritative guard rather than relying on DOM nesting.
   map.on("click", function () { closeActivePopup(); });
-
-  // Every marker/chip click handler below stops propagation (see above),
-  // which also prevents the Partner Directory's document-level click-away
-  // listener from ever seeing the click bubble up — so the floating
-  // partner profile card was staying open after a map pin click (Priority
-  // 5). Marker handlers call this alongside stopPropagation to dismiss it
-  // explicitly instead of relying on bubbling.
-  function closeFloatingPartnerCard() {
-    if (typeof window.nwxClosePartnerProfileCard === "function") window.nwxClosePartnerProfileCard();
-  }
 
   var regionList = document.getElementById("region-list");
   var listTitle = document.getElementById("list-title");
@@ -1832,20 +1686,14 @@
   // ---------------- WORLD / REGION-LEVEL VIEW ----------------
   function showWorldView() {
     closeActivePopup();
-    currentRegions = [];
+    currentRegion = null;
     clearMarkers();
 
     coverage.regions.forEach(function (region) {
       var el = buildRegionChipEl(region);
       el.addEventListener("click", function (e) {
         e.stopPropagation();
-        closeFloatingPartnerCard();
-        if (typeof window.nwxSetDirectoryRegionFilter === "function") {
-          window.nwxSetDirectoryRegionFilter(region.name);
-          setTimeout(function () { openRegionPopup(region, null); }, 0);
-        } else {
-          openRegionPopup(region, el);
-        }
+        openRegionPopup(region, el);
       });
       var marker = new mapboxgl.Marker({
         element: el,
@@ -1888,129 +1736,66 @@
     });
   }
 
-  // ---------------- REGION/COUNTRY-LEVEL VIEW (multi-region aware) ----------------
-  // Filter state is the source of truth for map geography (Priority 3): this
-  // renders every currently-selected region's chip (never just the last one
-  // clicked) plus the country markers for all of them combined, so region
-  // pins never disappear out from under a multi-region selection.
-  function renderMultiRegionContext(regions, activeCountryNames, animate) {
+  // ---------------- COUNTRY-LEVEL VIEW ----------------
+  function drillIntoRegion(region) {
     closeActivePopup();
-    currentRegions = regions;
+    currentRegion = region;
     clearMarkers();
 
-    regions.forEach(function (region) {
-      var regionEl = buildRegionChipEl(region);
-      regionEl.classList.add("is-selected");
-      regionEl.addEventListener("click", function (e) {
+    region.countries.forEach(function (country) {
+      var el = buildCountryMarkerEl(country.uniqueAccounts, country.name);
+      el.addEventListener("click", function (e) {
         e.stopPropagation();
-        closeFloatingPartnerCard();
-        openRegionPopup(region, regionEl);
+        openCountryPopup(country, region, el);
       });
-      var regionMarker = new mapboxgl.Marker({
-        element: regionEl,
-        anchor: "center",
-        offset: REGION_CHIP_OFFSETS[region.id] || [0, 0]
-      }).setLngLat(region.coordinates).addTo(map);
-      markers.push(regionMarker);
+      var marker = new mapboxgl.Marker({ element: el, anchor: "center" })
+        .setLngLat(country.coordinates)
+        .addTo(map);
+      markers.push(marker);
+    });
+    markerLevel = "country";
+    console.assert(markers.length === region.countries.length,
+      "Drill-down marker count (" + markers.length + ") should equal " + region.name + "'s country count (" + region.countries.length + ")");
+    console.assert(document.querySelectorAll(".nwx-chip").length === 0,
+      "No region chips should remain on the map while drilled into " + region.name);
 
-      (region.countries || []).forEach(function (country) {
-        var el = buildCountryMarkerEl(country.uniqueAccounts, country.name);
-        if (activeCountryNames && activeCountryNames.indexOf(country.name) !== -1) {
-          var dot = el.querySelector('.country-marker');
-          if (dot) dot.classList.add('is-selected');
-        }
-        el.addEventListener("click", function (e) {
-          e.stopPropagation();
-          closeFloatingPartnerCard();
-          if (typeof window.nwxSetDirectoryCountryFilter === "function") {
-            window.nwxSetDirectoryCountryFilter(country.name, region.name);
-          }
-          // The filter event re-renders the marker set. Open after that sync.
-          setTimeout(function () { openCountryPopup(country, region, null); }, 0);
-        });
-        var marker = new mapboxgl.Marker({ element: el, anchor: "center" })
-          .setLngLat(country.coordinates)
-          .addTo(map);
-        markers.push(marker);
-      });
+    map.flyTo({
+      center: region.coordinates,
+      zoom: isMobile() ? REGION_ZOOM_MOBILE : REGION_ZOOM_DESKTOP,
+      speed: 1.1
     });
 
-    markerLevel = "region+country";
-
-    if (animate !== false) {
-      if (regions.length === 1) {
-        map.flyTo({
-          center: regions[0].coordinates,
-          zoom: isMobile() ? REGION_ZOOM_MOBILE : REGION_ZOOM_DESKTOP,
-          speed: 1.1
-        });
-      } else if (regions.length > 1) {
-        var bounds = new mapboxgl.LngLatBounds();
-        regions.forEach(function (r) {
-          bounds.extend(r.coordinates);
-          (r.countries || []).forEach(function (c) { bounds.extend(c.coordinates); });
-        });
-        var mobile = isMobile();
-        map.fitBounds(bounds, {
-          padding: mobile ? { top: 150, bottom: 100, left: 34, right: 34 } : { top: 90, bottom: 60, left: 100, right: 110 },
-          duration: 900,
-          maxZoom: mobile ? 3.2 : 4.4
-        });
-      }
-    }
-
-    listTitle.textContent = regions.length === 1 ? (regions[0].name + " — Countries") : (regions.length + " Regions selected");
-    breadcrumb.innerHTML = '<span class="crumb-world" style="cursor:pointer;text-decoration:underline;">World</span>' +
-      ' / <span class="crumb-current">' + (regions.length === 1 ? regions[0].name : regions.length + " regions") + "</span>";
+    listTitle.textContent = region.name + " — Countries";
+    breadcrumb.innerHTML =
+      '<span class="crumb-world" style="cursor:pointer;text-decoration:underline;">World</span>' +
+      ' / <span class="crumb-current">' + region.name + "</span>";
     var worldCrumb = breadcrumb.querySelector(".crumb-world");
-    if (worldCrumb) worldCrumb.addEventListener("click", clearMapGeoFilters);
+    if (worldCrumb) worldCrumb.addEventListener("click", showWorldView);
 
     backBtn.classList.add("visible");
     mobileBack.classList.add("visible");
-    if (regions.length === 1) {
-      renderContextStat(regions[0]);
-    } else {
-      mobileStats.innerHTML = mobilePill(sumField(regions, "uniqueAccounts"), regions.length + " regions accounts");
-    }
-    renderCountryList(regions);
-    setBrowseExpanded(true);
+    renderContextStat(region);
+
+    renderCountryList(region);
+    setBrowseExpanded(true); // Task 3: auto-expand so countries are immediately visible
   }
 
-  function drillIntoRegion(region) {
-    if (typeof window.nwxSetDirectoryRegionFilter === "function") {
-      window.nwxSetDirectoryRegionFilter(region.name);
-    } else {
-      renderMultiRegionContext([region], [], true);
-    }
-  }
-
-  // Lists every country across every currently-selected region (labeling
-  // with its region when more than one region is active, so rows stay
-  // unambiguous once regions are combined).
-  function renderCountryList(regions) {
+  function renderCountryList(region) {
     regionList.innerHTML = "";
-    var multi = regions.length > 1;
-    regions.forEach(function (region) {
-      (region.countries || []).forEach(function (country) {
-        var row = document.createElement("div");
-        row.className = "region-row";
-        var label = multi ? (country.name + " — " + region.name) : country.name;
-        row.innerHTML =
-          '<span class="name">' + label + '</span><span class="count">' + country.uniqueAccounts + "</span>";
-        row.addEventListener("click", function () {
-          map.flyTo({ center: country.coordinates, zoom: isMobile() ? REGION_ZOOM_MOBILE + 0.6 : REGION_ZOOM_DESKTOP + 0.6 });
-        });
-        regionList.appendChild(row);
+    region.countries.forEach(function (country) {
+      var row = document.createElement("div");
+      row.className = "region-row";
+      row.innerHTML =
+        '<span class="name">' + country.name + '</span><span class="count">' + country.uniqueAccounts + "</span>";
+      row.addEventListener("click", function () {
+        map.flyTo({ center: country.coordinates, zoom: isMobile() ? REGION_ZOOM_MOBILE + 0.6 : REGION_ZOOM_DESKTOP + 0.6 });
       });
+      regionList.appendChild(row);
     });
   }
 
-  function clearMapGeoFilters() {
-    if (typeof window.nwxClearDirectoryGeoFilters === "function") window.nwxClearDirectoryGeoFilters();
-    else showWorldView();
-  }
-  backBtn.addEventListener("click", clearMapGeoFilters);
-  mobileBack.addEventListener("click", clearMapGeoFilters);
+  backBtn.addEventListener("click", showWorldView);
+  mobileBack.addEventListener("click", showWorldView);
 
   // ---------------- MARKER + POPUP BUILDERS ----------------
 
@@ -2064,80 +1849,23 @@
     });
   }
 
-  function popupCategoryIconSrc(category) {
-    if (typeof window.nwxPartnerCategoryIconSrc === "function") {
-      return window.nwxPartnerCategoryIconSrc(category) || "";
-    }
-    return "";
-  }
-
-  function popupPartnersHTML(regionName, countryName) {
-    if (typeof window.nwxPartnerDirectoryForMapContext !== "function") return "";
-    var partners = window.nwxPartnerDirectoryForMapContext(regionName, countryName || "") || [];
-    if (!partners.length) {
-      return '<div class="nwx-popup-partners">' +
-        '<div class="nwx-popup-partners-title">Trusted Partners</div>' +
-        '<div class="nwx-popup-no-partners">No Trusted Partners match the current filters in this area.</div>' +
-        '</div>';
-    }
-
-    var cards = partners.map(function (p) {
+  function regionPartnersHTML(regionName) {
+    if (typeof window.nwxPartnerDirectoryForRegion !== "function") return "";
+    var partners = window.nwxPartnerDirectoryForRegion(regionName) || [];
+    if (!partners.length) return "";
+    var items = partners.map(function (p) {
       var name = popupEscapeHtml(p.name || "");
-      var category = popupEscapeHtml(p.category || "");
-      var subs = Array.isArray(p.subcategories) ? p.subcategories.filter(Boolean).join(", ") : "";
-      var iconSrc = popupCategoryIconSrc(p.category);
-      var icon = iconSrc ? '<img class="nwx-popup-partner-icon" src="' + popupEscapeHtml(iconSrc) + '" alt="" aria-hidden="true">' : "";
-      var geo = [p.country || "", p.regionsDisplay || ""].filter(Boolean).join(" · ");
-      return '<div class="nwx-popup-partner-card" data-partner-id="' + popupEscapeHtml(p.__id) + '">' +
-        '<div class="nwx-popup-partner-card-head">' + icon +
-          '<div class="nwx-popup-partner-copy">' +
-            '<div class="nwx-popup-partner-name">' + name + '</div>' +
-            (category ? '<div class="nwx-popup-partner-category">' + category + '</div>' : '') +
-            (subs ? '<div class="nwx-popup-partner-sub">' + popupEscapeHtml(subs) + '</div>' : '') +
-          '</div>' +
-        '</div>' +
-        (geo ? '<div class="nwx-popup-partner-geo">' + popupEscapeHtml(geo) + '</div>' : '') +
-      '</div>';
-    }).join("");
-
+      if (!name) return "";
+      if (p.partnerPageUrl) {
+        return '<a class="nwx-popup-partner-link" href="' + popupEscapeHtml(p.partnerPageUrl) + '">' + name + "</a>";
+      }
+      return '<span class="nwx-popup-partner-plain">' + name + "</span>";
+    }).filter(Boolean).join("");
+    if (!items) return "";
     return '<div class="nwx-popup-partners">' +
-      '<div class="nwx-popup-partners-head">' +
-        '<div class="nwx-popup-partners-title">Trusted Partners</div>' +
-        '<div class="nwx-popup-partner-count" data-carousel-count>1 / ' + partners.length + '</div>' +
-      '</div>' +
-      '<div class="nwx-popup-partner-viewport"><div class="nwx-popup-partner-track" data-carousel-track>' + cards + '</div></div>' +
-      (partners.length > 1 ? '<div class="nwx-popup-carousel-nav">' +
-        '<button class="nwx-popup-carousel-btn" type="button" data-carousel-prev aria-label="Previous partner">‹</button>' +
-        '<button class="nwx-popup-carousel-btn" type="button" data-carousel-next aria-label="Next partner">›</button>' +
-      '</div>' : '') +
-    '</div>';
-  }
-
-  function wirePopupPartnerCarousel(popupEl) {
-    if (!popupEl) return;
-    var track = popupEl.querySelector('[data-carousel-track]');
-    var count = popupEl.querySelector('[data-carousel-count]');
-    var cards = track ? Array.prototype.slice.call(track.querySelectorAll('.nwx-popup-partner-card')) : [];
-    if (track && cards.length) {
-      var updateCount = function () {
-        var width = track.clientWidth || 1;
-        var idx = Math.max(0, Math.min(cards.length - 1, Math.round(track.scrollLeft / width)));
-        if (count) count.textContent = (idx + 1) + ' / ' + cards.length;
-      };
-      track.addEventListener('scroll', updateCount, { passive: true });
-      var prev = popupEl.querySelector('[data-carousel-prev]');
-      var next = popupEl.querySelector('[data-carousel-next]');
-      if (prev) prev.addEventListener('click', function (e) { e.stopPropagation(); track.scrollBy({ left: -track.clientWidth, behavior: 'smooth' }); });
-      if (next) next.addEventListener('click', function (e) { e.stopPropagation(); track.scrollBy({ left: track.clientWidth, behavior: 'smooth' }); });
-    }
-    popupEl.querySelectorAll('.nwx-popup-partner-card').forEach(function (card) {
-      card.addEventListener('click', function (e) {
-        e.stopPropagation();
-        if (typeof window.nwxOpenPartnerPreviewById === 'function') {
-          window.nwxOpenPartnerPreviewById(card.getAttribute('data-partner-id'));
-        }
-      });
-    });
+      '<div class="nwx-popup-partners-title">Trusted Partners</div>' +
+      '<div class="nwx-popup-partner-list">' + items + "</div>" +
+      "</div>";
   }
 
   function popupHTML(opts) {
@@ -2179,8 +1907,8 @@
         ["Fleet Owners", region.fleetOwners],
         ["Dual Accounts", region.dualAccounts]
       ],
-      partnersHtml: popupPartnersHTML(region.name, ""),
-      actionLabel: null
+      partnersHtml: regionPartnersHTML(region.name),
+      actionLabel: "View countries →"
     });
 
     var popup = new mapboxgl.Popup({ offset: 26, closeButton: true, maxWidth: "300px" })
@@ -2195,7 +1923,6 @@
     // Mapbox wires internally) must not bubble to the map's background
     // click-to-close handler.
     el.addEventListener("click", function (e) { e.stopPropagation(); });
-    wirePopupPartnerCarousel(el);
 
     var actionBtn = el.querySelector('[data-action="drill"]');
     if (actionBtn) {
@@ -2222,11 +1949,10 @@
         ["Fleet Owners", country.fleetOwners],
         ["Dual Accounts", country.dualAccounts]
       ],
-      partnersHtml: popupPartnersHTML(region.name, country.name),
       actionLabel: null
     });
 
-    var popup = new mapboxgl.Popup({ offset: 22, closeButton: true, maxWidth: "300px" })
+    var popup = new mapboxgl.Popup({ offset: 22, closeButton: true, maxWidth: "240px" })
       .setLngLat(country.coordinates)
       .setHTML(html)
       .addTo(map);
@@ -2234,28 +1960,7 @@
     activePopup = popup;
 
     popup.getElement().addEventListener("click", function (e) { e.stopPropagation(); });
-    wirePopupPartnerCarousel(popup.getElement());
   }
-
-
-  // Partner Directory filters are the source of truth for geographic map state.
-  // Reads the full arrays (not just the backward-compat singular region/
-  // country fields), so 2+ active Region filters keep every one of their
-  // pins on the map instead of collapsing back to World view (Priority 3).
-  window.addEventListener("nwxpartnerfilterschange", function (e) {
-    if (!coverage) return;
-    var detail = (e && e.detail) || {};
-    var regionNames = Array.isArray(detail.regions) ? detail.regions : (detail.region ? [detail.region] : []);
-    var countryNames = Array.isArray(detail.countries) ? detail.countries : (detail.country ? [detail.country] : []);
-
-    var regions = coverage.regions.filter(function (r) { return regionNames.indexOf(r.name) !== -1; });
-
-    if (!regions.length) {
-      showWorldView();
-      return;
-    }
-    renderMultiRegionContext(regions, countryNames, true);
-  });
 
   // ---------------- RESPONSIVE RE-CENTER ----------------
   // Region/country (drill-down) framing: unchanged from before — re-applies
@@ -2266,7 +1971,7 @@
   // fresh camera fit from the real region anchors.
   window.addEventListener("resize", function () {
     if (!coverage) return;
-    if (currentRegions.length) {
+    if (currentRegion) {
       var targetZoom = isMobile() ? REGION_ZOOM_MOBILE : REGION_ZOOM_DESKTOP;
       map.easeTo({ zoom: targetZoom, duration: 200 });
       return;
@@ -2294,109 +1999,15 @@
   "use strict";
 
   var allPartners = [];
-  var filters = { search: "", regions: [], countries: [], categories: [], subcategories: [] };
+  var filters = { search: "", region: "", country: "", category: "", subcategory: "" };
   var selectedId = null;
   // Full Nauticworx country list, source: data/partners.json's own
   // options.countries block — the same authoritative reference list the
   // live production Partner Program frontend uses to populate its own
   // Country filter (confirmed in Nauticworx/Partner-Program's index.html,
   // updateFeedOptions()/COUNTRY_OPTIONS_FALLBACK). Never regenerated from
-  // active partner records (Batch 3 correction, Task 2). NOTE: when a
-  // Region filter is active, the option list shown is narrowed to that
-  // Region's countries per the authoritative Region->Country mapping below
-  // (QA Priority 2) — see populateCountryOptions(); this array itself
-  // always stays the complete, unfiltered reference list.
+  // active partner records (Batch 3 correction, Task 2).
   var fullCountryList = [];
-
-  // ISO 3166-1 alpha-2 -> display name, used only to decode
-  // data/partners.json's options.regionCountries block (which stores
-  // country membership as ISO codes) into the same full-name strings used
-  // everywhere else in this feed (options.countries, partner.country).
-  // Standard ISO reference data, not CRM-derived or invented. Every name
-  // here was cross-checked to match an entry in options.countries verbatim
-  // (including diacritics/punctuation, e.g. "Côte d’Ivoire" with the
-  // curly apostrophe options.countries itself uses); "GF"/French Guiana has
-  // no matching options.countries entry and is intentionally left out of
-  // regionCountriesByName below rather than guessed.
-  var ISO_CODE_TO_COUNTRY_NAME = {
-    "AE": "United Arab Emirates", "AG": "Antigua and Barbuda", "AL": "Albania", "AO": "Angola",
-    "AR": "Argentina", "AU": "Australia", "AZ": "Azerbaijan", "BA": "Bosnia and Herzegovina",
-    "BB": "Barbados", "BD": "Bangladesh", "BE": "Belgium", "BG": "Bulgaria", "BH": "Bahrain",
-    "BJ": "Benin", "BN": "Brunei", "BR": "Brazil", "BS": "Bahamas", "BW": "Botswana", "BZ": "Belize",
-    "CA": "Canada", "CD": "Democratic Republic of the Congo", "CG": "Republic of the Congo",
-    "CI": "Côte d’Ivoire", "CL": "Chile", "CM": "Cameroon", "CN": "China", "CO": "Colombia",
-    "CR": "Costa Rica", "CU": "Cuba", "CV": "Cabo Verde", "CY": "Cyprus", "DE": "Germany",
-    "DJ": "Djibouti", "DK": "Denmark", "DM": "Dominica", "DO": "Dominican Republic", "DZ": "Algeria",
-    "EC": "Ecuador", "EE": "Estonia", "EG": "Egypt", "ES": "Spain", "FI": "Finland", "FJ": "Fiji",
-    "FM": "Micronesia", "FR": "France", "GA": "Gabon", "GB": "United Kingdom", "GD": "Grenada",
-    "GE": "Georgia", "GF": "French Guiana", "GH": "Ghana", "GM": "Gambia", "GQ": "Equatorial Guinea",
-    "GR": "Greece", "GT": "Guatemala", "GW": "Guinea-Bissau", "GY": "Guyana", "HK": "Hong Kong",
-    "HN": "Honduras", "HR": "Croatia", "HT": "Haiti", "ID": "Indonesia", "IE": "Ireland",
-    "IL": "Israel", "IN": "India", "IS": "Iceland", "IT": "Italy", "JM": "Jamaica", "JO": "Jordan",
-    "JP": "Japan", "KE": "Kenya", "KH": "Cambodia", "KI": "Kiribati", "KN": "Saint Kitts and Nevis",
-    "KR": "South Korea", "KW": "Kuwait", "KZ": "Kazakhstan", "LC": "Saint Lucia", "LK": "Sri Lanka",
-    "LR": "Liberia", "LT": "Lithuania", "LV": "Latvia", "LY": "Libya", "MA": "Morocco",
-    "ME": "Montenegro", "MG": "Madagascar", "MH": "Marshall Islands", "MM": "Myanmar", "MO": "Macau",
-    "MR": "Mauritania", "MT": "Malta", "MU": "Mauritius", "MV": "Maldives", "MX": "Mexico",
-    "MY": "Malaysia", "MZ": "Mozambique", "NA": "Namibia", "NG": "Nigeria", "NL": "Netherlands",
-    "NO": "Norway", "NR": "Nauru", "NZ": "New Zealand", "OM": "Oman", "PA": "Panama", "PE": "Peru",
-    "PG": "Papua New Guinea", "PH": "Philippines", "PK": "Pakistan", "PL": "Poland", "PT": "Portugal",
-    "PW": "Palau", "QA": "Qatar", "RO": "Romania", "SA": "Saudi Arabia", "SB": "Solomon Islands",
-    "SC": "Seychelles", "SE": "Sweden", "SG": "Singapore", "SI": "Slovenia", "SL": "Sierra Leone",
-    "SN": "Senegal", "SO": "Somalia", "SR": "Suriname", "ST": "São Tomé and Príncipe", "SV": "El Salvador",
-    "TG": "Togo", "TH": "Thailand", "TL": "Timor-Leste", "TM": "Turkmenistan", "TN": "Tunisia",
-    "TO": "Tonga", "TR": "Turkey", "TT": "Trinidad and Tobago", "TV": "Tuvalu", "TW": "Taiwan",
-    "TZ": "Tanzania", "US": "United States", "UY": "Uruguay", "VC": "Saint Vincent and the Grenadines",
-    "VE": "Venezuela", "VN": "Vietnam", "VU": "Vanuatu", "WS": "Samoa", "ZA": "South Africa"
-  };
-
-  // Authoritative Region -> Country-name membership (Priority 2), built from
-  // data/partners.json's own options.regionCountries block (ISO codes)
-  // decoded via ISO_CODE_TO_COUNTRY_NAME above, once partners.json loads.
-  // countryToRegionName is the reverse lookup used to auto-drop a Country
-  // filter whose Region is no longer active (Priority 2, rule 4).
-  var regionCountriesByName = {};
-  var countryToRegionName = {};
-  function buildRegionCountryMaps(regionCountriesRaw) {
-    regionCountriesByName = {};
-    countryToRegionName = {};
-    Object.keys(regionCountriesRaw || {}).forEach(function (regionName) {
-      var names = (regionCountriesRaw[regionName] || [])
-        .map(function (code) { return ISO_CODE_TO_COUNTRY_NAME[code]; })
-        .filter(Boolean);
-      regionCountriesByName[regionName] = uniqueSorted(names);
-      names.forEach(function (name) { countryToRegionName[name] = regionName; });
-    });
-  }
-
-  // Country <select> options, narrowed to the authoritative countries of
-  // whichever Region filter(s) are active (Priority 2, rules 1-3/6): the
-  // full list with no Region active, the union of each selected Region's
-  // countries otherwise. Never derived from active Partner records.
-  function populateCountryOptions() {
-    var countries = filters.regions.length
-      ? uniqueSorted(filters.regions.reduce(function (acc, r) { return acc.concat(regionCountriesByName[r] || []); }, []))
-      : fullCountryList;
-    fillSelect(countrySelect, countries, "Add Country");
-  }
-
-  // Drops any active Country filter that no longer belongs to any active
-  // Region filter (Priority 2, rule 4). When zero Regions remain active,
-  // all Country filters are cleared -- Country filters always require
-  // Region context.
-  function pruneCountriesOutsideActiveRegions() {
-    if (!filters.regions.length) {
-      // No Region remains active: Country filters always require Region
-      // context, so clear them entirely (the caller restores the full
-      // authoritative Country dropdown via populateCountryOptions()).
-      filters.countries = [];
-      return;
-    }
-    filters.countries = filters.countries.filter(function (name) {
-      var r = countryToRegionName[name];
-      return !r || filters.regions.indexOf(r) !== -1;
-    });
-  }
   // Full Category list, same pattern as fullCountryList above: sourced from
   // data/partners.json's own options.categories block (Batch 3/redesign,
   // Task 7). Never regenerated from active partners.
@@ -2467,16 +2078,16 @@
   // every option shown always matches at least one real partner (Task 3). ----
   function populateStaticFilterOptions() {
     var regions = uniqueSorted(allPartners.reduce(function (acc, p) { return acc.concat(partnerRegions(p)); }, []));
-    fillSelect(regionSelect, regions, "Add Region");
-    // Country: the full authoritative Nauticworx country list, narrowed to
-    // the active Region filter(s) via the authoritative Region->Country
-    // mapping when one or more Regions are selected (Priority 2). Never
-    // derived from/narrowed by active partners or search — only by Region.
-    populateCountryOptions();
+    fillSelect(regionSelect, regions, "All Regions");
+    // Country: always the full Nauticworx country list (fullCountryList),
+    // never derived from/narrowed by active partners, search, or the other
+    // filters (Batch 3 correction, Task 2) — populated once here and never
+    // touched again by any filter-change handler.
+    fillSelect(countrySelect, fullCountryList, "All Countries");
     // Category: full authoritative list (redesign, Task 7) — same pattern
     // as Country above, never narrowed to categories present on active
     // partners.
-    fillSelect(categorySelect, fullCategoryList, "Add Category");
+    fillSelect(categorySelect, fullCategoryList, "All Categories");
     populateSubcategoryOptions();
   }
 
@@ -2485,20 +2096,13 @@
   // subcategories when no Category is selected; that Category's
   // subcategories (from the map) when one is.
   function populateSubcategoryOptions() {
-    var subcats = filters.categories.length
-      ? uniqueSorted(filters.categories.reduce(function (acc, c) { return acc.concat(CATEGORY_SUBCATEGORY_MAP[c] || []); }, []))
+    var subcats = filters.category
+      ? (CATEGORY_SUBCATEGORY_MAP[filters.category] || []).slice().sort(function (a, b) { return a.localeCompare(b); })
       : uniqueSorted(fullCategoryList.reduce(function (acc, c) { return acc.concat(CATEGORY_SUBCATEGORY_MAP[c] || []); }, []));
-
-    // If one or more categories remain selected, discard only subcategory
-    // selections that no longer belong to any selected category. When no
-    // categories are selected, the full taxonomy is available and existing
-    // subcategory selections remain valid.
-    if (filters.categories.length) {
-      filters.subcategories = filters.subcategories.filter(function (v) { return subcats.indexOf(v) !== -1; });
-    }
-
-    fillSelect(subcategorySelect, subcats, "Add Subcategory");
-    subcategorySelect.value = "";
+    var keepSelection = subcats.indexOf(filters.subcategory) !== -1 ? filters.subcategory : "";
+    fillSelect(subcategorySelect, subcats, "All Subcategories");
+    subcategorySelect.value = keepSelection;
+    filters.subcategory = keepSelection;
     subcategorySelect.disabled = subcats.length === 0;
   }
 
@@ -2518,60 +2122,47 @@
     if (values.indexOf(current) !== -1) select.value = current;
   }
 
-  function filterArrayForKey(key) {
-    if (key === "region") return filters.regions;
-    if (key === "country") return filters.countries;
-    if (key === "category") return filters.categories;
-    if (key === "subcategory") return filters.subcategories;
-    return [];
-  }
-
-  function removeFilterValue(key, label) {
-    var arr = filterArrayForKey(key);
-    var idx = arr.indexOf(label);
-    if (idx !== -1) arr.splice(idx, 1);
-
-    if (key === "region") {
-      // Countries belonging to a removed region cannot remain active
-      // (Priority 2, rule 4), and the Country option list is restored to
-      // the full authoritative list once no Region remains (rule 5).
-      pruneCountriesOutsideActiveRegions();
-      populateCountryOptions();
-    }
-    if (key === "category") populateSubcategoryOptions();
-    renderAll();
-  }
-
-  function renderSelectedFilterChipsForKey(key) {
+  function renderSelectedFilterChip(key, label) {
     var container = filterSelectedEls[key];
     if (!container) return;
     container.innerHTML = "";
-    filterArrayForKey(key).forEach(function (label) {
-      var chip = document.createElement("button");
-      chip.type = "button";
-      chip.className = "filter-chip";
-      chip.setAttribute("aria-label", "Remove " + key + " filter: " + label);
-      chip.innerHTML = '<span>' + escapeHtml(label) + '</span><span class="filter-chip-x" aria-hidden="true">×</span>';
-      chip.addEventListener("click", function () { removeFilterValue(key, label); });
-      container.appendChild(chip);
+    if (!label) return;
+    var chip = document.createElement("button");
+    chip.type = "button";
+    chip.className = "filter-chip";
+    chip.setAttribute("aria-label", "Remove " + key + " filter: " + label);
+    chip.innerHTML = '<span>' + escapeHtml(label) + '</span><span class="filter-chip-x" aria-hidden="true">×</span>';
+    chip.addEventListener("click", function () {
+      if (key === "region") { filters.region = ""; regionSelect.value = ""; }
+      if (key === "country") { filters.country = ""; countrySelect.value = ""; }
+      if (key === "category") {
+        filters.category = "";
+        filters.subcategory = "";
+        categorySelect.value = "";
+        populateSubcategoryOptions();
+        subcategorySelect.value = "";
+      }
+      if (key === "subcategory") { filters.subcategory = ""; subcategorySelect.value = ""; }
+      renderAll();
     });
+    container.appendChild(chip);
   }
 
   function renderSelectedFilterChips() {
-    renderSelectedFilterChipsForKey("region");
-    renderSelectedFilterChipsForKey("country");
-    renderSelectedFilterChipsForKey("category");
-    renderSelectedFilterChipsForKey("subcategory");
+    renderSelectedFilterChip("region", filters.region);
+    renderSelectedFilterChip("country", filters.country);
+    renderSelectedFilterChip("category", filters.category);
+    renderSelectedFilterChip("subcategory", filters.subcategory);
   }
 
   // ---- filtering (Task 3): search + all four filters combine (AND) ----
   function getFilteredPartners() {
     var q = filters.search.trim().toLowerCase();
     return allPartners.filter(function (p) {
-      if (filters.regions.length && !partnerRegions(p).some(function (v) { return filters.regions.indexOf(v) !== -1; })) return false;
-      if (filters.countries.length && filters.countries.indexOf(p.country) === -1) return false;
-      if (filters.categories.length && filters.categories.indexOf(p.category) === -1) return false;
-      if (filters.subcategories.length && !partnerSubcats(p).some(function (v) { return filters.subcategories.indexOf(v) !== -1; })) return false;
+      if (filters.region && partnerRegions(p).indexOf(filters.region) === -1) return false;
+      if (filters.country && p.country !== filters.country) return false;
+      if (filters.category && p.category !== filters.category) return false;
+      if (filters.subcategory && partnerSubcats(p).indexOf(filters.subcategory) === -1) return false;
       if (q) {
         var haystack = [
           p.name || "",
@@ -2721,92 +2312,16 @@
     renderInto(railList, filtered, "Try adjusting search or filters.", buildCompactCardEl);
     renderInto(listGrid, filtered, "Try adjusting search or filters.", buildCardEl);
     resultCount.textContent = filtered.length + (filtered.length === 1 ? " partner" : " partners") + " found";
-    dispatchPartnerFilterState();
   }
   // Read-only bridge used by the Network Coverage region popup. It keeps
   // the two datasets separate while allowing a region popup to list matching
   // Partner Directory companies beneath the account summary.
-  window.nwxPartnerDirectoryForMapContext = function (regionName, countryName) {
-    return getFilteredPartners().filter(function (p) {
-      if (regionName && partnerRegions(p).indexOf(regionName) === -1) return false;
-      if (countryName && p.country !== countryName) return false;
-      return true;
+  window.nwxPartnerDirectoryForRegion = function (regionName) {
+    return allPartners.filter(function (p) {
+      return partnerRegions(p).indexOf(regionName) !== -1;
     }).sort(function (a, b) {
       return String(a.name || "").localeCompare(String(b.name || ""));
     });
-  };
-
-  window.nwxPartnerCategoryIconSrc = function (category) {
-    var fileName = CATEGORY_ICON_FILES[category];
-    return fileName ? ("assets/" + encodeURIComponent(fileName).replace(/%2F/g, "/")) : "";
-  };
-
-  window.nwxOpenPartnerPreviewById = function (partnerId) {
-    var id = String(partnerId);
-    var partner = allPartners.find(function (p) { return String(p.__id) === id; });
-    if (partner) openPreviewOverlay(partner);
-  };
-
-  function dispatchPartnerFilterState() {
-    window.dispatchEvent(new CustomEvent("nwxpartnerfilterschange", {
-      detail: {
-        regions: filters.regions.slice(),
-        countries: filters.countries.slice(),
-        // Backward-compatible singular values for any older listener.
-        region: filters.regions.length === 1 ? filters.regions[0] : "",
-        country: filters.countries.length === 1 ? filters.countries[0] : ""
-      }
-    }));
-  }
-
-  function addUniqueFilterValue(arr, value) {
-    if (value && arr.indexOf(value) === -1) arr.push(value);
-  }
-
-  // Map clicks add geographic filters rather than replacing existing ones.
-  window.nwxSetDirectoryRegionFilter = function (regionName) {
-    if (!regionName) {
-      filters.regions = [];
-      filters.countries = [];
-    } else {
-      addUniqueFilterValue(filters.regions, regionName);
-    }
-    regionSelect.value = "";
-    countrySelect.value = "";
-    populateCountryOptions();
-    renderAll();
-  };
-
-  // Single entry point for "select a Country" (dropdown or map pin): adds
-  // the Country, then resolves its Region from the authoritative
-  // Region->Country mapping (countryToRegionName) and adds that Region too
-  // if it isn't already active — Region selections already active are left
-  // untouched (addUniqueFilterValue no-ops on a duplicate, so no duplicate
-  // chip is possible). regionNameHint is a fallback only for a Country the
-  // authoritative mapping doesn't cover (e.g. one not in
-  // options.regionCountries), so a map click still ends up in the right
-  // Region context.
-  function applyCountryFilter(countryName, regionNameHint) {
-    var regionName = (countryName && countryToRegionName[countryName]) || regionNameHint || "";
-    if (regionName) addUniqueFilterValue(filters.regions, regionName);
-    if (countryName) addUniqueFilterValue(filters.countries, countryName);
-    regionSelect.value = "";
-    countrySelect.value = "";
-    populateCountryOptions();
-    renderAll();
-  }
-
-  window.nwxSetDirectoryCountryFilter = function (countryName, regionName) {
-    applyCountryFilter(countryName, regionName);
-  };
-
-  window.nwxClearDirectoryGeoFilters = function () {
-    filters.regions = [];
-    filters.countries = [];
-    regionSelect.value = "";
-    countrySelect.value = "";
-    populateCountryOptions();
-    renderAll();
   };
 
   function syncSelectedHighlight() {
@@ -2859,15 +2374,6 @@
     selectedId = null;
     syncSelectedHighlight();
   }
-
-  // Bridge for the Network Coverage script: its region/country marker click
-  // handlers call e.stopPropagation() (needed to guard against Mapbox's own
-  // map-click-to-close-popup handler), which also blocks the document-level
-  // click-away listener below from ever seeing those clicks bubble up. That
-  // silently left the floating partner card open after clicking a map pin
-  // (Priority 5 — "selected/floating partner card conflicts"). Exposing an
-  // explicit close call lets those handlers dismiss it themselves.
-  window.nwxClosePartnerProfileCard = closePartnerProfileCard;
 
   var closeBtn = document.getElementById("ppc-close");
   if (closeBtn) closeBtn.addEventListener("click", function (e) {
@@ -2960,48 +2466,15 @@
       renderAll();
     });
   });
-  regionSelect.addEventListener("change", function () {
-    addUniqueFilterValue(filters.regions, regionSelect.value);
-    regionSelect.value = "";
-    populateCountryOptions();
-    renderAll();
-  });
-  countrySelect.addEventListener("change", function () {
-    applyCountryFilter(countrySelect.value);
-  });
+  regionSelect.addEventListener("change", function () { filters.region = regionSelect.value; renderAll(); });
+  countrySelect.addEventListener("change", function () { filters.country = countrySelect.value; renderAll(); });
   categorySelect.addEventListener("change", function () {
-    addUniqueFilterValue(filters.categories, categorySelect.value);
-    categorySelect.value = "";
+    filters.category = categorySelect.value;
+    filters.subcategory = "";
     populateSubcategoryOptions();
     renderAll();
   });
-  subcategorySelect.addEventListener("change", function () {
-    addUniqueFilterValue(filters.subcategories, subcategorySelect.value);
-    subcategorySelect.value = "";
-    renderAll();
-  });
-
-  // Global "Reset all filters" control (matches the current live Partner
-  // Program's control/behavior). Clears every filter dimension this script
-  // owns, then delegates the geo/map/render reset to the existing
-  // nwxClearDirectoryGeoFilters() bridge rather than duplicating its logic
-  // -- that function already clears filters.regions/countries, restores the
-  // full Country dropdown, calls renderAll(), and (via the
-  // nwxpartnerfilterschange event the Network Coverage script listens for)
-  // resets the map to World view and closes any open region/country popup.
-  // Map/List mode is untouched, since nothing here touches the view toggle.
-  var resetAllButton = document.getElementById("filter-reset-all");
-  if (resetAllButton) {
-    resetAllButton.addEventListener("click", function () {
-      filters.search = "";
-      searchInputs.forEach(function (input) { input.value = ""; });
-      filters.categories = [];
-      filters.subcategories = [];
-      populateSubcategoryOptions();
-      closePartnerProfileCard();
-      window.nwxClearDirectoryGeoFilters();
-    });
-  }
+  subcategorySelect.addEventListener("change", function () { filters.subcategory = subcategorySelect.value; renderAll(); });
 
   function escapeHtml(s) {
     return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
@@ -3034,10 +2507,6 @@
       fullCategoryList = optionCategories.length
         ? uniqueSorted(optionCategories)
         : uniqueSorted(allPartners.map(function (p) { return p.category; }));
-      // Authoritative Region->Country membership (Priority 2), source:
-      // options.regionCountries (ISO codes), decoded to the same full-name
-      // strings fullCountryList/partner.country use.
-      buildRegionCountryMaps(json.options && json.options.regionCountries);
       populateStaticFilterOptions();
       renderAll();
     })
