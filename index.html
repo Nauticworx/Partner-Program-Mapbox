@@ -2332,10 +2332,17 @@
   }
 
   // Drops any active Country filter that no longer belongs to any active
-  // Region filter (Priority 2, rule 4). A no-op when no Region is active
-  // (rule 5 — full list, all previously-selected countries stay valid).
+  // Region filter (Priority 2, rule 4). When zero Regions remain active,
+  // all Country filters are cleared -- Country filters always require
+  // Region context.
   function pruneCountriesOutsideActiveRegions() {
-    if (!filters.regions.length) return;
+    if (!filters.regions.length) {
+      // No Region remains active: Country filters always require Region
+      // context, so clear them entirely (the caller restores the full
+      // authoritative Country dropdown via populateCountryOptions()).
+      filters.countries = [];
+      return;
+    }
     filters.countries = filters.countries.filter(function (name) {
       var r = countryToRegionName[name];
       return !r || filters.regions.indexOf(r) !== -1;
@@ -2721,13 +2728,27 @@
     renderAll();
   };
 
-  window.nwxSetDirectoryCountryFilter = function (countryName, regionName) {
+  // Single entry point for "select a Country" (dropdown or map pin): adds
+  // the Country, then resolves its Region from the authoritative
+  // Region->Country mapping (countryToRegionName) and adds that Region too
+  // if it isn't already active — Region selections already active are left
+  // untouched (addUniqueFilterValue no-ops on a duplicate, so no duplicate
+  // chip is possible). regionNameHint is a fallback only for a Country the
+  // authoritative mapping doesn't cover (e.g. one not in
+  // options.regionCountries), so a map click still ends up in the right
+  // Region context.
+  function applyCountryFilter(countryName, regionNameHint) {
+    var regionName = (countryName && countryToRegionName[countryName]) || regionNameHint || "";
     if (regionName) addUniqueFilterValue(filters.regions, regionName);
     if (countryName) addUniqueFilterValue(filters.countries, countryName);
     regionSelect.value = "";
     countrySelect.value = "";
     populateCountryOptions();
     renderAll();
+  }
+
+  window.nwxSetDirectoryCountryFilter = function (countryName, regionName) {
+    applyCountryFilter(countryName, regionName);
   };
 
   window.nwxClearDirectoryGeoFilters = function () {
@@ -2897,9 +2918,7 @@
     renderAll();
   });
   countrySelect.addEventListener("change", function () {
-    addUniqueFilterValue(filters.countries, countrySelect.value);
-    countrySelect.value = "";
-    renderAll();
+    applyCountryFilter(countrySelect.value);
   });
   categorySelect.addEventListener("change", function () {
     addUniqueFilterValue(filters.categories, categorySelect.value);
