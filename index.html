@@ -2208,7 +2208,7 @@
   "use strict";
 
   var allPartners = [];
-  var filters = { search: "", region: "", country: "", category: "", subcategory: "" };
+  var filters = { search: "", regions: [], countries: [], categories: [], subcategories: [] };
   var selectedId = null;
   // Full Nauticworx country list, source: data/partners.json's own
   // options.countries block — the same authoritative reference list the
@@ -2287,16 +2287,16 @@
   // every option shown always matches at least one real partner (Task 3). ----
   function populateStaticFilterOptions() {
     var regions = uniqueSorted(allPartners.reduce(function (acc, p) { return acc.concat(partnerRegions(p)); }, []));
-    fillSelect(regionSelect, regions, "All Regions");
+    fillSelect(regionSelect, regions, "Add Region");
     // Country: always the full Nauticworx country list (fullCountryList),
     // never derived from/narrowed by active partners, search, or the other
     // filters (Batch 3 correction, Task 2) — populated once here and never
     // touched again by any filter-change handler.
-    fillSelect(countrySelect, fullCountryList, "All Countries");
+    fillSelect(countrySelect, fullCountryList, "Add Country");
     // Category: full authoritative list (redesign, Task 7) — same pattern
     // as Country above, never narrowed to categories present on active
     // partners.
-    fillSelect(categorySelect, fullCategoryList, "All Categories");
+    fillSelect(categorySelect, fullCategoryList, "Add Category");
     populateSubcategoryOptions();
   }
 
@@ -2305,13 +2305,20 @@
   // subcategories when no Category is selected; that Category's
   // subcategories (from the map) when one is.
   function populateSubcategoryOptions() {
-    var subcats = filters.category
-      ? (CATEGORY_SUBCATEGORY_MAP[filters.category] || []).slice().sort(function (a, b) { return a.localeCompare(b); })
+    var subcats = filters.categories.length
+      ? uniqueSorted(filters.categories.reduce(function (acc, c) { return acc.concat(CATEGORY_SUBCATEGORY_MAP[c] || []); }, []))
       : uniqueSorted(fullCategoryList.reduce(function (acc, c) { return acc.concat(CATEGORY_SUBCATEGORY_MAP[c] || []); }, []));
-    var keepSelection = subcats.indexOf(filters.subcategory) !== -1 ? filters.subcategory : "";
-    fillSelect(subcategorySelect, subcats, "All Subcategories");
-    subcategorySelect.value = keepSelection;
-    filters.subcategory = keepSelection;
+
+    // If one or more categories remain selected, discard only subcategory
+    // selections that no longer belong to any selected category. When no
+    // categories are selected, the full taxonomy is available and existing
+    // subcategory selections remain valid.
+    if (filters.categories.length) {
+      filters.subcategories = filters.subcategories.filter(function (v) { return subcats.indexOf(v) !== -1; });
+    }
+
+    fillSelect(subcategorySelect, subcats, "Add Subcategory");
+    subcategorySelect.value = "";
     subcategorySelect.disabled = subcats.length === 0;
   }
 
@@ -2331,47 +2338,62 @@
     if (values.indexOf(current) !== -1) select.value = current;
   }
 
-  function renderSelectedFilterChip(key, label) {
+  function filterArrayForKey(key) {
+    if (key === "region") return filters.regions;
+    if (key === "country") return filters.countries;
+    if (key === "category") return filters.categories;
+    if (key === "subcategory") return filters.subcategories;
+    return [];
+  }
+
+  function removeFilterValue(key, label) {
+    var arr = filterArrayForKey(key);
+    var idx = arr.indexOf(label);
+    if (idx !== -1) arr.splice(idx, 1);
+
+    if (key === "region") {
+      // Countries belonging to a removed region cannot remain active.
+      var activeRegions = filters.regions.slice();
+      filters.countries = filters.countries.filter(function (countryName) {
+        if (!window.nwxCountryRegionName) return true;
+        var r = window.nwxCountryRegionName(countryName);
+        return !r || activeRegions.indexOf(r) !== -1;
+      });
+    }
+    if (key === "category") populateSubcategoryOptions();
+    renderAll();
+  }
+
+  function renderSelectedFilterChipsForKey(key) {
     var container = filterSelectedEls[key];
     if (!container) return;
     container.innerHTML = "";
-    if (!label) return;
-    var chip = document.createElement("button");
-    chip.type = "button";
-    chip.className = "filter-chip";
-    chip.setAttribute("aria-label", "Remove " + key + " filter: " + label);
-    chip.innerHTML = '<span>' + escapeHtml(label) + '</span><span class="filter-chip-x" aria-hidden="true">×</span>';
-    chip.addEventListener("click", function () {
-      if (key === "region") { filters.region = ""; filters.country = ""; regionSelect.value = ""; countrySelect.value = ""; }
-      if (key === "country") { filters.country = ""; countrySelect.value = ""; }
-      if (key === "category") {
-        filters.category = "";
-        filters.subcategory = "";
-        categorySelect.value = "";
-        populateSubcategoryOptions();
-        subcategorySelect.value = "";
-      }
-      if (key === "subcategory") { filters.subcategory = ""; subcategorySelect.value = ""; }
-      renderAll();
+    filterArrayForKey(key).forEach(function (label) {
+      var chip = document.createElement("button");
+      chip.type = "button";
+      chip.className = "filter-chip";
+      chip.setAttribute("aria-label", "Remove " + key + " filter: " + label);
+      chip.innerHTML = '<span>' + escapeHtml(label) + '</span><span class="filter-chip-x" aria-hidden="true">×</span>';
+      chip.addEventListener("click", function () { removeFilterValue(key, label); });
+      container.appendChild(chip);
     });
-    container.appendChild(chip);
   }
 
   function renderSelectedFilterChips() {
-    renderSelectedFilterChip("region", filters.region);
-    renderSelectedFilterChip("country", filters.country);
-    renderSelectedFilterChip("category", filters.category);
-    renderSelectedFilterChip("subcategory", filters.subcategory);
+    renderSelectedFilterChipsForKey("region");
+    renderSelectedFilterChipsForKey("country");
+    renderSelectedFilterChipsForKey("category");
+    renderSelectedFilterChipsForKey("subcategory");
   }
 
   // ---- filtering (Task 3): search + all four filters combine (AND) ----
   function getFilteredPartners() {
     var q = filters.search.trim().toLowerCase();
     return allPartners.filter(function (p) {
-      if (filters.region && partnerRegions(p).indexOf(filters.region) === -1) return false;
-      if (filters.country && p.country !== filters.country) return false;
-      if (filters.category && p.category !== filters.category) return false;
-      if (filters.subcategory && partnerSubcats(p).indexOf(filters.subcategory) === -1) return false;
+      if (filters.regions.length && !partnerRegions(p).some(function (v) { return filters.regions.indexOf(v) !== -1; })) return false;
+      if (filters.countries.length && filters.countries.indexOf(p.country) === -1) return false;
+      if (filters.categories.length && filters.categories.indexOf(p.category) === -1) return false;
+      if (filters.subcategories.length && !partnerSubcats(p).some(function (v) { return filters.subcategories.indexOf(v) !== -1; })) return false;
       if (q) {
         var haystack = [
           p.name || "",
@@ -2549,33 +2571,44 @@
 
   function dispatchPartnerFilterState() {
     window.dispatchEvent(new CustomEvent("nwxpartnerfilterschange", {
-      detail: { region: filters.region || "", country: filters.country || "" }
+      detail: {
+        regions: filters.regions.slice(),
+        countries: filters.countries.slice(),
+        // Backward-compatible singular values for any older listener.
+        region: filters.regions.length === 1 ? filters.regions[0] : "",
+        country: filters.countries.length === 1 ? filters.countries[0] : ""
+      }
     }));
   }
 
+  function addUniqueFilterValue(arr, value) {
+    if (value && arr.indexOf(value) === -1) arr.push(value);
+  }
+
+  // Map clicks add geographic filters rather than replacing existing ones.
   window.nwxSetDirectoryRegionFilter = function (regionName) {
-    filters.region = regionName || "";
-    regionSelect.value = filters.region;
-    if (!filters.region) {
-      filters.country = "";
-      countrySelect.value = "";
+    if (!regionName) {
+      filters.regions = [];
+      filters.countries = [];
+    } else {
+      addUniqueFilterValue(filters.regions, regionName);
     }
+    regionSelect.value = "";
+    countrySelect.value = "";
     renderAll();
   };
 
   window.nwxSetDirectoryCountryFilter = function (countryName, regionName) {
-    if (regionName) {
-      filters.region = regionName;
-      regionSelect.value = regionName;
-    }
-    filters.country = countryName || "";
-    countrySelect.value = filters.country;
+    if (regionName) addUniqueFilterValue(filters.regions, regionName);
+    if (countryName) addUniqueFilterValue(filters.countries, countryName);
+    regionSelect.value = "";
+    countrySelect.value = "";
     renderAll();
   };
 
   window.nwxClearDirectoryGeoFilters = function () {
-    filters.region = "";
-    filters.country = "";
+    filters.regions = [];
+    filters.countries = [];
     regionSelect.value = "";
     countrySelect.value = "";
     renderAll();
@@ -2723,15 +2756,27 @@
       renderAll();
     });
   });
-  regionSelect.addEventListener("change", function () { filters.region = regionSelect.value; if (!filters.region) { filters.country = ""; countrySelect.value = ""; } renderAll(); });
-  countrySelect.addEventListener("change", function () { filters.country = countrySelect.value; renderAll(); });
+  regionSelect.addEventListener("change", function () {
+    addUniqueFilterValue(filters.regions, regionSelect.value);
+    regionSelect.value = "";
+    renderAll();
+  });
+  countrySelect.addEventListener("change", function () {
+    addUniqueFilterValue(filters.countries, countrySelect.value);
+    countrySelect.value = "";
+    renderAll();
+  });
   categorySelect.addEventListener("change", function () {
-    filters.category = categorySelect.value;
-    filters.subcategory = "";
+    addUniqueFilterValue(filters.categories, categorySelect.value);
+    categorySelect.value = "";
     populateSubcategoryOptions();
     renderAll();
   });
-  subcategorySelect.addEventListener("change", function () { filters.subcategory = subcategorySelect.value; renderAll(); });
+  subcategorySelect.addEventListener("change", function () {
+    addUniqueFilterValue(filters.subcategories, subcategorySelect.value);
+    subcategorySelect.value = "";
+    renderAll();
+  });
 
   function escapeHtml(s) {
     return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
