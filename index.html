@@ -921,6 +921,274 @@
   .mapboxgl-ctrl-group { background: rgba(2,18,41,0.85) !important; border: 1px solid var(--nwx-border) !important; }
   .mapboxgl-ctrl-group button { filter: invert(0.9) hue-rotate(180deg); }
 
+
+  /* ---------- UI polish: live Partner Program filter treatment ---------- */
+  #rail {
+    scrollbar-color: rgba(206,226,235,0.28) transparent;
+    scrollbar-width: thin;
+  }
+  #rail::-webkit-scrollbar { width: 8px; }
+  #rail::-webkit-scrollbar-track { background: transparent; }
+  #rail::-webkit-scrollbar-thumb {
+    background: rgba(206,226,235,0.24);
+    border-radius: 999px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+  #rail::-webkit-scrollbar-thumb:hover {
+    background: rgba(206,226,235,0.38);
+    background-clip: padding-box;
+  }
+
+  /* Match the live Partner Program typography inside filter controls. */
+  #rail,
+  #rail input,
+  #rail select,
+  #rail button {
+    font-family: Gotham, Helvetica, Arial, sans-serif;
+  }
+
+  /* Search uses the same white pill treatment as the live filter inputs. */
+  #rail .rail-search {
+    width: 100%;
+    min-height: 30px;
+    padding: 0 10px;
+    background: #ffffff;
+    border: 1px solid rgba(16,32,51,0.18);
+    border-radius: 16px;
+    box-shadow: 0 8px 20px rgba(16,32,51,0.08);
+    color: #102033;
+    transition: border-color 0.15s ease;
+  }
+  #rail .rail-search:hover,
+  #rail .rail-search:focus-within {
+    border-color: rgba(232,100,44,0.85);
+  }
+  #rail .rail-search svg {
+    color: #102033;
+    opacity: 0.55;
+  }
+  #rail .rail-search input {
+    min-height: 28px;
+    padding: 0;
+    background: transparent;
+    color: #102033;
+    font-size: 11px;
+    font-weight: 800;
+  }
+  #rail .rail-search input::placeholder {
+    color: rgba(16,32,51,0.45);
+    font-weight: 700;
+  }
+
+  /* One full-width filter per row, as in the current Partner Program. */
+  #rail .filter-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+  }
+  #rail .filter-field {
+    width: 100%;
+    min-width: 0;
+  }
+
+  /* Live control dimensions, border, radius, type and shadow. */
+  #rail .filter-select {
+    width: 100%;
+    max-width: 100%;
+    height: 30px;
+    min-height: 30px;
+    padding: 5px 30px 5px 10px;
+    border: 1px solid rgba(16,32,51,0.18);
+    border-radius: 16px;
+    background: #ffffff;
+    color: #102033;
+    font-size: 11px;
+    font-weight: 800;
+    box-shadow: 0 8px 20px rgba(16,32,51,0.08);
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.15s ease;
+  }
+  #rail .filter-select:hover,
+  #rail .filter-select:focus {
+    border-color: rgba(232,100,44,0.85);
+  }
+  #rail .filter-select:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+  }
+  #rail .filter-select option {
+    background: #ffffff;
+    color: #102033;
+    font-weight: 700;
+  }
+
+  /* Applied filters sit directly below their own field and use the live chips. */
+  #rail .filter-selected {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    min-height: 0;
+    margin-top: 4px;
+  }
+  #rail .filter-selected:empty { display: none; }
+  #rail .filter-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 24px;
+    max-width: 100%;
+    padding: 4px 8px;
+    border: 1px solid rgba(232,100,44,0.55);
+    border-radius: 999px;
+    background: rgba(232,100,44,0.10);
+    color: #102033;
+    font-size: 10px;
+    font-weight: 900;
+    line-height: 1.15;
+    cursor: pointer;
+    white-space: normal;
+    text-align: left;
+  }
+  #rail .filter-chip:hover,
+  #rail .filter-chip:focus {
+    border-color: var(--nwx-orange);
+    background: rgba(232,100,44,0.16);
+    outline: none;
+  }
+  #rail .filter-chip .filter-chip-x {
+    color: var(--nwx-orange);
+    font-size: 13px;
+    font-weight: 900;
+    line-height: 1;
+    flex: 0 0 auto;
+  }
+
+  /* Partner names are clean by default; underline is an interaction cue only. */
+  a.mc-name, a.pc-name, a.ppc-name, a.nwx-popup-partner-link {
+    text-decoration: none;
+  }
+  a.mc-name:hover, a.pc-name:hover, a.ppc-name:hover, a.nwx-popup-partner-link:hover {
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  /* Category/type icon assets, carried over from the current Partner page. */
+  .mc-category-icon {
+    width: 32px;
+    height: 32px;
+    flex: 0 0 32px;
+    display: block;
+    object-fit: contain;
+    align-self: center;
+  }
+  .pc-category-icon {
+    width: 42px;
+    height: 42px;
+    flex: 0 0 42px;
+    display: block;
+    object-fit: contain;
+  }
+  .mini-card {
+    justify-content: flex-start;
+  }
+  .mini-card .mc-text { flex: 1 1 auto; }
+  .mini-card .mc-name {
+    line-height: 1.25;
+    text-decoration: none;
+  }
+  .mini-card .mc-meta {
+    line-height: 1.25;
+  }
+  .mini-card .mc-chev { margin-left: auto; }
+
+  /* List cards borrow the current Partner page's icon-led, structured card feel. */
+  .plv-grid .partner-card {
+    background: rgba(255,255,255,0.045);
+    border: 1px solid rgba(206,226,235,0.22);
+    border-radius: 12px;
+    padding: 14px;
+    gap: 8px;
+    box-shadow: none;
+  }
+  .plv-grid .partner-card:hover,
+  .plv-grid .partner-card.selected {
+    background: rgba(255,255,255,0.065);
+    border-color: rgba(232,100,44,0.62);
+  }
+  .pc-heading {
+    display: grid;
+    grid-template-columns: 42px minmax(0,1fr) auto;
+    align-items: start;
+    gap: 10px;
+  }
+  .pc-heading-copy { min-width: 0; }
+  .pc-heading .pc-top { display: block; }
+  .pc-heading .pc-premier {
+    grid-column: 3;
+    grid-row: 1;
+    align-self: start;
+  }
+  .pc-heading .pc-cat { margin-top: 3px; }
+  .plv-grid .pc-name {
+    display: inline;
+    font-size: 14px;
+    line-height: 1.25;
+    color: #ffffff;
+  }
+  .plv-grid .pc-cat {
+    color: var(--nwx-orange);
+    font-size: 10.5px;
+    line-height: 1.3;
+  }
+  .plv-grid .pc-sub {
+    margin-left: 52px;
+    color: rgba(206,226,235,0.68);
+  }
+  .plv-grid .pc-contact,
+  .plv-grid .pc-meta-row {
+    color: rgba(206,226,235,0.68);
+  }
+  .plv-grid .pc-actions { margin-top: auto; padding-top: 4px; }
+  #partner-list-view {
+    scrollbar-color: rgba(206,226,235,0.24) transparent;
+    scrollbar-width: thin;
+  }
+  #partner-list-view::-webkit-scrollbar-track { background: transparent; }
+
+  /* Partner names listed inside a Network Coverage region popup. */
+  .nwx-popup-partners {
+    margin-top: 12px;
+    padding-top: 10px;
+    border-top: 1px solid rgba(206,226,235,0.14);
+  }
+  .nwx-popup-partners-title {
+    color: rgba(206,226,235,0.58);
+    font-size: 10px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.55px;
+    margin-bottom: 6px;
+  }
+  .nwx-popup-partner-list {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    max-height: 126px;
+    overflow-y: auto;
+    scrollbar-color: rgba(206,226,235,0.22) transparent;
+    scrollbar-width: thin;
+  }
+  .nwx-popup-partner-list::-webkit-scrollbar-track { background: transparent; }
+  .nwx-popup-partner-link,
+  .nwx-popup-partner-plain {
+    color: var(--nwx-name);
+    font-size: 11px;
+    line-height: 1.3;
+  }
+
   /* ---------- RESPONSIVE ---------- */
   @media (max-width: 860px) {
     #rail { display: none; }
@@ -963,11 +1231,23 @@
        taxonomy), so every option shown always has at least one result.
        Region uses partner.regions[] with a legacy partner.region fallback;
        Subcategory options depend on the selected Category. -->
-  <div class="filter-grid" aria-label="Partner filters">
-    <select class="filter-select" id="filter-region" aria-label="Filter by region"><option value="">All Regions</option></select>
-    <select class="filter-select" id="filter-country" aria-label="Filter by country"><option value="">All Countries</option></select>
-    <select class="filter-select" id="filter-category" aria-label="Filter by category"><option value="">All Categories</option></select>
-    <select class="filter-select" id="filter-subcategory" aria-label="Filter by subcategory"><option value="">All Subcategories</option></select>
+  <div class="filter-stack" aria-label="Partner filters">
+    <div class="filter-field">
+      <select class="filter-select" id="filter-region" aria-label="Filter by region"><option value="">All Regions</option></select>
+      <div class="filter-selected" id="filter-region-selected" aria-live="polite"></div>
+    </div>
+    <div class="filter-field">
+      <select class="filter-select" id="filter-country" aria-label="Filter by country"><option value="">All Countries</option></select>
+      <div class="filter-selected" id="filter-country-selected" aria-live="polite"></div>
+    </div>
+    <div class="filter-field">
+      <select class="filter-select" id="filter-category" aria-label="Filter by category"><option value="">All Categories</option></select>
+      <div class="filter-selected" id="filter-category-selected" aria-live="polite"></div>
+    </div>
+    <div class="filter-field">
+      <select class="filter-select" id="filter-subcategory" aria-label="Filter by subcategory"><option value="">All Subcategories</option></select>
+      <div class="filter-selected" id="filter-subcategory-selected" aria-live="polite"></div>
+    </div>
   </div>
 
   <div class="rail-result-row" id="partner-result-count">Loading Partner Directory…</div>
@@ -1331,6 +1611,7 @@
   var toggleMapBtns = [document.getElementById("toggle-map"), document.getElementById("toggle-map-m")];
   var toggleListBtns = [document.getElementById("toggle-list"), document.getElementById("toggle-list-m")];
   function setViewMode(mode) {
+    closeActivePopup();
     toggleMapBtns.forEach(function (b) { if (b) b.classList.toggle("active", mode === "map"); });
     toggleListBtns.forEach(function (b) { if (b) b.classList.toggle("active", mode === "list"); });
     window.dispatchEvent(new CustomEvent("nwxviewmode", { detail: { mode: mode } }));
@@ -1562,8 +1843,33 @@
     return wrap;
   }
 
+  function popupEscapeHtml(value) {
+    return String(value == null ? "" : value).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+
+  function regionPartnersHTML(regionName) {
+    if (typeof window.nwxPartnerDirectoryForRegion !== "function") return "";
+    var partners = window.nwxPartnerDirectoryForRegion(regionName) || [];
+    if (!partners.length) return "";
+    var items = partners.map(function (p) {
+      var name = popupEscapeHtml(p.name || "");
+      if (!name) return "";
+      if (p.partnerPageUrl) {
+        return '<a class="nwx-popup-partner-link" href="' + popupEscapeHtml(p.partnerPageUrl) + '">' + name + "</a>";
+      }
+      return '<span class="nwx-popup-partner-plain">' + name + "</span>";
+    }).filter(Boolean).join("");
+    if (!items) return "";
+    return '<div class="nwx-popup-partners">' +
+      '<div class="nwx-popup-partners-title">Trusted Partners</div>' +
+      '<div class="nwx-popup-partner-list">' + items + "</div>" +
+      "</div>";
+  }
+
   function popupHTML(opts) {
-    // opts: {title, sub (optional), headlineNum, headlineLabel, rows: [[k,v], ...], actionLabel}
+    // opts: {title, sub (optional), headlineNum, headlineLabel, rows: [[k,v], ...], actionLabel, partnersHtml}
     var rowsHtml = opts.rows.map(function (r) {
       return '<div class="nwx-popup-row"><span class="k">' + r[0] + '</span><span class="v">' + r[1] + "</span></div>";
     }).join("");
@@ -1579,6 +1885,7 @@
       subHtml +
       '<div class="nwx-popup-headline"><span class="n">' + opts.headlineNum + '</span><span class="l">' + opts.headlineLabel + '</span></div>' +
       '<div class="nwx-popup-grid">' + rowsHtml + "</div>" +
+      (opts.partnersHtml || "") +
       actionHtml
     );
   }
@@ -1600,10 +1907,11 @@
         ["Fleet Owners", region.fleetOwners],
         ["Dual Accounts", region.dualAccounts]
       ],
+      partnersHtml: regionPartnersHTML(region.name),
       actionLabel: "View countries →"
     });
 
-    var popup = new mapboxgl.Popup({ offset: 26, closeButton: true, maxWidth: "260px" })
+    var popup = new mapboxgl.Popup({ offset: 26, closeButton: true, maxWidth: "300px" })
       .setLngLat(region.coordinates)
       .setHTML(html)
       .addTo(map);
@@ -1737,6 +2045,12 @@
   var countrySelect = document.getElementById("filter-country");
   var categorySelect = document.getElementById("filter-category");
   var subcategorySelect = document.getElementById("filter-subcategory");
+  var filterSelectedEls = {
+    region: document.getElementById("filter-region-selected"),
+    country: document.getElementById("filter-country-selected"),
+    category: document.getElementById("filter-category-selected"),
+    subcategory: document.getElementById("filter-subcategory-selected")
+  };
   var profileCard = document.getElementById("partner-profile-card");
   var previewOverlay = document.getElementById("partner-preview-overlay");
 
@@ -1808,6 +2122,39 @@
     if (values.indexOf(current) !== -1) select.value = current;
   }
 
+  function renderSelectedFilterChip(key, label) {
+    var container = filterSelectedEls[key];
+    if (!container) return;
+    container.innerHTML = "";
+    if (!label) return;
+    var chip = document.createElement("button");
+    chip.type = "button";
+    chip.className = "filter-chip";
+    chip.setAttribute("aria-label", "Remove " + key + " filter: " + label);
+    chip.innerHTML = '<span>' + escapeHtml(label) + '</span><span class="filter-chip-x" aria-hidden="true">×</span>';
+    chip.addEventListener("click", function () {
+      if (key === "region") { filters.region = ""; regionSelect.value = ""; }
+      if (key === "country") { filters.country = ""; countrySelect.value = ""; }
+      if (key === "category") {
+        filters.category = "";
+        filters.subcategory = "";
+        categorySelect.value = "";
+        populateSubcategoryOptions();
+        subcategorySelect.value = "";
+      }
+      if (key === "subcategory") { filters.subcategory = ""; subcategorySelect.value = ""; }
+      renderAll();
+    });
+    container.appendChild(chip);
+  }
+
+  function renderSelectedFilterChips() {
+    renderSelectedFilterChip("region", filters.region);
+    renderSelectedFilterChip("country", filters.country);
+    renderSelectedFilterChip("category", filters.category);
+    renderSelectedFilterChip("subcategory", filters.subcategory);
+  }
+
   // ---- filtering (Task 3): search + all four filters combine (AND) ----
   function getFilteredPartners() {
     var q = filters.search.trim().toLowerCase();
@@ -1838,6 +2185,28 @@
   var ICON_CONTACT = '<svg class="pc-icon-contact" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c.8-4.2 3.5-6 8-6s7.2 1.8 8 6"></path></svg>';
   var ICON_WEBSITE = '<svg class="pc-icon-website" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 4h6v6"></path><path d="M10 14 20 4"></path><path d="M18 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h5"></path></svg>';
   var ICON_CHEVRON = '<svg class="mc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg>';
+  var CATEGORY_ICON_FILES = {
+    "Crew, Medical & Welfare Services": "Crew, Medical & Welfare Services.png",
+    "Green Solutions & Sustainability": "Green Solutions & Sustainability.png",
+    "Legal, Insurance & Finance": "Legal, Insurance & Finance.png",
+    "Logistics, Transport & Port Services": "Logistics, Transport & Port Services.png",
+    "Marine Equipment & Systems": "Marine Equipment & Systems.png",
+    "Offshore & Marine Support Services": "Offshore & Marine Support Services.png",
+    "Offshore Wind & Renewable Services": "Offshore Wind & Renewable Services.png",
+    "Shipbuilding, Repair & Maintenance": "Shipbuilding, Repair & Maintenance.png",
+    "Shipyards & Newbuild Projects": "Shipyards & Newbuild Projects.png",
+    "Spare Parts & Consumables": "Spare Parts & Consumables.png",
+    "Technology, Digital & Innovation": "Technology, Digital & Innovation.png"
+  };
+
+  function categoryIconHTML(p, cssClass) {
+    var fileName = CATEGORY_ICON_FILES[p.category];
+    if (!fileName) return "";
+    return '<img class="' + cssClass + '" src="assets/' +
+      encodeURIComponent(fileName).replace(/%2F/g, "/") +
+      '" alt="" aria-hidden="true">';
+  }
+
 
   function contactLineHTML(p) {
     if (!p.contactName && !p.contactTitle) return "";
@@ -1879,10 +2248,14 @@
   function cardHTML(p) {
     var subs = partnerSubcats(p);
     return (
-      '<div class="pc-top">' + nameHTML(p, "pc-name") +
-      (isPremier(p) ? '<span class="pc-premier">Premier</span>' : "") +
+      '<div class="pc-heading">' +
+        categoryIconHTML(p, "pc-category-icon") +
+        '<div class="pc-heading-copy">' +
+          '<div class="pc-top">' + nameHTML(p, "pc-name") + "</div>" +
+          '<div class="pc-cat">' + escapeHtml(p.category || "") + "</div>" +
+        "</div>" +
+        (isPremier(p) ? '<span class="pc-premier">Premier</span>' : "") +
       "</div>" +
-      '<div class="pc-cat">' + escapeHtml(p.category || "") + "</div>" +
       (subs.length ? '<div class="pc-sub">' + escapeHtml(subs.join(", ")) + "</div>" : "") +
       contactLineHTML(p) +
       actionsHTML(p) +
@@ -1904,6 +2277,7 @@
   // contact/actions/geo, so the rail never duplicates the full card. ----
   function compactCardHTML(p) {
     return (
+      categoryIconHTML(p, "mc-category-icon") +
       '<div class="mc-text">' + nameHTML(p, "mc-name") +
       '<div class="mc-meta">' + escapeHtml(p.category || "") + "</div></div>" +
       ICON_CHEVRON
@@ -1916,7 +2290,7 @@
     el.setAttribute("data-partner-id", p.__id);
     el.innerHTML = compactCardHTML(p);
     // Sidebar entries show the compact floating panel (Task 2).
-    el.addEventListener("click", function () { selectPartner(p); });
+    el.addEventListener("click", function (e) { e.stopPropagation(); selectPartner(p); });
     return el;
   }
 
@@ -1934,10 +2308,21 @@
 
   function renderAll() {
     var filtered = getFilteredPartners();
+    renderSelectedFilterChips();
     renderInto(railList, filtered, "Try adjusting search or filters.", buildCompactCardEl);
     renderInto(listGrid, filtered, "Try adjusting search or filters.", buildCardEl);
     resultCount.textContent = filtered.length + (filtered.length === 1 ? " partner" : " partners") + " found";
   }
+  // Read-only bridge used by the Network Coverage region popup. It keeps
+  // the two datasets separate while allowing a region popup to list matching
+  // Partner Directory companies beneath the account summary.
+  window.nwxPartnerDirectoryForRegion = function (regionName) {
+    return allPartners.filter(function (p) {
+      return partnerRegions(p).indexOf(regionName) !== -1;
+    }).sort(function (a, b) {
+      return String(a.name || "").localeCompare(String(b.name || ""));
+    });
+  };
 
   function syncSelectedHighlight() {
     document.querySelectorAll(".partner-card, .mini-card").forEach(function (el) {
@@ -1984,11 +2369,26 @@
     profileCard.classList.add("visible");
   }
 
-  var closeBtn = document.getElementById("ppc-close");
-  if (closeBtn) closeBtn.addEventListener("click", function () {
+  function closePartnerProfileCard() {
     profileCard.classList.remove("visible");
     selectedId = null;
     syncSelectedHighlight();
+  }
+
+  var closeBtn = document.getElementById("ppc-close");
+  if (closeBtn) closeBtn.addEventListener("click", function (e) {
+    e.stopPropagation();
+    closePartnerProfileCard();
+  });
+
+  // Dismiss the floating partner card when the user clicks anywhere outside
+  // the card or its sidebar selector. This prevents a selection from feeling
+  // persistent while the user returns to the map.
+  document.addEventListener("click", function (e) {
+    if (!profileCard.classList.contains("visible")) return;
+    if (profileCard.contains(e.target)) return;
+    if (e.target.closest && e.target.closest(".mini-card")) return;
+    closePartnerProfileCard();
   });
 
   // ---- Partner Preview Overlay (Task 6) — data-driven profile, no iframe
@@ -2055,6 +2455,7 @@
   // Network Coverage script dispatches; never touches the map itself. ----
   window.addEventListener("nwxviewmode", function (e) {
     listView.classList.toggle("visible", e.detail && e.detail.mode === "list");
+    closePartnerProfileCard();
   });
 
   // ---- search + filter wiring (Task 3) ----
