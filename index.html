@@ -1066,6 +1066,43 @@
     flex: 0 0 auto;
   }
 
+  /* Global "Reset all filters" control -- same icon button, sizing, border,
+     radius and hover treatment as the current live Partner Program's
+     .nwx-clear-filters-button/.nwx-reset-filter-icon, adapted only in
+     placement (right-aligned below the filter-stack, since this rail is a
+     single full-width column rather than the live site's filter-bar row). */
+  #rail .nwx-clear-filters-wrap {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+  }
+  #rail .nwx-clear-filters-button {
+    width: 46px;
+    min-width: 46px;
+    height: 46px;
+    min-height: 46px;
+    padding: 0;
+    display: inline-grid;
+    place-items: center;
+    border: 1px solid var(--nwx-orange);
+    border-radius: 9px;
+    background: #ffffff;
+    color: var(--nwx-orange);
+    cursor: pointer;
+    box-shadow: none;
+  }
+  #rail .nwx-clear-filters-button:hover,
+  #rail .nwx-clear-filters-button:focus-visible {
+    background: rgba(232, 100, 44, 0.08);
+    border-color: var(--nwx-orange);
+    color: var(--nwx-orange);
+  }
+  #rail .nwx-reset-filter-icon {
+    width: 24px;
+    height: 24px;
+    display: block;
+  }
+
   /* Partner names are clean by default; underline is an interaction cue only. */
   a.mc-name, a.pc-name, a.ppc-name, a.nwx-popup-partner-link {
     text-decoration: none;
@@ -1335,6 +1372,18 @@
       <select class="filter-select" id="filter-subcategory" aria-label="Filter by subcategory"><option value="">All Subcategories</option></select>
       <div class="filter-selected" id="filter-subcategory-selected" aria-live="polite"></div>
     </div>
+  </div>
+
+  <!-- Global filter reset -- same control, icon, and behavior as the
+       current live Partner Program ("Reset all filters" / map_reset_filters),
+       positioned directly after the last filter field. -->
+  <div class="nwx-clear-filters-wrap">
+    <button class="nwx-clear-filters-button" type="button" id="filter-reset-all" aria-label="Reset all filters" title="Reset all filters">
+      <svg class="nwx-reset-filter-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M20 11a8 8 0 1 0-2.34 5.66" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round"/>
+        <path d="M20 4v7h-7" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
   </div>
 
   <div class="rail-result-row" id="partner-result-count">Loading Partner Directory…</div>
@@ -2931,6 +2980,28 @@
     subcategorySelect.value = "";
     renderAll();
   });
+
+  // Global "Reset all filters" control (matches the current live Partner
+  // Program's control/behavior). Clears every filter dimension this script
+  // owns, then delegates the geo/map/render reset to the existing
+  // nwxClearDirectoryGeoFilters() bridge rather than duplicating its logic
+  // -- that function already clears filters.regions/countries, restores the
+  // full Country dropdown, calls renderAll(), and (via the
+  // nwxpartnerfilterschange event the Network Coverage script listens for)
+  // resets the map to World view and closes any open region/country popup.
+  // Map/List mode is untouched, since nothing here touches the view toggle.
+  var resetAllButton = document.getElementById("filter-reset-all");
+  if (resetAllButton) {
+    resetAllButton.addEventListener("click", function () {
+      filters.search = "";
+      searchInputs.forEach(function (input) { input.value = ""; });
+      filters.categories = [];
+      filters.subcategories = [];
+      populateSubcategoryOptions();
+      closePartnerProfileCard();
+      window.nwxClearDirectoryGeoFilters();
+    });
+  }
 
   function escapeHtml(s) {
     return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
