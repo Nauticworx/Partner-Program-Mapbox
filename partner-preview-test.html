@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Nauticworx Partner Preview Mockup</title>
+<style>
+:root{
+  --navy:#021229; --navy2:#081b34; --navy3:#0d2441;
+  --orange:#e8642c; --blue:#cee2eb; --text:#f7fbff;
+  --muted:#9fb2c6; --line:rgba(206,226,235,.16);
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;font-family:Inter,Arial,sans-serif;background:var(--navy);color:var(--text)}
+button,input,select{font:inherit}
+.app{display:grid;grid-template-columns:300px minmax(0,1fr);height:100vh;overflow:hidden}
+.sidebar{background:var(--navy);border-right:1px solid var(--line)}
+.brand{padding:18px 18px 12px;display:flex;align-items:center;gap:10px}
+.brand-circle{width:38px;height:38px;border:2px solid #fff;border-radius:50%;position:relative}
+.brand-circle:after{content:"";position:absolute;inset:8px 5px;border:3px solid var(--orange);border-top-color:transparent;border-right-color:transparent;border-radius:50%;transform:rotate(-20deg)}
+.brand-copy strong{display:block;font-weight:500;font-size:19px;letter-spacing:1.2px}
+.brand-copy span{display:block;font-size:9px;letter-spacing:3.6px}
+.controls{padding:0 16px 14px}
+.toggle{display:grid;grid-template-columns:1fr 1fr;gap:3px;padding:3px;background:var(--navy2);border:1px solid var(--line);border-radius:9px;margin-bottom:12px}
+.toggle button{border:0;border-radius:7px;padding:8px;background:transparent;color:var(--muted);font-weight:700}
+.toggle .active{background:var(--orange);color:#fff}
+.search{width:100%;background:var(--navy2);border:1px solid var(--line);border-radius:8px;padding:10px 12px;color:#fff;margin-bottom:10px}
+.filters{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+select{background:var(--navy2);border:1px solid var(--line);border-radius:8px;color:#fff;padding:9px}
+.count{font-size:12px;color:var(--muted);margin-top:12px}
+.dir{padding:0 12px 14px;border-top:1px solid rgba(255,255,255,.04)}
+.dir h4{font-size:11px;letter-spacing:1.2px;text-transform:uppercase;color:#748ba1;margin:14px 5px 8px}
+.item{padding:10px 11px;border-radius:9px;border:1px solid transparent;margin-bottom:4px;cursor:pointer}
+.item.active,.item:hover{background:rgba(255,255,255,.035);border-color:rgba(232,100,44,.42)}
+.item .n{font-size:13px;font-weight:800}
+.item .m{font-size:11px;color:var(--muted);margin-top:3px}
+
+.stage{position:relative;overflow:hidden;background:#07172d}
+.map{position:absolute;inset:0;background:
+radial-gradient(circle at 48% 47%,rgba(206,226,235,.10),transparent 26%),
+linear-gradient(#eef2f0 0 0) center/58% 58% no-repeat,
+var(--navy)}
+.map:after{content:"MAP AREA";position:absolute;inset:0;display:grid;place-items:center;color:rgba(2,18,41,.22);font-weight:800;font-size:58px;letter-spacing:6px}
+.chip{position:absolute;background:#06172e;border:1.5px solid var(--orange);padding:9px 12px;border-radius:8px;font-weight:800;font-size:12px}
+.chip b{color:var(--orange);margin-left:6px}
+.na{left:12%;top:37%}.ne{left:34%;top:25%}.wa{left:34%;top:52%}.ea{left:58%;top:56%}.sea{left:68%;top:54%}.aus{left:72%;top:70%}
+
+.dim{position:absolute;inset:0;background:rgba(0,8,20,.58);backdrop-filter:blur(2px)}
+.preview{
+  position:absolute;
+  left:50%; top:50%; transform:translate(-50%,-50%);
+  width:min(1180px,calc(100% - 56px)); height:min(760px,calc(100% - 56px));
+  background:#fff; border-radius:16px; overflow:hidden;
+  box-shadow:0 30px 90px rgba(0,0,0,.55);
+  border:1px solid rgba(255,255,255,.2);
+  display:grid; grid-template-rows:auto 1fr;
+}
+.preview-top{
+  background:var(--navy); color:#fff; display:flex; align-items:center;
+  justify-content:space-between; gap:14px; padding:13px 16px;
+  border-bottom:1px solid rgba(255,255,255,.12);
+}
+.preview-title{min-width:0}
+.preview-title .eyebrow{font-size:10px;letter-spacing:1.3px;text-transform:uppercase;color:var(--orange);font-weight:800}
+.preview-title strong{display:block;font-size:15px;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.preview-actions{display:flex;gap:8px;align-items:center}
+.preview-actions a,.preview-actions button{
+  border-radius:8px;padding:9px 12px;font-weight:800;font-size:12px;text-decoration:none;cursor:pointer
+}
+.open{background:var(--orange);border:1px solid var(--orange);color:#fff}
+.close{background:#0b213e;border:1px solid var(--line);color:#fff}
+.frame-wrap{position:relative;background:#fff}
+iframe{width:100%;height:100%;border:0;background:#fff}
+.fallback{
+  position:absolute;inset:0;display:none;place-items:center;text-align:center;padding:40px;background:#fff;color:#10233d
+}
+.fallback strong{display:block;font-size:22px;margin-bottom:8px}
+.fallback p{margin:0 0 16px;color:#5c6b7c}
+.fallback a{display:inline-block;background:var(--orange);color:#fff;text-decoration:none;padding:10px 14px;border-radius:8px;font-weight:800}
+.note{
+  position:absolute;left:50%;bottom:10px;transform:translateX(-50%);
+  background:rgba(2,18,41,.92);border:1px solid var(--line);border-radius:999px;
+  color:#cee2eb;padding:7px 11px;font-size:11px
+}
+@media(max-width:780px){
+  .app{grid-template-columns:1fr}
+  .sidebar{display:none}
+  .preview{width:100%;height:100%;border-radius:0}
+  .preview-top{padding:11px 12px}
+  .preview-actions .open{display:none}
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-circle"></div>
+      <div class="brand-copy"><strong>NAUTICWORX</strong><span>PARTNER PROGRAM</span></div>
+    </div>
+    <div class="controls">
+      <div class="toggle"><button class="active">Map</button><button>List</button></div>
+      <input class="search" placeholder="Search partners...">
+      <div class="filters">
+        <select><option>All Regions</option></select>
+        <select><option>All Countries</option></select>
+        <select><option>All Categories</option></select>
+        <select><option>All Subcategories</option></select>
+      </div>
+      <div class="count">10 partners found</div>
+    </div>
+    <div class="dir">
+      <h4>Partner Directory</h4>
+      <div class="item active"><div class="n">Beequip Equipment Finance</div><div class="m">Legal, Insurance & Finance</div></div>
+      <div class="item"><div class="n">EGNA Marine</div><div class="m">Shipyards & Newbuild Projects</div></div>
+      <div class="item"><div class="n">FDR</div><div class="m">Legal, Insurance & Finance</div></div>
+      <div class="item"><div class="n">Hull Vane</div><div class="m">Green Solutions & Sustainability</div></div>
+    </div>
+  </aside>
+
+  <main class="stage">
+    <div class="map"></div>
+    <div class="chip na">North America <b>24</b></div>
+    <div class="chip ne">Northern Europe <b>22</b></div>
+    <div class="chip wa">West Africa <b>13</b></div>
+    <div class="chip ea">East Africa <b>8</b></div>
+    <div class="chip sea">Southeast Asia <b>16</b></div>
+    <div class="chip aus">Australia/Oceania <b>10</b></div>
+
+    <div class="dim"></div>
+
+    <section class="preview" aria-label="Partner page preview">
+      <header class="preview-top">
+        <div class="preview-title">
+          <div class="eyebrow">Partner Page Preview</div>
+          <strong>Beequip Equipment Finance</strong>
+        </div>
+        <div class="preview-actions">
+          <a class="open" href="https://www.nauticworx.com/our-trusted-partners/beequip-equipment-finance/" target="_top">Open Full Page ↗</a>
+          <button class="close" onclick="document.querySelector('.preview').style.display='none';document.querySelector('.dim').style.display='none'">Close ✕</button>
+        </div>
+      </header>
+      <div class="frame-wrap">
+        <iframe
+          src="https://www.nauticworx.com/our-trusted-partners/beequip-equipment-finance/"
+          title="Beequip Equipment Finance partner page"
+          loading="eager">
+        </iframe>
+        <div class="fallback">
+          <div>
+            <strong>Preview unavailable</strong>
+            <p>If the site blocks embedding, the full partner page can still be opened directly.</p>
+            <a href="https://www.nauticworx.com/our-trusted-partners/beequip-equipment-finance/" target="_top">Open Beequip Partner Page</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="note">Mockup: embedded Beequip partner page preview inside the Partner Program iframe</div>
+  </main>
+</div>
+</body>
+</html>
