@@ -265,31 +265,183 @@
   .pc-contact .pc-contact-title { color: rgba(206,226,235,0.4); }
   .pc-actions { display: flex; gap: 6px; margin-top: 4px; }
 
-  /* ---------- PARTNER DIRECTORY icons (Batch 3 correction) ----------
-     Reuses the same three production asset icons already in this repo's
-     assets/ folder (assets/globe.png, assets/partner-contact-name.png,
-     assets/visit-partner.PNG) at the same sizing the production
-     Partner Program frontend uses them at (17px geo/contact icons,
-     15px website icon), rather than introducing new icon assets. */
+  /* ---------- PARTNER DIRECTORY icons (redesign pass) ----------
+     Inline SVG, no image assets. Same footprint as the previous PNG
+     icons (17px geo/contact, 15px website) so surrounding layout is
+     unaffected. */
   .pc-icon-geo, .pc-icon-contact {
     width: 17px;
     height: 17px;
     flex: 0 0 17px;
     display: block;
-    object-fit: contain;
-    background: transparent;
-    border: 0;
+    color: rgba(206,226,235,0.6);
     margin-top: 1px;
   }
   .pc-icon-website {
-    width: 15px;
-    height: 15px;
-    flex: 0 0 15px;
-    display: block;
-    object-fit: contain;
-    background: transparent;
-    border: 0;
+    width: 14px;
+    height: 14px;
+    flex: 0 0 14px;
+    display: inline-block;
+    vertical-align: -2px;
+    margin-left: 6px;
   }
+
+  /* ---------- SIDEBAR: compact directory entries only (redesign) ----------
+     Replaces full pc-* cards in the rail with a lightweight name+category
+     row + chevron, matching the approved sidebar mockup. Full detail
+     (contact, actions, geography) is never duplicated here — it lives in
+     the List-mode grid card and the profile preview. */
+  .mini-card {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 9px 10px;
+    border: 1px solid transparent;
+    border-radius: 9px;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+  .mini-card:hover, .mini-card.selected {
+    background: rgba(255,255,255,0.04);
+    border-color: rgba(232,100,44,0.45);
+  }
+  .mini-card .mc-text { min-width: 0; }
+  .mini-card .mc-name {
+    font-weight: 700;
+    font-size: 12.5px;
+    color: var(--nwx-name);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .mini-card .mc-meta {
+    font-size: 10.5px;
+    color: rgba(206,226,235,0.5);
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .mc-chev { width: 14px; height: 14px; flex: 0 0 14px; color: var(--nwx-orange); }
+
+  /* ---------- FLOATING PANEL (drawer) additions (redesign) ---------- */
+  .ppc-kicker {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.1px;
+    color: var(--nwx-orange);
+    font-weight: 800;
+    margin-bottom: 3px;
+  }
+  .ppc-sub { font-size: 11px; color: rgba(206,226,235,0.6); margin-bottom: 10px; }
+  .ppc-more {
+    display: block;
+    width: 100%;
+    text-align: center;
+    margin-top: 10px;
+    background: transparent;
+    border: 1px solid var(--nwx-border);
+    color: var(--nwx-name);
+    font-size: 11px;
+    font-weight: 700;
+    padding: 7px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    text-decoration: none;
+  }
+  .ppc-more:hover { background: rgba(255,255,255,0.06); }
+
+  /* ---------- PARTNER PREVIEW OVERLAY (redesign, Task 6) ----------
+     Approved preview-overlay UX from partner-preview-test.html, adapted:
+     WordPress blocks iframe embedding, so this renders a data-driven
+     profile from partner.* fields instead of embedding the live page.
+     Opening/closing this overlay never touches filters/search/map view/
+     selected-partner state underneath it. */
+  #partner-preview-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+  }
+  #partner-preview-overlay.visible { display: block; }
+  .ppo-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,8,20,0.6);
+    backdrop-filter: blur(2px);
+  }
+  .ppo-panel {
+    position: absolute;
+    left: 50%; top: 50%;
+    transform: translate(-50%, -50%);
+    width: min(560px, calc(100% - 32px));
+    max-height: calc(100% - 48px);
+    overflow-y: auto;
+    background: var(--nwx-navy-soft);
+    border: 1px solid var(--nwx-border);
+    border-radius: 14px;
+    box-shadow: 0 30px 80px rgba(0,0,0,0.55);
+  }
+  .ppo-header {
+    position: sticky;
+    top: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: var(--nwx-navy);
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--nwx-border);
+    border-radius: 14px 14px 0 0;
+  }
+  .ppo-header-text { min-width: 0; }
+  .ppo-eyebrow { font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px; color: var(--nwx-orange); font-weight: 800; }
+  .ppo-title-link, .ppo-title-plain {
+    display: block;
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--nwx-name);
+    text-decoration: none;
+    margin-top: 3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .ppo-title-link:hover { text-decoration: underline; }
+  .ppo-header-actions { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
+  .ppo-open-full {
+    background: var(--nwx-orange);
+    border: 1px solid var(--nwx-orange);
+    color: #fff;
+    font-weight: 800;
+    font-size: 11.5px;
+    padding: 8px 11px;
+    border-radius: 7px;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .ppo-open-full:hover { background: var(--nwx-orange-dim); }
+  .ppo-close {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--nwx-border);
+    color: var(--nwx-name);
+    font-size: 16px;
+    line-height: 1;
+    padding: 7px 10px;
+    border-radius: 7px;
+    cursor: pointer;
+  }
+  .ppo-close:hover { background: rgba(255,255,255,0.12); }
+  .ppo-body { padding: 18px 20px 22px; }
+  .ppo-category { font-size: 12px; font-weight: 800; color: var(--nwx-orange); text-transform: uppercase; letter-spacing: 0.3px; }
+  .ppo-subcats { font-size: 12px; color: var(--nwx-name); margin-top: 3px; }
+  .ppo-row { display: flex; align-items: flex-start; gap: 8px; margin-top: 12px; font-size: 12.5px; color: rgba(206,226,235,0.75); line-height: 1.4; }
+  .ppo-row svg { width: 17px; height: 17px; flex: 0 0 17px; color: rgba(206,226,235,0.6); margin-top: 1px; }
+  .ppo-desc { font-size: 12.5px; color: rgba(206,226,235,0.7); line-height: 1.55; margin-top: 14px; }
+  .ppo-testimonial { font-size: 12.5px; color: rgba(206,226,235,0.6); line-height: 1.55; margin-top: 10px; font-style: italic; border-left: 2px solid var(--nwx-orange); padding-left: 10px; }
+  .ppo-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 18px; }
+  .ppo-actions .pc-btn { padding: 10px 10px; font-size: 12px; }
   .pc-meta-row.has-icon { display: flex; align-items: flex-start; gap: 6px; }
   .pc-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
   .pc-btn {
@@ -325,14 +477,21 @@
     padding: 24px clamp(16px, 4vw, 48px);
   }
   #partner-list-view.visible { display: block; }
+  /* Explicit 3/2/1 responsive grid (redesign, Task 3) — was auto-fill. */
   .plv-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-    gap: 12px;
-    max-width: 1100px;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    max-width: 1200px;
     margin: 0 auto;
   }
   .plv-grid .partner-card { height: 100%; }
+  @media (max-width: 1100px) {
+    .plv-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 640px) {
+    .plv-grid { grid-template-columns: 1fr; }
+  }
 
   /* ---------- RAIL: region/country browse (de-emphasized — the mockup's
      search/filter/result-card hierarchy is the primary rail content now;
@@ -877,19 +1036,49 @@
          records (Batch 3, Task 6). Hidden until a partner is selected. -->
     <div id="partner-profile-card">
       <button type="button" class="ppc-close" id="ppc-close" aria-label="Close">&times;</button>
-      <div class="ppc-avatar"></div>
-      <div class="ppc-name" id="ppc-name">Partner name</div>
-      <div class="ppc-meta" id="ppc-meta">Category · Subcategory</div>
+      <div class="ppc-kicker">Trusted Partner</div>
+      <span id="ppc-name-wrap"></span>
+      <div class="ppc-sub" id="ppc-sub"></div>
       <div class="pc-contact" id="ppc-contact-line"></div>
       <div class="pc-actions">
         <a class="pc-btn" id="ppc-contact-btn" href="#" target="_blank" rel="noopener">Contact Partner</a>
         <a class="pc-btn pc-btn-primary" id="ppc-website-btn" href="#" target="_blank" rel="noopener">Visit Website</a>
       </div>
       <div class="pc-meta-row" id="ppc-geo-line"></div>
-      <div class="ppc-desc" id="ppc-desc"></div>
+      <button type="button" class="ppc-more" id="ppc-more">View full profile</button>
     </div>
 
     <div id="mobile-stats"></div>
+  </div>
+</div>
+
+<!-- Partner Preview Overlay (Task 6, redesign) — data-driven profile
+     preview. WordPress blocks iframe embedding of the live partner page,
+     so this never embeds it; it renders partner.* fields instead. Fixed-
+     position, independent of Map/List mode; opening/closing it never
+     touches filters, search, view mode, or the selected map partner. -->
+<div id="partner-preview-overlay" aria-hidden="true">
+  <div class="ppo-backdrop" id="ppo-backdrop"></div>
+  <div class="ppo-panel" role="dialog" aria-modal="true" aria-labelledby="ppo-name">
+    <div class="ppo-header">
+      <div class="ppo-header-text">
+        <div class="ppo-eyebrow">Partner Preview</div>
+        <span id="ppo-name-wrap"></span>
+      </div>
+      <div class="ppo-header-actions">
+        <a id="ppo-open-full" class="ppo-open-full" href="#" target="_blank" rel="noopener">Open Full Partner Page</a>
+        <button type="button" class="ppo-close" id="ppo-close" aria-label="Close preview">&times;</button>
+      </div>
+    </div>
+    <div class="ppo-body">
+      <div class="ppo-category" id="ppo-category"></div>
+      <div class="ppo-subcats" id="ppo-subcats"></div>
+      <div class="ppo-row" id="ppo-contact-row"></div>
+      <div class="ppo-row" id="ppo-geo-row"></div>
+      <div class="ppo-desc" id="ppo-desc"></div>
+      <div class="ppo-testimonial" id="ppo-testimonial"></div>
+      <div class="ppo-actions" id="ppo-actions"></div>
+    </div>
   </div>
 </div>
 
@@ -1511,6 +1700,33 @@
   // updateFeedOptions()/COUNTRY_OPTIONS_FALLBACK). Never regenerated from
   // active partner records (Batch 3 correction, Task 2).
   var fullCountryList = [];
+  // Full Category list, same pattern as fullCountryList above: sourced from
+  // data/partners.json's own options.categories block (Batch 3/redesign,
+  // Task 7). Never regenerated from active partners.
+  var fullCategoryList = [];
+
+  // Category -> Subcategory taxonomy (redesign, Task 7), for populating the
+  // full authoritative Subcategory list (not just subcategories present on
+  // active partners), grouped by Category so the existing category-scoped
+  // UX is preserved. Transcribed from the Nauticworx Category | Subcategory
+  // reference table and cross-checked to match data/partners.json's own
+  // options.categories (11) and options.subcategories (82) sets exactly —
+  // this is a client-side grouping of the same authoritative taxonomy
+  // already shipped in partners.json, not a new/separate data source, and
+  // data/partners.json itself is not modified.
+  var CATEGORY_SUBCATEGORY_MAP = {
+    "Shipbuilding, Repair & Maintenance": ["Coating, Painting & Blasting","Dry Docking","Electrical & Automation","HVAC & Ventilation","Inspection, Survey & Certification","Mechanical & Engine Services","Ship Repair & Conversion","Steel, Hull & Structural Works"],
+    "Marine Equipment & Systems": ["Deck Machinery & Lifting Equipment","DP Systems","Mooring & Anchoring Systems","Navigation & Communication Systems","Power Generation & Energy Storage","Propulsion & Thrusters","Safety & Firefighting Equipment","Subsea & Offshore Equipment"],
+    "Spare Parts & Consumables": ["Electrical & Electronic Components","Engine & Machinery Spare Parts","Filters, Lubricants & Fluids","Hydraulic & Pneumatic Parts","Safety Equipment & PPE","Stores & Provisions","Tools & Workshop Equipment"],
+    "Logistics, Transport & Port Services": ["Crew Transport & Transfers","Customs, Clearance & Documentation","Freight Forwarding & Shipping","Port Logistics & Stevedoring","Road Transport & Heavy Lifting","Ship Agency Services","Vehicle Rental","Warehousing & Storage"],
+    "Offshore & Marine Support Services": ["Diving Services","Marine Coordination","Offshore & Maritime Security","Offshore Installation Support","Project Management","ROV & Inspection Services","Survey & Positioning"],
+    "Crew, Medical & Welfare Services": ["Accommodation & Hotels","Catering & Welfare Services","Crew Management & Manning","Emergency Response Services","Medical Care & Offshore Doctors","Recruitment & Training","Repatriation Services"],
+    "Legal, Insurance & Finance": ["Claims Handling","Contract & Commercial Consultancy","HSE & Safety Consultancy","Insurance & P&I Services","Maritime & Offshore Legal Services","Regulatory & Compliance Advisory","Risk Management","Ship Finance and Leasing"],
+    "Green Solutions & Sustainability": ["Alternative Fuels (LNG, Methanol, Hydrogen)","Decommissioning Solutions","Emission Reduction Technologies","Energy Efficiency Solutions","Environmental Monitoring","ESG & Carbon Reporting","Waste Management & Recycling"],
+    "Offshore Wind & Renewable Services": ["Cable Laying & Protection","Crew Transfer Vessels (CTV)","Foundations & Substructures","Inspection & Repair Services","Operations & Maintenance (O&M)","Service Operation Vessels (SOV)","Wind Farm Installation"],
+    "Shipyards & Newbuild Projects": ["Concept Design & Engineering","Dredging Vessel Construction","Newbuild Vessel Projects","Offshore Wind Newbuilds","Security & Patrol Vessel Programs","Series & Semi-Series Production","Specialized & Custom-Built Vessels","Turnkey Shipbuilding"],
+    "Technology, Digital & Innovation": ["Automation & AI","Cybersecurity","Data Analytics","Digital Twin Solutions","Fleet Management Systems","IoT & Remote Monitoring","Maritime Software"]
+  };
 
   var railList = document.getElementById("partner-card-list");
   var listGrid = document.getElementById("partner-list-grid");
@@ -1522,6 +1738,7 @@
   var categorySelect = document.getElementById("filter-category");
   var subcategorySelect = document.getElementById("filter-subcategory");
   var profileCard = document.getElementById("partner-profile-card");
+  var previewOverlay = document.getElementById("partner-preview-overlay");
 
   function partnerRegions(p) {
     return Array.isArray(p.regions) && p.regions.length ? p.regions : (p.region ? [p.region] : []);
@@ -1547,20 +1764,27 @@
   // every option shown always matches at least one real partner (Task 3). ----
   function populateStaticFilterOptions() {
     var regions = uniqueSorted(allPartners.reduce(function (acc, p) { return acc.concat(partnerRegions(p)); }, []));
-    var categories = uniqueSorted(allPartners.map(function (p) { return p.category; }));
     fillSelect(regionSelect, regions, "All Regions");
     // Country: always the full Nauticworx country list (fullCountryList),
     // never derived from/narrowed by active partners, search, or the other
     // filters (Batch 3 correction, Task 2) — populated once here and never
     // touched again by any filter-change handler.
     fillSelect(countrySelect, fullCountryList, "All Countries");
-    fillSelect(categorySelect, categories, "All Categories");
+    // Category: full authoritative list (redesign, Task 7) — same pattern
+    // as Country above, never narrowed to categories present on active
+    // partners.
+    fillSelect(categorySelect, fullCategoryList, "All Categories");
     populateSubcategoryOptions();
   }
 
+  // Subcategory (redesign, Task 7): full authoritative list via
+  // CATEGORY_SUBCATEGORY_MAP, not derived from active partners. All
+  // subcategories when no Category is selected; that Category's
+  // subcategories (from the map) when one is.
   function populateSubcategoryOptions() {
-    var pool = filters.category ? allPartners.filter(function (p) { return p.category === filters.category; }) : allPartners;
-    var subcats = uniqueSorted(pool.reduce(function (acc, p) { return acc.concat(partnerSubcats(p)); }, []));
+    var subcats = filters.category
+      ? (CATEGORY_SUBCATEGORY_MAP[filters.category] || []).slice().sort(function (a, b) { return a.localeCompare(b); })
+      : uniqueSorted(fullCategoryList.reduce(function (acc, c) { return acc.concat(CATEGORY_SUBCATEGORY_MAP[c] || []); }, []));
     var keepSelection = subcats.indexOf(filters.subcategory) !== -1 ? filters.subcategory : "";
     fillSelect(subcategorySelect, subcats, "All Subcategories");
     subcategorySelect.value = keepSelection;
@@ -1606,12 +1830,14 @@
     });
   }
 
-  // ---- icon helpers (Batch 3 correction) — reuse the existing production
-  // asset icons already in this repo's assets/ folder, same files/sizing
-  // the live Partner Program frontend uses. ----
-  var ICON_GEO = '<img class="pc-icon-geo" src="assets/globe.png" alt="" aria-hidden="true">';
-  var ICON_CONTACT = '<img class="pc-icon-contact" src="assets/partner-contact-name.png" alt="" aria-hidden="true">';
-  var ICON_WEBSITE = '<img class="pc-icon-website" src="assets/visit-partner.PNG" alt="" aria-hidden="true">';
+  // ---- icon helpers (redesign pass) — inline SVG, matching the approved
+  // mockups' glyph set, replacing the PNG assets (globe.png,
+  // partner-contact-name.png, visit-partner.PNG) that were failing to
+  // render. No new asset files; icons are pure inline markup + CSS. ----
+  var ICON_GEO = '<svg class="pc-icon-geo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18"></path></svg>';
+  var ICON_CONTACT = '<svg class="pc-icon-contact" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c.8-4.2 3.5-6 8-6s7.2 1.8 8 6"></path></svg>';
+  var ICON_WEBSITE = '<svg class="pc-icon-website" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 4h6v6"></path><path d="M10 14 20 4"></path><path d="M18 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h5"></path></svg>';
+  var ICON_CHEVRON = '<svg class="mc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg>';
 
   function contactLineHTML(p) {
     if (!p.contactName && !p.contactTitle) return "";
@@ -1635,13 +1861,25 @@
     return '<div class="pc-meta-row has-icon">' + ICON_GEO + "<span>" + escapeHtml(text) + "</span></div>";
   }
 
-  // ---- card rendering (Task 4). Approved field order: name -> category ->
-  // subcategories -> contact name/title -> Contact Partner button ->
-  // Visit Website button -> Country/Regions last. ----
+  // Partner name: link to partnerPageUrl, same tab, when present; plain
+  // text when missing (Task 5). Used by both the full grid card and the
+  // floating/preview panels. stopPropagation so clicking the name link
+  // navigates instead of also triggering the card's own click handler.
+  function nameHTML(p, cssClass) {
+    var text = escapeHtml(p.name);
+    if (p.partnerPageUrl) {
+      return '<a class="' + cssClass + '" href="' + escapeAttr(p.partnerPageUrl) + '" onclick="event.stopPropagation()">' + text + "</a>";
+    }
+    return '<span class="' + cssClass + '">' + text + "</span>";
+  }
+
+  // ---- full card rendering (List-mode grid only — Task 3/4). Approved
+  // field order: name -> category -> subcategories -> contact name/title ->
+  // Contact Partner button -> Visit Website button -> Country/Regions last.
   function cardHTML(p) {
     var subs = partnerSubcats(p);
     return (
-      '<div class="pc-top"><span class="pc-name">' + escapeHtml(p.name) + "</span>" +
+      '<div class="pc-top">' + nameHTML(p, "pc-name") +
       (isPremier(p) ? '<span class="pc-premier">Premier</span>' : "") +
       "</div>" +
       '<div class="pc-cat">' + escapeHtml(p.category || "") + "</div>" +
@@ -1654,15 +1892,35 @@
 
   function buildCardEl(p) {
     var el = document.createElement("div");
-    el.className = "partner-card" + (p === selectedId ? " selected" : "");
+    el.className = "partner-card" + (p.__id === selectedId ? " selected" : "");
     el.setAttribute("data-partner-id", p.__id);
-    if (p.__id === selectedId) el.classList.add("selected");
     el.innerHTML = cardHTML(p);
+    // Grid cards open the full Preview Overlay directly (Task 6).
+    el.addEventListener("click", function () { openPreviewOverlay(p); });
+    return el;
+  }
+
+  // ---- compact sidebar entries only (Task 1/3) — name + category, no
+  // contact/actions/geo, so the rail never duplicates the full card. ----
+  function compactCardHTML(p) {
+    return (
+      '<div class="mc-text">' + nameHTML(p, "mc-name") +
+      '<div class="mc-meta">' + escapeHtml(p.category || "") + "</div></div>" +
+      ICON_CHEVRON
+    );
+  }
+
+  function buildCompactCardEl(p) {
+    var el = document.createElement("div");
+    el.className = "mini-card" + (p.__id === selectedId ? " selected" : "");
+    el.setAttribute("data-partner-id", p.__id);
+    el.innerHTML = compactCardHTML(p);
+    // Sidebar entries show the compact floating panel (Task 2).
     el.addEventListener("click", function () { selectPartner(p); });
     return el;
   }
 
-  function renderInto(container, list, emptyMsg) {
+  function renderInto(container, list, emptyMsg, builder) {
     container.innerHTML = "";
     if (!list.length) {
       var empty = document.createElement("div");
@@ -1671,30 +1929,33 @@
       container.appendChild(empty);
       return;
     }
-    list.forEach(function (p) { container.appendChild(buildCardEl(p)); });
+    list.forEach(function (p) { container.appendChild(builder(p)); });
   }
 
   function renderAll() {
     var filtered = getFilteredPartners();
-    renderInto(railList, filtered, "Try adjusting search or filters.");
-    renderInto(listGrid, filtered, "Try adjusting search or filters.");
+    renderInto(railList, filtered, "Try adjusting search or filters.", buildCompactCardEl);
+    renderInto(listGrid, filtered, "Try adjusting search or filters.", buildCardEl);
     resultCount.textContent = filtered.length + (filtered.length === 1 ? " partner" : " partners") + " found";
   }
 
-  // ---- selected partner panel (Task 6) ----
+  function syncSelectedHighlight() {
+    document.querySelectorAll(".partner-card, .mini-card").forEach(function (el) {
+      el.classList.toggle("selected", el.getAttribute("data-partner-id") === String(selectedId));
+    });
+  }
+
+  // ---- floating panel / drawer (Task 2) — compact preview shown over the
+  // map when a partner is selected from the sidebar. Full detail lives in
+  // the Preview Overlay (Task 6), reached via "View full profile" below. ----
   function selectPartner(p) {
     selectedId = p.__id;
-    document.querySelectorAll(".partner-card").forEach(function (el) {
-      el.classList.toggle("selected", el.getAttribute("data-partner-id") === String(p.__id));
-    });
+    syncSelectedHighlight();
 
-    // Approved field order (Batch 3 correction): name -> category/
-    // subcategories -> contact name/title -> Contact Partner button ->
-    // Visit Website button -> Country/Regions last.
-    document.getElementById("ppc-name").textContent = p.name || "";
+    document.getElementById("ppc-name-wrap").innerHTML = nameHTML(p, "ppc-name");
     var subs = partnerSubcats(p);
-    var metaBits = [p.category].concat(subs.length ? [subs.join(", ")] : []).filter(Boolean);
-    document.getElementById("ppc-meta").textContent = metaBits.join(" · ");
+    var subBits = [p.category].concat(subs.length ? [subs.join(", ")] : []).filter(Boolean);
+    document.getElementById("ppc-sub").textContent = subBits.join(" · ");
 
     document.getElementById("ppc-contact-line").innerHTML = contactLineHTML(p);
 
@@ -1718,16 +1979,7 @@
 
     document.getElementById("ppc-geo-line").innerHTML = geoLineHTML(p);
 
-    var descBits = [];
-    if (p.description) descBits.push(p.description);
-    if (p.testimonial) descBits.push('"' + p.testimonial + '"');
-    var descEl = document.getElementById("ppc-desc");
-    if (descBits.length) {
-      descEl.textContent = descBits.join(" — ");
-      descEl.style.display = "";
-    } else {
-      descEl.style.display = "none";
-    }
+    document.getElementById("ppc-more").onclick = function () { openPreviewOverlay(p); };
 
     profileCard.classList.add("visible");
   }
@@ -1736,7 +1988,67 @@
   if (closeBtn) closeBtn.addEventListener("click", function () {
     profileCard.classList.remove("visible");
     selectedId = null;
-    document.querySelectorAll(".partner-card.selected").forEach(function (el) { el.classList.remove("selected"); });
+    syncSelectedHighlight();
+  });
+
+  // ---- Partner Preview Overlay (Task 6) — data-driven profile, no iframe
+  // (WordPress blocks embedding the live page). Includes every field the
+  // approved mockup calls for: name, category, subcategories, contact
+  // name/title, country, regions, description/testimonial when present,
+  // Contact Partner, Visit Website, Open Full Partner Page. Opening/
+  // closing this never mutates filters, search, view mode, or the
+  // selected-partner state underneath it — that state is untouched here. ----
+  function openPreviewOverlay(p) {
+    document.getElementById("ppo-name-wrap").innerHTML = nameHTML(p, "ppo-title-link ppo-title-plain");
+
+    var openFullBtn = document.getElementById("ppo-open-full");
+    if (p.partnerPageUrl) {
+      openFullBtn.href = p.partnerPageUrl;
+      openFullBtn.style.display = "";
+    } else {
+      openFullBtn.style.display = "none";
+    }
+
+    document.getElementById("ppo-category").textContent = p.category || "";
+    var subs = partnerSubcats(p);
+    document.getElementById("ppo-subcats").textContent = subs.join(", ");
+
+    document.getElementById("ppo-contact-row").innerHTML = (p.contactName || p.contactTitle)
+      ? ICON_CONTACT + "<span>" + escapeHtml([p.contactName, p.contactTitle].filter(Boolean).join(" · ")) + "</span>"
+      : "";
+
+    var regions = partnerRegions(p);
+    var regionsLabel = p.regionsDisplay || regions.join(", ");
+    var geoText = [p.country, regionsLabel].filter(Boolean).join(" · ");
+    document.getElementById("ppo-geo-row").innerHTML = geoText
+      ? ICON_GEO + "<span>" + escapeHtml(geoText) + "</span>"
+      : "";
+
+    var descEl = document.getElementById("ppo-desc");
+    if (p.description) { descEl.textContent = p.description; descEl.style.display = ""; }
+    else { descEl.style.display = "none"; }
+
+    var testimonialEl = document.getElementById("ppo-testimonial");
+    if (p.testimonial) { testimonialEl.textContent = '"' + p.testimonial + '"'; testimonialEl.style.display = ""; }
+    else { testimonialEl.style.display = "none"; }
+
+    document.getElementById("ppo-actions").innerHTML = actionsHTML(p);
+
+    previewOverlay.classList.add("visible");
+    previewOverlay.setAttribute("aria-hidden", "false");
+  }
+
+  function closePreviewOverlay() {
+    previewOverlay.classList.remove("visible");
+    previewOverlay.setAttribute("aria-hidden", "true");
+    // Deliberately does not touch filters, search, view mode, selectedId,
+    // or the floating panel — closing the preview restores exactly the
+    // map/list/filter/search state the user had before opening it.
+  }
+  document.getElementById("ppo-close").addEventListener("click", closePreviewOverlay);
+  document.getElementById("ppo-backdrop").addEventListener("click", closePreviewOverlay);
+  window.addEventListener("keydown", function (e) {
+    if (e.key === "Escape" && previewOverlay.classList.contains("visible")) closePreviewOverlay();
   });
 
   // ---- Map/List toggle coexistence (Task 5) — listens for the event the
@@ -1786,6 +2098,14 @@
       fullCountryList = optionCountries.length
         ? uniqueSorted(optionCountries)
         : uniqueSorted(allPartners.map(function (p) { return p.country; }));
+      // Category (redesign, Task 7): same source/fallback pattern as
+      // Country above — data/partners.json's options.categories block,
+      // falling back to active-partner categories only if that block is
+      // ever missing.
+      var optionCategories = (json.options && Array.isArray(json.options.categories)) ? json.options.categories : [];
+      fullCategoryList = optionCategories.length
+        ? uniqueSorted(optionCategories)
+        : uniqueSorted(allPartners.map(function (p) { return p.category; }));
       populateStaticFilterOptions();
       renderAll();
     })
