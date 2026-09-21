@@ -208,6 +208,104 @@
   }
   .partner-empty-state .t1 { color: rgba(206,226,235,0.6); font-weight: 700; font-size: 11.5px; }
 
+  /* ---------- PARTNER DIRECTORY (Batch 3) ----------
+     Real data, wired separately from Network Coverage. Reuses the existing
+     dark/navy/orange visual language (filter-pill borders, rail-search
+     styling, nwx-orange accents) rather than introducing a new style
+     system. */
+  .filter-select {
+    width: 100%;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--nwx-border);
+    border-radius: 7px;
+    padding: 7px 9px;
+    font-size: 11px;
+    font-family: inherit;
+    color: rgba(206,226,235,0.85);
+    cursor: pointer;
+  }
+  .filter-select:disabled { opacity: 0.4; cursor: not-allowed; }
+  .filter-select option { background: var(--nwx-navy-soft); color: var(--nwx-name); }
+
+  .partner-card-list { display: flex; flex-direction: column; gap: 8px; }
+
+  .partner-card {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--nwx-border);
+    border-radius: 9px;
+    padding: 11px 12px;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease;
+  }
+  .partner-card:hover,
+  .partner-card.selected {
+    background: rgba(232,100,44,0.10);
+    border-color: rgba(232,100,44,0.35);
+  }
+  .pc-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 8px; }
+  .pc-name { font-size: 13px; font-weight: 800; color: var(--nwx-name); line-height: 1.3; }
+  .pc-premier {
+    flex: 0 0 auto;
+    background: var(--nwx-orange);
+    color: #fff;
+    font-size: 9px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    border-radius: 4px;
+    padding: 2px 6px;
+  }
+  .pc-cat { font-size: 10.5px; color: var(--nwx-orange); font-weight: 700; }
+  .pc-sub { font-size: 10.5px; color: rgba(206,226,235,0.55); }
+  .pc-meta-row { font-size: 10.5px; color: rgba(206,226,235,0.45); }
+  .pc-contact { font-size: 10.5px; color: rgba(206,226,235,0.6); }
+  .pc-contact .pc-contact-title { color: rgba(206,226,235,0.4); }
+  .pc-actions { display: flex; gap: 6px; margin-top: 4px; }
+  .pc-btn {
+    flex: 1 1 auto;
+    text-align: center;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--nwx-border);
+    color: var(--nwx-name);
+    font-size: 10.5px;
+    font-weight: 700;
+    padding: 6px 8px;
+    border-radius: 6px;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .pc-btn:hover { background: rgba(255,255,255,0.09); }
+  .pc-btn.pc-btn-primary { background: var(--nwx-orange); border-color: var(--nwx-orange); color: #fff; }
+  .pc-btn.pc-btn-primary:hover { background: var(--nwx-orange-dim); }
+
+  .partner-empty-state.pd-no-results { cursor: default; }
+
+  /* ---------- PARTNER LIST VIEW (main panel — the "List" half of the
+     Map/List toggle). Absolutely positioned over #map-wrap, shown only
+     when the toggle is set to List; the map itself is untouched
+     underneath (Task 5: do not redesign the map). ---------- */
+  #partner-list-view {
+    display: none;
+    position: absolute;
+    inset: 0;
+    z-index: 4;
+    background: var(--nwx-navy);
+    overflow-y: auto;
+    padding: 24px clamp(16px, 4vw, 48px);
+  }
+  #partner-list-view.visible { display: block; }
+  .plv-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 12px;
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .plv-grid .partner-card { height: 100%; }
+
   /* ---------- RAIL: region/country browse (de-emphasized — the mockup's
      search/filter/result-card hierarchy is the primary rail content now;
      this is the same functional region drill-down as before, collapsed
@@ -347,6 +445,19 @@
     box-shadow: 0 12px 32px rgba(0,0,0,0.5);
   }
   #partner-profile-card.visible { display: block; }
+  .ppc-close {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    background: none;
+    border: none;
+    color: rgba(206,226,235,0.5);
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 4px 6px;
+  }
+  .ppc-close:hover { color: var(--nwx-name); }
   .ppc-avatar {
     width: 40px;
     height: 40px;
@@ -651,35 +762,34 @@
 
   <div class="view-toggle" role="tablist" aria-label="Map or List view">
     <button id="toggle-map" class="active" type="button">Map</button>
-    <button id="toggle-list" type="button" title="List mode is out of scope for this POC">List</button>
+    <button id="toggle-list" type="button" title="List view of the Partner Directory">List</button>
   </div>
 
-  <!-- Search — presentational layout shell, not yet wired (Partner
-       Directory search is a future data-integration pass). -->
+  <!-- Search — wired to the real Partner Directory feed (Batch 3). -->
   <div class="rail-search">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.2" y2="16.2"></line></svg>
-    <input type="text" placeholder="Search partners..." aria-label="Search partners (preview layout — not yet connected)">
+    <input type="text" id="partner-search" placeholder="Search partners..." aria-label="Search partners by name, category, subcategory, country or region">
   </div>
 
-  <!-- Filter pills — presentational layout shell mapping to the four
-       CRM-confirmed fields (Region, Country, Category, Subcategory).
-       Left unwired: filtering by these requires the Partner Directory
-       dataset, which this pass deliberately does not connect. -->
-  <div class="filter-grid" aria-label="Partner filters (preview layout — not yet connected)">
-    <div class="filter-pill"><span>All Regions</span><span class="chev">&#9662;</span></div>
-    <div class="filter-pill"><span>All Countries</span><span class="chev">&#9662;</span></div>
-    <div class="filter-pill"><span>All Categories</span><span class="chev">&#9662;</span></div>
-    <div class="filter-pill"><span>All Subcategories</span><span class="chev">&#9662;</span></div>
+  <!-- Filter selects — wired to the real Partner Directory feed. Options
+       are populated from actual partner records (not the full reference
+       taxonomy), so every option shown always has at least one result.
+       Region uses partner.regions[] with a legacy partner.region fallback;
+       Subcategory options depend on the selected Category. -->
+  <div class="filter-grid" aria-label="Partner filters">
+    <select class="filter-select" id="filter-region" aria-label="Filter by region"><option value="">All Regions</option></select>
+    <select class="filter-select" id="filter-country" aria-label="Filter by country"><option value="">All Countries</option></select>
+    <select class="filter-select" id="filter-category" aria-label="Filter by category"><option value="">All Categories</option></select>
+    <select class="filter-select" id="filter-subcategory" aria-label="Filter by subcategory"><option value="">All Subcategories</option></select>
   </div>
 
-  <div class="rail-result-row">Partner Directory preview — layout only, not yet connected</div>
+  <div class="rail-result-row" id="partner-result-count">Loading Partner Directory…</div>
 
-  <!-- Partner-card area — layout shell only; explicit empty state rather
-       than fabricated partner records (Section 2.6). -->
-  <div class="partner-card-list">
+  <!-- Partner-card area — real Partner Directory cards (Batch 3). -->
+  <div class="partner-card-list" id="partner-card-list">
     <div class="partner-empty-state">
-      <div class="t1">No partner cards yet</div>
-      <div>This area will show Partner Directory cards once it's connected.</div>
+      <div class="t1">Loading…</div>
+      <div>Fetching the Partner Directory feed.</div>
     </div>
   </div>
 
@@ -701,7 +811,7 @@
   </div>
 
   <div class="rail-footnote">
-    Proof of concept. Sample/demo data, canonical 16-region taxonomy. Not connected to CRM, Zoho Flow, or the live Partner Directory.
+    Proof of concept. Network Coverage: sample/demo data, canonical 16-region taxonomy, not connected to CRM or Zoho Flow. Partner Directory: real partner records, kept as a separate dataset from Network Coverage.
   </div>
 </div>
 
@@ -719,23 +829,34 @@
       </div>
       <div class="view-toggle view-toggle-mobile" role="tablist" aria-label="Map or List view">
         <button id="toggle-map-m" class="active" type="button">Map</button>
-        <button id="toggle-list-m" type="button" title="List mode is out of scope for this POC">List</button>
+        <button id="toggle-list-m" type="button" title="List view of the Partner Directory">List</button>
       </div>
       <div class="mobile-search">
         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><line x1="21" y1="21" x2="16.2" y2="16.2"></line></svg>
-        <input type="text" placeholder="Search partners..." aria-label="Search partners (preview layout — not yet connected)">
+        <input type="text" id="partner-search-m" placeholder="Search partners..." aria-label="Search partners by name, category, subcategory, country or region">
       </div>
     </div>
     <div id="map"></div>
 
-    <!-- Floating selected-partner card shell — hidden by default, never
-         triggered this pass (Section 6). -->
+    <!-- Partner Directory list view — the "List" half of the Map/List
+         toggle (Batch 3, Task 5). Absolutely positioned over #map-wrap;
+         the map/Network Coverage code underneath is untouched. -->
+    <div id="partner-list-view">
+      <div class="plv-grid" id="partner-list-grid"></div>
+    </div>
+
+    <!-- Floating selected-partner card — wired to real Partner Directory
+         records (Batch 3, Task 6). Hidden until a partner is selected. -->
     <div id="partner-profile-card">
+      <button type="button" class="ppc-close" id="ppc-close" aria-label="Close">&times;</button>
       <div class="ppc-avatar"></div>
-      <div class="ppc-name">Partner name</div>
-      <div class="ppc-meta">Category · Region</div>
-      <div class="ppc-desc">Partner details will appear here once the Partner Directory is connected.</div>
-      <button class="ppc-contact" type="button">View partner</button>
+      <div class="ppc-name" id="ppc-name">Partner name</div>
+      <div class="ppc-meta" id="ppc-meta">Category · Region</div>
+      <div class="ppc-desc" id="ppc-desc">Partner details will appear here once selected.</div>
+      <div class="pc-actions">
+        <a class="pc-btn" id="ppc-contact-btn" href="#" target="_blank" rel="noopener">Contact Partner</a>
+        <a class="pc-btn pc-btn-primary" id="ppc-website-btn" href="#" target="_blank" rel="noopener">Visit Website</a>
+      </div>
     </div>
 
     <div id="mobile-stats"></div>
@@ -983,21 +1104,20 @@
   });
 
   // ---- Map/List toggle: desktop + mobile button pairs kept in sync ----
-  // List remains an intentional out-of-scope stub (existing behavior,
-  // unchanged) — this just gives mobile the same toggle the rail already
-  // had, per the mockup's mobile hierarchy.
+  // List now shows the Partner Directory list view (Batch 3, Task 5) in
+  // place of the map; the map/Network Coverage code itself is untouched,
+  // just hidden via a CSS class while List is active. The Partner
+  // Directory script (separate <script> block below) listens for the
+  // "nwxviewmode" event rather than this code reaching into it directly.
   var toggleMapBtns = [document.getElementById("toggle-map"), document.getElementById("toggle-map-m")];
   var toggleListBtns = [document.getElementById("toggle-list"), document.getElementById("toggle-list-m")];
   function setViewMode(mode) {
     toggleMapBtns.forEach(function (b) { if (b) b.classList.toggle("active", mode === "map"); });
     toggleListBtns.forEach(function (b) { if (b) b.classList.toggle("active", mode === "list"); });
+    window.dispatchEvent(new CustomEvent("nwxviewmode", { detail: { mode: mode } }));
   }
   toggleMapBtns.forEach(function (b) { if (b) b.addEventListener("click", function () { setViewMode("map"); }); });
-  toggleListBtns.forEach(function (b) {
-    if (b) b.addEventListener("click", function () {
-      alert("List mode is out of scope for this pass. Map view only.");
-    });
-  });
+  toggleListBtns.forEach(function (b) { if (b) b.addEventListener("click", function () { setViewMode("list"); }); });
 
   fetch("data/network-coverage.json")
     .then(function (r) {
@@ -1335,6 +1455,271 @@
       _lastIsMobile = mobileNow;
     }
   });
+
+})();
+</script>
+
+<!-- ================= PARTNER DIRECTORY (Batch 3) =================
+     Fully separate script/state from the Network Coverage code above —
+     own fetch, own data source (data/partners.json), no shared variables.
+     Data shape matches the live production Partner Program frontend
+     (nauticworx.github.io/Partner-Program) exactly: partner.regions[]/
+     region, subcategories[], websiteUrl, contactUrl, ctaLabel,
+     contactCtaLabel, partnerPageUrl, tier (premier = tier contains
+     "premier", same rule production uses for sort order). -->
+<script>
+(function () {
+  "use strict";
+
+  var allPartners = [];
+  var filters = { search: "", region: "", country: "", category: "", subcategory: "" };
+  var selectedId = null;
+
+  var railList = document.getElementById("partner-card-list");
+  var listGrid = document.getElementById("partner-list-grid");
+  var listView = document.getElementById("partner-list-view");
+  var resultCount = document.getElementById("partner-result-count");
+  var searchInputs = [document.getElementById("partner-search"), document.getElementById("partner-search-m")].filter(Boolean);
+  var regionSelect = document.getElementById("filter-region");
+  var countrySelect = document.getElementById("filter-country");
+  var categorySelect = document.getElementById("filter-category");
+  var subcategorySelect = document.getElementById("filter-subcategory");
+  var profileCard = document.getElementById("partner-profile-card");
+
+  function partnerRegions(p) {
+    return Array.isArray(p.regions) && p.regions.length ? p.regions : (p.region ? [p.region] : []);
+  }
+  function partnerSubcats(p) {
+    return Array.isArray(p.subcategories) ? p.subcategories.filter(Boolean) : [];
+  }
+  function isPremier(p) {
+    return String(p.tier || "").toLowerCase().indexOf("premier") !== -1;
+  }
+
+  function uniqueSorted(arr) {
+    var seen = {}, out = [];
+    arr.forEach(function (v) {
+      if (!v || seen[v]) return;
+      seen[v] = true;
+      out.push(v);
+    });
+    return out.sort(function (a, b) { return a.localeCompare(b); });
+  }
+
+  // ---- filter option lists — derived from actual partner records, so
+  // every option shown always matches at least one real partner (Task 3). ----
+  function populateStaticFilterOptions() {
+    var regions = uniqueSorted(allPartners.reduce(function (acc, p) { return acc.concat(partnerRegions(p)); }, []));
+    var countries = uniqueSorted(allPartners.map(function (p) { return p.country; }));
+    var categories = uniqueSorted(allPartners.map(function (p) { return p.category; }));
+    fillSelect(regionSelect, regions, "All Regions");
+    fillSelect(countrySelect, countries, "All Countries");
+    fillSelect(categorySelect, categories, "All Categories");
+    populateSubcategoryOptions();
+  }
+
+  function populateSubcategoryOptions() {
+    var pool = filters.category ? allPartners.filter(function (p) { return p.category === filters.category; }) : allPartners;
+    var subcats = uniqueSorted(pool.reduce(function (acc, p) { return acc.concat(partnerSubcats(p)); }, []));
+    var keepSelection = subcats.indexOf(filters.subcategory) !== -1 ? filters.subcategory : "";
+    fillSelect(subcategorySelect, subcats, "All Subcategories");
+    subcategorySelect.value = keepSelection;
+    filters.subcategory = keepSelection;
+    subcategorySelect.disabled = subcats.length === 0;
+  }
+
+  function fillSelect(select, values, allLabel) {
+    var current = select.value;
+    select.innerHTML = "";
+    var allOpt = document.createElement("option");
+    allOpt.value = "";
+    allOpt.textContent = allLabel;
+    select.appendChild(allOpt);
+    values.forEach(function (v) {
+      var opt = document.createElement("option");
+      opt.value = v;
+      opt.textContent = v;
+      select.appendChild(opt);
+    });
+    if (values.indexOf(current) !== -1) select.value = current;
+  }
+
+  // ---- filtering (Task 3): search + all four filters combine (AND) ----
+  function getFilteredPartners() {
+    var q = filters.search.trim().toLowerCase();
+    return allPartners.filter(function (p) {
+      if (filters.region && partnerRegions(p).indexOf(filters.region) === -1) return false;
+      if (filters.country && p.country !== filters.country) return false;
+      if (filters.category && p.category !== filters.category) return false;
+      if (filters.subcategory && partnerSubcats(p).indexOf(filters.subcategory) === -1) return false;
+      if (q) {
+        var haystack = [
+          p.name || "",
+          p.category || "",
+          partnerSubcats(p).join(" "),
+          p.country || "",
+          partnerRegions(p).join(" ")
+        ].join(" ").toLowerCase();
+        if (haystack.indexOf(q) === -1) return false;
+      }
+      return true;
+    });
+  }
+
+  // ---- card rendering (Task 4) ----
+  function cardHTML(p) {
+    var subs = partnerSubcats(p);
+    var regions = partnerRegions(p);
+    var regionsLabel = p.regionsDisplay || regions.join(", ");
+    var contactLine = "";
+    if (p.contactName || p.contactTitle) {
+      contactLine = '<div class="pc-contact">' + escapeHtml([p.contactName, p.contactTitle].filter(Boolean).join(" · ")) + "</div>";
+    }
+    var actions = "";
+    var contactHref = p.contactUrl ? escapeAttr(p.contactUrl) : "";
+    var websiteHref = p.websiteUrl ? escapeAttr(p.websiteUrl) : "";
+    if (contactHref || websiteHref) {
+      actions = '<div class="pc-actions">' +
+        (contactHref ? '<a class="pc-btn" href="' + contactHref + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">' + escapeHtml(p.contactCtaLabel || "Contact Partner") + "</a>" : "") +
+        (websiteHref ? '<a class="pc-btn pc-btn-primary" href="' + websiteHref + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">' + escapeHtml(p.ctaLabel || "Visit Website") + "</a>" : "") +
+        "</div>";
+    }
+    return (
+      '<div class="pc-top"><span class="pc-name">' + escapeHtml(p.name) + "</span>" +
+      (isPremier(p) ? '<span class="pc-premier">Premier</span>' : "") +
+      "</div>" +
+      '<div class="pc-cat">' + escapeHtml(p.category || "") + "</div>" +
+      (subs.length ? '<div class="pc-sub">' + escapeHtml(subs.join(", ")) + "</div>" : "") +
+      '<div class="pc-meta-row">' + escapeHtml(p.country || "") + (regionsLabel ? " · " + escapeHtml(regionsLabel) : "") + "</div>" +
+      contactLine +
+      actions
+    );
+  }
+
+  function buildCardEl(p) {
+    var el = document.createElement("div");
+    el.className = "partner-card" + (p === selectedId ? " selected" : "");
+    el.setAttribute("data-partner-id", p.__id);
+    if (p.__id === selectedId) el.classList.add("selected");
+    el.innerHTML = cardHTML(p);
+    el.addEventListener("click", function () { selectPartner(p); });
+    return el;
+  }
+
+  function renderInto(container, list, emptyMsg) {
+    container.innerHTML = "";
+    if (!list.length) {
+      var empty = document.createElement("div");
+      empty.className = "partner-empty-state pd-no-results";
+      empty.innerHTML = '<div class="t1">No partners found</div><div>' + escapeHtml(emptyMsg) + "</div>";
+      container.appendChild(empty);
+      return;
+    }
+    list.forEach(function (p) { container.appendChild(buildCardEl(p)); });
+  }
+
+  function renderAll() {
+    var filtered = getFilteredPartners();
+    renderInto(railList, filtered, "Try adjusting search or filters.");
+    renderInto(listGrid, filtered, "Try adjusting search or filters.");
+    resultCount.textContent = filtered.length + (filtered.length === 1 ? " partner" : " partners") + " found";
+  }
+
+  // ---- selected partner panel (Task 6) ----
+  function selectPartner(p) {
+    selectedId = p.__id;
+    document.querySelectorAll(".partner-card").forEach(function (el) {
+      el.classList.toggle("selected", el.getAttribute("data-partner-id") === String(p.__id));
+    });
+
+    document.getElementById("ppc-name").textContent = p.name || "";
+    var regions = partnerRegions(p);
+    var metaBits = [p.category, p.regionsDisplay || regions.join(", ")].filter(Boolean);
+    document.getElementById("ppc-meta").textContent = metaBits.join(" · ");
+
+    var descBits = [];
+    if (p.description) descBits.push(p.description);
+    if (p.testimonial) descBits.push('"' + p.testimonial + '"');
+    if (p.contactName || p.contactTitle) descBits.push([p.contactName, p.contactTitle].filter(Boolean).join(" · "));
+    if (p.country) descBits.push(p.country);
+    document.getElementById("ppc-desc").textContent = descBits.length ? descBits.join(" — ") : "No further details on file for this partner.";
+
+    var contactBtn = document.getElementById("ppc-contact-btn");
+    if (p.contactUrl) {
+      contactBtn.href = p.contactUrl;
+      contactBtn.textContent = p.contactCtaLabel || "Contact Partner";
+      contactBtn.style.display = "";
+    } else {
+      contactBtn.style.display = "none";
+    }
+
+    var websiteBtn = document.getElementById("ppc-website-btn");
+    if (p.websiteUrl) {
+      websiteBtn.href = p.websiteUrl;
+      websiteBtn.textContent = p.ctaLabel || "Visit Website";
+      websiteBtn.style.display = "";
+    } else {
+      websiteBtn.style.display = "none";
+    }
+
+    profileCard.classList.add("visible");
+  }
+
+  var closeBtn = document.getElementById("ppc-close");
+  if (closeBtn) closeBtn.addEventListener("click", function () {
+    profileCard.classList.remove("visible");
+    selectedId = null;
+    document.querySelectorAll(".partner-card.selected").forEach(function (el) { el.classList.remove("selected"); });
+  });
+
+  // ---- Map/List toggle coexistence (Task 5) — listens for the event the
+  // Network Coverage script dispatches; never touches the map itself. ----
+  window.addEventListener("nwxviewmode", function (e) {
+    listView.classList.toggle("visible", e.detail && e.detail.mode === "list");
+  });
+
+  // ---- search + filter wiring (Task 3) ----
+  searchInputs.forEach(function (input) {
+    input.addEventListener("input", function () {
+      filters.search = input.value || "";
+      searchInputs.forEach(function (other) { if (other !== input) other.value = filters.search; });
+      renderAll();
+    });
+  });
+  regionSelect.addEventListener("change", function () { filters.region = regionSelect.value; renderAll(); });
+  countrySelect.addEventListener("change", function () { filters.country = countrySelect.value; renderAll(); });
+  categorySelect.addEventListener("change", function () {
+    filters.category = categorySelect.value;
+    filters.subcategory = "";
+    populateSubcategoryOptions();
+    renderAll();
+  });
+  subcategorySelect.addEventListener("change", function () { filters.subcategory = subcategorySelect.value; renderAll(); });
+
+  function escapeHtml(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  function escapeAttr(s) { return escapeHtml(s); }
+
+  fetch("data/partners.json")
+    .then(function (r) {
+      if (!r.ok) throw new Error("HTTP " + r.status);
+      return r.json();
+    })
+    .then(function (json) {
+      allPartners = (json.partners || []).filter(function (p) { return p && p.name && p.country && (p.region || (p.regions && p.regions.length)); });
+      allPartners.forEach(function (p, i) { p.__id = i; });
+      populateStaticFilterOptions();
+      renderAll();
+    })
+    .catch(function (err) {
+      console.error("Failed to load Partner Directory (data/partners.json):", err);
+      resultCount.textContent = "Partner Directory failed to load";
+      renderInto(railList, [], "Could not load the Partner Directory feed.");
+      renderInto(listGrid, [], "Could not load the Partner Directory feed.");
+    });
 
 })();
 </script>
