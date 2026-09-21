@@ -261,9 +261,37 @@
   .pc-cat { font-size: 10.5px; color: var(--nwx-orange); font-weight: 700; }
   .pc-sub { font-size: 10.5px; color: rgba(206,226,235,0.55); }
   .pc-meta-row { font-size: 10.5px; color: rgba(206,226,235,0.45); }
-  .pc-contact { font-size: 10.5px; color: rgba(206,226,235,0.6); }
+  .pc-contact { font-size: 10.5px; color: rgba(206,226,235,0.6); display: flex; align-items: flex-start; gap: 6px; }
   .pc-contact .pc-contact-title { color: rgba(206,226,235,0.4); }
   .pc-actions { display: flex; gap: 6px; margin-top: 4px; }
+
+  /* ---------- PARTNER DIRECTORY icons (Batch 3 correction) ----------
+     Reuses the same three production asset icons already in this repo's
+     assets/ folder (assets/globe.png, assets/partner-contact-name.png,
+     assets/visit-partner.PNG) at the same sizing the production
+     Partner Program frontend uses them at (17px geo/contact icons,
+     15px website icon), rather than introducing new icon assets. */
+  .pc-icon-geo, .pc-icon-contact {
+    width: 17px;
+    height: 17px;
+    flex: 0 0 17px;
+    display: block;
+    object-fit: contain;
+    background: transparent;
+    border: 0;
+    margin-top: 1px;
+  }
+  .pc-icon-website {
+    width: 15px;
+    height: 15px;
+    flex: 0 0 15px;
+    display: block;
+    object-fit: contain;
+    background: transparent;
+    border: 0;
+  }
+  .pc-meta-row.has-icon { display: flex; align-items: flex-start; gap: 6px; }
+  .pc-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
   .pc-btn {
     flex: 1 1 auto;
     text-align: center;
@@ -851,12 +879,14 @@
       <button type="button" class="ppc-close" id="ppc-close" aria-label="Close">&times;</button>
       <div class="ppc-avatar"></div>
       <div class="ppc-name" id="ppc-name">Partner name</div>
-      <div class="ppc-meta" id="ppc-meta">Category · Region</div>
-      <div class="ppc-desc" id="ppc-desc">Partner details will appear here once selected.</div>
+      <div class="ppc-meta" id="ppc-meta">Category · Subcategory</div>
+      <div class="pc-contact" id="ppc-contact-line"></div>
       <div class="pc-actions">
         <a class="pc-btn" id="ppc-contact-btn" href="#" target="_blank" rel="noopener">Contact Partner</a>
         <a class="pc-btn pc-btn-primary" id="ppc-website-btn" href="#" target="_blank" rel="noopener">Visit Website</a>
       </div>
+      <div class="pc-meta-row" id="ppc-geo-line"></div>
+      <div class="ppc-desc" id="ppc-desc"></div>
     </div>
 
     <div id="mobile-stats"></div>
@@ -1474,6 +1504,13 @@
   var allPartners = [];
   var filters = { search: "", region: "", country: "", category: "", subcategory: "" };
   var selectedId = null;
+  // Full Nauticworx country list, source: data/partners.json's own
+  // options.countries block — the same authoritative reference list the
+  // live production Partner Program frontend uses to populate its own
+  // Country filter (confirmed in Nauticworx/Partner-Program's index.html,
+  // updateFeedOptions()/COUNTRY_OPTIONS_FALLBACK). Never regenerated from
+  // active partner records (Batch 3 correction, Task 2).
+  var fullCountryList = [];
 
   var railList = document.getElementById("partner-card-list");
   var listGrid = document.getElementById("partner-list-grid");
@@ -1510,10 +1547,13 @@
   // every option shown always matches at least one real partner (Task 3). ----
   function populateStaticFilterOptions() {
     var regions = uniqueSorted(allPartners.reduce(function (acc, p) { return acc.concat(partnerRegions(p)); }, []));
-    var countries = uniqueSorted(allPartners.map(function (p) { return p.country; }));
     var categories = uniqueSorted(allPartners.map(function (p) { return p.category; }));
     fillSelect(regionSelect, regions, "All Regions");
-    fillSelect(countrySelect, countries, "All Countries");
+    // Country: always the full Nauticworx country list (fullCountryList),
+    // never derived from/narrowed by active partners, search, or the other
+    // filters (Batch 3 correction, Task 2) — populated once here and never
+    // touched again by any filter-change handler.
+    fillSelect(countrySelect, fullCountryList, "All Countries");
     fillSelect(categorySelect, categories, "All Categories");
     populateSubcategoryOptions();
   }
@@ -1566,33 +1606,49 @@
     });
   }
 
-  // ---- card rendering (Task 4) ----
-  function cardHTML(p) {
-    var subs = partnerSubcats(p);
-    var regions = partnerRegions(p);
-    var regionsLabel = p.regionsDisplay || regions.join(", ");
-    var contactLine = "";
-    if (p.contactName || p.contactTitle) {
-      contactLine = '<div class="pc-contact">' + escapeHtml([p.contactName, p.contactTitle].filter(Boolean).join(" · ")) + "</div>";
-    }
-    var actions = "";
+  // ---- icon helpers (Batch 3 correction) — reuse the existing production
+  // asset icons already in this repo's assets/ folder, same files/sizing
+  // the live Partner Program frontend uses. ----
+  var ICON_GEO = '<img class="pc-icon-geo" src="assets/globe.png" alt="" aria-hidden="true">';
+  var ICON_CONTACT = '<img class="pc-icon-contact" src="assets/partner-contact-name.png" alt="" aria-hidden="true">';
+  var ICON_WEBSITE = '<img class="pc-icon-website" src="assets/visit-partner.PNG" alt="" aria-hidden="true">';
+
+  function contactLineHTML(p) {
+    if (!p.contactName && !p.contactTitle) return "";
+    return '<div class="pc-contact">' + ICON_CONTACT +
+      '<span>' + escapeHtml([p.contactName, p.contactTitle].filter(Boolean).join(" · ")) + "</span></div>";
+  }
+  function actionsHTML(p) {
     var contactHref = p.contactUrl ? escapeAttr(p.contactUrl) : "";
     var websiteHref = p.websiteUrl ? escapeAttr(p.websiteUrl) : "";
-    if (contactHref || websiteHref) {
-      actions = '<div class="pc-actions">' +
-        (contactHref ? '<a class="pc-btn" href="' + contactHref + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">' + escapeHtml(p.contactCtaLabel || "Contact Partner") + "</a>" : "") +
-        (websiteHref ? '<a class="pc-btn pc-btn-primary" href="' + websiteHref + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">' + escapeHtml(p.ctaLabel || "Visit Website") + "</a>" : "") +
-        "</div>";
-    }
+    if (!contactHref && !websiteHref) return "";
+    return '<div class="pc-actions">' +
+      (contactHref ? '<a class="pc-btn" href="' + contactHref + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">' + escapeHtml(p.contactCtaLabel || "Contact Partner") + "</a>" : "") +
+      (websiteHref ? '<a class="pc-btn pc-btn-primary" href="' + websiteHref + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">' + escapeHtml(p.ctaLabel || "Visit Website") + ICON_WEBSITE + "</a>" : "") +
+      "</div>";
+  }
+  function geoLineHTML(p) {
+    var regions = partnerRegions(p);
+    var regionsLabel = p.regionsDisplay || regions.join(", ");
+    var text = [p.country, regionsLabel].filter(Boolean).join(" · ");
+    if (!text) return "";
+    return '<div class="pc-meta-row has-icon">' + ICON_GEO + "<span>" + escapeHtml(text) + "</span></div>";
+  }
+
+  // ---- card rendering (Task 4). Approved field order: name -> category ->
+  // subcategories -> contact name/title -> Contact Partner button ->
+  // Visit Website button -> Country/Regions last. ----
+  function cardHTML(p) {
+    var subs = partnerSubcats(p);
     return (
       '<div class="pc-top"><span class="pc-name">' + escapeHtml(p.name) + "</span>" +
       (isPremier(p) ? '<span class="pc-premier">Premier</span>' : "") +
       "</div>" +
       '<div class="pc-cat">' + escapeHtml(p.category || "") + "</div>" +
       (subs.length ? '<div class="pc-sub">' + escapeHtml(subs.join(", ")) + "</div>" : "") +
-      '<div class="pc-meta-row">' + escapeHtml(p.country || "") + (regionsLabel ? " · " + escapeHtml(regionsLabel) : "") + "</div>" +
-      contactLine +
-      actions
+      contactLineHTML(p) +
+      actionsHTML(p) +
+      geoLineHTML(p)
     );
   }
 
@@ -1632,22 +1688,20 @@
       el.classList.toggle("selected", el.getAttribute("data-partner-id") === String(p.__id));
     });
 
+    // Approved field order (Batch 3 correction): name -> category/
+    // subcategories -> contact name/title -> Contact Partner button ->
+    // Visit Website button -> Country/Regions last.
     document.getElementById("ppc-name").textContent = p.name || "";
-    var regions = partnerRegions(p);
-    var metaBits = [p.category, p.regionsDisplay || regions.join(", ")].filter(Boolean);
+    var subs = partnerSubcats(p);
+    var metaBits = [p.category].concat(subs.length ? [subs.join(", ")] : []).filter(Boolean);
     document.getElementById("ppc-meta").textContent = metaBits.join(" · ");
 
-    var descBits = [];
-    if (p.description) descBits.push(p.description);
-    if (p.testimonial) descBits.push('"' + p.testimonial + '"');
-    if (p.contactName || p.contactTitle) descBits.push([p.contactName, p.contactTitle].filter(Boolean).join(" · "));
-    if (p.country) descBits.push(p.country);
-    document.getElementById("ppc-desc").textContent = descBits.length ? descBits.join(" — ") : "No further details on file for this partner.";
+    document.getElementById("ppc-contact-line").innerHTML = contactLineHTML(p);
 
     var contactBtn = document.getElementById("ppc-contact-btn");
     if (p.contactUrl) {
       contactBtn.href = p.contactUrl;
-      contactBtn.textContent = p.contactCtaLabel || "Contact Partner";
+      contactBtn.innerHTML = escapeHtml(p.contactCtaLabel || "Contact Partner");
       contactBtn.style.display = "";
     } else {
       contactBtn.style.display = "none";
@@ -1656,10 +1710,23 @@
     var websiteBtn = document.getElementById("ppc-website-btn");
     if (p.websiteUrl) {
       websiteBtn.href = p.websiteUrl;
-      websiteBtn.textContent = p.ctaLabel || "Visit Website";
+      websiteBtn.innerHTML = escapeHtml(p.ctaLabel || "Visit Website") + ICON_WEBSITE;
       websiteBtn.style.display = "";
     } else {
       websiteBtn.style.display = "none";
+    }
+
+    document.getElementById("ppc-geo-line").innerHTML = geoLineHTML(p);
+
+    var descBits = [];
+    if (p.description) descBits.push(p.description);
+    if (p.testimonial) descBits.push('"' + p.testimonial + '"');
+    var descEl = document.getElementById("ppc-desc");
+    if (descBits.length) {
+      descEl.textContent = descBits.join(" — ");
+      descEl.style.display = "";
+    } else {
+      descEl.style.display = "none";
     }
 
     profileCard.classList.add("visible");
@@ -1711,6 +1778,14 @@
     .then(function (json) {
       allPartners = (json.partners || []).filter(function (p) { return p && p.name && p.country && (p.region || (p.regions && p.regions.length)); });
       allPartners.forEach(function (p, i) { p.__id = i; });
+      // Full country list source: data/partners.json's own options.countries
+      // block (the same authoritative list production's own Country filter
+      // uses). Falls back to partner-derived countries only if that block
+      // is ever missing, so the filter never renders empty.
+      var optionCountries = (json.options && Array.isArray(json.options.countries)) ? json.options.countries : [];
+      fullCountryList = optionCountries.length
+        ? uniqueSorted(optionCountries)
+        : uniqueSorted(allPartners.map(function (p) { return p.country; }));
       populateStaticFilterOptions();
       renderAll();
     })
