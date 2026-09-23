@@ -1778,8 +1778,10 @@
     if (region) {
       mobileStats.innerHTML = mobilePill(region.uniqueAccounts, region.name + " accounts");
     } else {
-      var totalUnique = sumField(coverage.regions, "uniqueAccounts");
-      mobileStats.innerHTML = mobilePill(totalUnique, "Network accounts");
+      // Global "Network accounts" card removed: summing uniqueAccounts across
+      // all regions double-counts accounts present in multiple regions and is
+      // not a valid global unique-account total. No replacement value shown.
+      mobileStats.innerHTML = "";
     }
   }
 
