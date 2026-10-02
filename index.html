@@ -1542,6 +1542,12 @@
   .nwx-popup-action:focus-visible, .nwx-chip:focus-visible { outline:2px solid #cee2eb; outline-offset:3px; }
 
 
+  .nwx-popup-actions { display:flex; gap:8px; margin:0 0 10px; }
+  .nwx-popup-actions .nwx-popup-action { width:auto; flex:1; margin:0; font-size:11px; padding:7px 9px; }
+  .nwx-popup-actions [data-action="drill"] { background:transparent; color:var(--nwx-orange); border:1px solid var(--nwx-orange); }
+  .nwx-popup-actions [data-action="drill"]:hover { background:rgba(232,100,44,.12); }
+  #rail .nwx-clear-filters-button { width:auto; min-height:32px; height:auto; display:inline-flex; align-items:center; gap:6px; padding:4px 7px; font:inherit; font-size:12px; font-weight:700; }
+  #rail .nwx-clear-filters-button:focus-visible { outline:2px solid var(--nwx-orange); outline-offset:2px; }
 </style>
 </head>
 <body>
@@ -1597,11 +1603,12 @@
        current live Partner Program, positioned directly after the last filter field.
        Reset behavior is intentionally not tracked as an analytics event. -->
   <div class="nwx-clear-filters-wrap">
-    <button class="nwx-clear-filters-button" type="button" id="filter-reset-all" aria-label="Reset all filters" title="Reset all filters">
+    <button class="nwx-clear-filters-button" type="button" id="filter-reset-all" aria-label="Clear filters" title="Clear filters">
       <svg class="nwx-reset-filter-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
         <path d="M20 11a8 8 0 1 0-2.34 5.66" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round"/>
         <path d="M20 4v7h-7" fill="none" stroke="currentColor" stroke-width="2.25" stroke-linecap="round" stroke-linejoin="round"/>
       </svg>
+    <span>Clear filters</span>
     </button>
   </div>
 
@@ -1987,8 +1994,7 @@
       country = {name:name,coordinates:[(box[0]+box[2])/2,(box[1]+box[3])/2]};
     }
     closeFloatingPartnerCard();
-    window.nwxSetDirectoryCountryFilter(name, region.name);
-    setTimeout(function () { openCountryPopup(country, region, null); }, 0);
+    openCountryPopup(country, region, null);
     return true;
   }
   map.on("mousemove", "nwx-country-fill", function (e) {
@@ -2268,11 +2274,7 @@
               has_partners: !!(countryPartners && countryPartners.length)
             });
           }
-          if (typeof window.nwxSetDirectoryCountryFilter === "function") {
-            window.nwxSetDirectoryCountryFilter(country.name, region.name);
-          }
-          // The filter event re-renders the marker set. Open after that sync.
-          setTimeout(function () { openCountryPopup(country, region, null); }, 0);
+          openCountryPopup(country, region, null);
         });
         var marker = new mapboxgl.Marker({ element: el, anchor: "center" })
           .setLngLat(country.coordinates)
@@ -2487,8 +2489,9 @@
     var subHtml = opts.sub ? '<div class="nwx-popup-sub">' + opts.sub + '</div>' : "";
 
     return (
-      '<div class="nwx-popup-header"><div class="nwx-popup-title">' + popupEscapeHtml(opts.title) + '</div>' + actionHtml + '</div>' +
+      '<div class="nwx-popup-header"><div class="nwx-popup-title">' + popupEscapeHtml(opts.title) + '</div>' + (opts.countryAction ? '' : actionHtml) + '</div>' +
       subHtml +
+      (opts.countryAction ? '<div class="nwx-popup-actions"><button class="nwx-popup-action" type="button" data-action="country">View Country</button>' + actionHtml + '</div>' : '') +
       (opts.partnersOnly ? "" :
         '<div class="nwx-popup-headline"><span class="n">' + (typeof opts.headlineNum === 'number' ? opts.headlineNum : '—') + '</span><span class="l">' + opts.headlineLabel + '</span></div>' +
         '<div class="nwx-popup-grid">' + rowsHtml + '</div>') +
@@ -2554,6 +2557,7 @@
       title: country.name,
       sub: region.name,
       partnersOnly: true,
+      countryAction: true,
       partnersHtml: popupPartnersHTML(region.name, country.name),
       actionLabel: "View Region"
     });
@@ -2567,6 +2571,10 @@
 
     popup.getElement().addEventListener("click", function (e) { e.stopPropagation(); });
     wirePopupPartnerCarousel(popup.getElement(), "country_popup");
+    popup.getElement().querySelector('[data-action="country"]').addEventListener("click", function () {
+      popup.remove();
+      window.nwxFocusDirectoryCountry(country.name, region.name);
+    });
     popup.getElement().querySelector('[data-action="drill"]').addEventListener("click", function () {
       popup.remove();
       window.nwxReturnToDirectoryRegion(region.name);
@@ -3242,6 +3250,13 @@
     populateCountryOptions();
     renderAll();
   }
+
+  // Explicit popup focus replaces prior country selections, avoiding an
+  // accumulating trail while browsing. Dropdowns retain multi-select behavior.
+  window.nwxFocusDirectoryCountry = function (countryName, regionName) {
+    filters.countries = [];
+    applyCountryFilter(countryName, regionName);
+  };
 
   window.nwxSetDirectoryCountryFilter = function (countryName, regionName) {
     applyCountryFilter(countryName, regionName);
