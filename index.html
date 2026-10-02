@@ -1540,7 +1540,7 @@
   .nwx-popup-header .nwx-popup-title { flex:1; min-width:0; margin:0; }
   .nwx-popup-header .nwx-popup-action { flex:none; width:auto; margin:0; padding:6px 9px; font-size:11px; white-space:nowrap; }
   .nwx-popup-action:focus-visible, .nwx-chip:focus-visible { outline:2px solid #cee2eb; outline-offset:3px; }
-  .nwx-popup-data-note { color:rgba(206,226,235,.65); font-size:11px; margin-top:8px; }
+
 
 </style>
 </head>
@@ -2411,7 +2411,7 @@
     if (!partners.length) {
       return '<div class="nwx-popup-partners">' +
         '<div class="nwx-popup-partners-title">Trusted Partners</div>' +
-        '<div class="nwx-popup-no-partners">No Trusted Partners match the current filters in this area.</div>' +
+        '<div class="nwx-popup-no-partners">' + (countryName ? 'No Trusted Partners match the current filters in this country.' : 'No Trusted Partners match the current filters in this region.') + '</div>' +
         '</div>';
     }
 
@@ -2476,7 +2476,7 @@
 
   function popupHTML(opts) {
     // opts: {title, sub (optional), headlineNum, headlineLabel, rows: [[k,v], ...], actionLabel, partnersHtml}
-    var rowsHtml = opts.rows.map(function (r) {
+    var rowsHtml = (opts.rows || []).map(function (r) {
       return '<div class="nwx-popup-row"><span class="k">' + r[0] + '</span><span class="v">' + (typeof r[1] === 'number' ? r[1] : '—') + "</span></div>";
     }).join("");
 
@@ -2489,9 +2489,9 @@
     return (
       '<div class="nwx-popup-header"><div class="nwx-popup-title">' + popupEscapeHtml(opts.title) + '</div>' + actionHtml + '</div>' +
       subHtml +
-      '<div class="nwx-popup-headline"><span class="n">' + (typeof opts.headlineNum === 'number' ? opts.headlineNum : '—') + '</span><span class="l">' + opts.headlineLabel + '</span></div>' +
-      '<div class="nwx-popup-grid">' + rowsHtml + "</div>" +
-      (typeof opts.headlineNum !== "number" ? '<div class="nwx-popup-data-note">Country-level network counts aren’t available yet.</div>' : "") +
+      (opts.partnersOnly ? "" :
+        '<div class="nwx-popup-headline"><span class="n">' + (typeof opts.headlineNum === 'number' ? opts.headlineNum : '—') + '</span><span class="l">' + opts.headlineLabel + '</span></div>' +
+        '<div class="nwx-popup-grid">' + rowsHtml + '</div>') +
       (opts.partnersHtml || "")
     );
   }
@@ -2553,14 +2553,7 @@
     var html = popupHTML({
       title: country.name,
       sub: region.name,
-      headlineNum: country.uniqueAccounts,
-      headlineLabel: "Unique Accounts",
-      rows: [
-        ["Charterers", country.charterers],
-        ["Brokers", country.brokers],
-        ["Fleet Owners", country.fleetOwners],
-        ["Dual Accounts", country.dualAccounts]
-      ],
+      partnersOnly: true,
       partnersHtml: popupPartnersHTML(region.name, country.name),
       actionLabel: "View Region"
     });
@@ -2792,6 +2785,23 @@
   function partnerRegions(p) {
     return Array.isArray(p.regions) && p.regions.length ? p.regions : (p.region ? [p.region] : []);
   }
+  // One coverage rule for directory filters and map popups. The feed
+  // already expands Worldwide/Africa to their constituent NWX regions;
+  // explicit Worldwide labels remain supported for future feed versions.
+  function hasWorldwideCoverage(p) {
+    return String(p.regionsDisplay || "").trim().toLowerCase() === "worldwide" ||
+      partnerRegions(p).some(function (r) { return String(r).trim().toLowerCase() === "worldwide"; });
+  }
+  function partnerCoversRegion(p, regionName) {
+    if (!Object.prototype.hasOwnProperty.call(regionCountriesByName, regionName)) return false;
+    return hasWorldwideCoverage(p) || partnerRegions(p).indexOf(regionName) !== -1 || countryToRegionName[p.country] === regionName;
+  }
+  function partnerCoversCountry(p, countryName) {
+    var regionName = countryToRegionName[countryName];
+    // Worldwide coverage applies only inside the authoritative NWX mapping.
+    if (!regionName) return false;
+    return p.country === countryName || hasWorldwideCoverage(p) || partnerRegions(p).indexOf(regionName) !== -1;
+  }
   function partnerSubcats(p) {
     return Array.isArray(p.subcategories) ? p.subcategories.filter(Boolean) : [];
   }
@@ -2812,7 +2822,7 @@
   // ---- filter option lists — derived from actual partner records, so
   // every option shown always matches at least one real partner (Task 3). ----
   function populateStaticFilterOptions() {
-    var regions = uniqueSorted(allPartners.reduce(function (acc, p) { return acc.concat(partnerRegions(p)); }, []));
+    var regions = uniqueSorted(Object.keys(regionCountriesByName));
     fillSelect(regionSelect, regions, "Add Region");
     // Country: the full authoritative Nauticworx country list, narrowed to
     // the active Region filter(s) via the authoritative Region->Country
@@ -2920,11 +2930,11 @@
     });
   }
 
-  function getFilteredPartners() {
+  function getFilteredPartners(skipGeography) {
     var q = filters.search.trim().toLowerCase();
     return sortPartnersByName(allPartners.filter(function (p) {
-      if (filters.regions.length && !partnerRegions(p).some(function (v) { return filters.regions.indexOf(v) !== -1; })) return false;
-      if (filters.countries.length && filters.countries.indexOf(p.country) === -1) return false;
+      if (!skipGeography && filters.regions.length && !filters.regions.some(function (r) { return partnerCoversRegion(p, r); })) return false;
+      if (!skipGeography && filters.countries.length && !filters.countries.some(function (c) { return partnerCoversCountry(p, c); })) return false;
       if (filters.categories.length && filters.categories.indexOf(p.category) === -1) return false;
       if (filters.subcategories.length && !partnerSubcats(p).some(function (v) { return filters.subcategories.indexOf(v) !== -1; })) return false;
       if (q) {
@@ -3165,9 +3175,9 @@
   // the two datasets separate while allowing a region popup to list matching
   // Partner Directory companies beneath the account summary.
   window.nwxPartnerDirectoryForMapContext = function (regionName, countryName) {
-    return sortPartnersByName(getFilteredPartners().filter(function (p) {
-      if (regionName && partnerRegions(p).indexOf(regionName) === -1) return false;
-      if (countryName && p.country !== countryName) return false;
+    return sortPartnersByName(getFilteredPartners(true).filter(function (p) {
+      if (countryName) return partnerCoversCountry(p, countryName);
+      if (regionName && !partnerCoversRegion(p, regionName)) return false;
       return true;
     }));
   };
