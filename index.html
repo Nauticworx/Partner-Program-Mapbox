@@ -7,9 +7,6 @@
 
 <link href="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.css" rel="stylesheet" />
 <script src="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.js"></script>
-
-<!-- Partner Program analytics: preserves the existing GA4 event model and
-     relays events to the Nauticworx WordPress parent when embedded. -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-LG8CBXS558"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
@@ -1542,10 +1539,6 @@
   .nwx-popup-action:focus-visible, .nwx-chip:focus-visible { outline:2px solid #cee2eb; outline-offset:3px; }
 
 
-  .nwx-popup-actions { display:flex; gap:8px; margin:0 0 10px; }
-  .nwx-popup-actions .nwx-popup-action { width:auto; flex:1; margin:0; font-size:11px; padding:7px 9px; }
-  .nwx-popup-actions [data-action="drill"] { background:transparent; color:var(--nwx-orange); border:1px solid var(--nwx-orange); }
-  .nwx-popup-actions [data-action="drill"]:hover { background:rgba(232,100,44,.12); }
   #rail .nwx-clear-filters-button { width:auto; min-height:32px; height:auto; display:inline-flex; align-items:center; gap:6px; padding:4px 7px; font:inherit; font-size:12px; font-weight:700; }
   #rail .nwx-clear-filters-button:focus-visible { outline:2px solid var(--nwx-orange); outline-offset:2px; }
 </style>
@@ -2480,9 +2473,8 @@
     var subHtml = opts.sub ? '<div class="nwx-popup-sub">' + opts.sub + '</div>' : "";
 
     return (
-      '<div class="nwx-popup-header"><div class="nwx-popup-title">' + popupEscapeHtml(opts.title) + '</div>' + (opts.actionBelowTitle ? '' : actionHtml) + '</div>' +
+      '<div class="nwx-popup-header"><div class="nwx-popup-title">' + popupEscapeHtml(opts.title) + '</div>' + actionHtml + '</div>' +
       subHtml +
-      (opts.actionBelowTitle ? '<div class="nwx-popup-actions">' + actionHtml + '</div>' : '') +
       (opts.partnersOnly ? "" :
         '<div class="nwx-popup-headline"><span class="n">' + (typeof opts.headlineNum === 'number' ? opts.headlineNum : '—') + '</span><span class="l">' + opts.headlineLabel + '</span></div>' +
         '<div class="nwx-popup-grid">' + rowsHtml + '</div>') +
@@ -2548,7 +2540,6 @@
       title: country.name,
       sub: region.name,
       partnersOnly: true,
-      actionBelowTitle: true,
       partnersHtml: popupPartnersHTML(region.name, country.name),
       actionLabel: "View Region"
     });
