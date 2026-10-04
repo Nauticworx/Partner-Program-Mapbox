@@ -1994,7 +1994,7 @@
       country = {name:name,coordinates:[(box[0]+box[2])/2,(box[1]+box[3])/2]};
     }
     closeFloatingPartnerCard();
-    openCountryPopup(country, region, null);
+    openCountryPopup(country, region);
     return true;
   }
   map.on("mousemove", "nwx-country-fill", function (e) {
@@ -2139,17 +2139,10 @@
     return '<div class="pill"><div class="num">' + num + '</div><div class="lbl">' + label + "</div></div>";
   }
 
-  // markerLevel tracks which tier is currently on the map ("region" |
-  // "country" | null). clearMarkers() always empties the map completely
-  // before either view repopulates it, so region and country markers can
-  // never coexist — this is what satisfies "hide all region markers during
-  // drill-down" / "no world markers left floating" (Task 3).
-  var markerLevel = null;
-
+  // Always remove the previous marker set before rendering a new view.
   function clearMarkers() {
     markers.forEach(function (m) { m.remove(); });
     markers = [];
-    markerLevel = null;
     hoveredRegion = "";
     hoveredCountry = "";
     updateCountryHighlight();
@@ -2178,7 +2171,7 @@
         // Region chip opens the region popup only; it never changes the
         // Region/Country/Category/Subcategory filters (the Region filter
         // control is the only way to filter by region).
-        setTimeout(function () { openRegionPopup(region, null); }, 0);
+        setTimeout(function () { openRegionPopup(region); }, 0);
       });
       var marker = new mapboxgl.Marker({
         element: el,
@@ -2192,7 +2185,6 @@
         .addTo(map);
       markers.push(marker);
     });
-    markerLevel = "region";
     console.assert(markers.length === coverage.regions.length,
       "World view marker count (" + markers.length + ") should equal region count (" + coverage.regions.length + ")");
 
@@ -2246,7 +2238,7 @@
             has_partners: !!(regionPartners && regionPartners.length)
           });
         }
-        openRegionPopup(region, regionEl);
+        openRegionPopup(region);
       });
       var regionMarker = new mapboxgl.Marker({
         element: regionEl,
@@ -2274,7 +2266,7 @@
               has_partners: !!(countryPartners && countryPartners.length)
             });
           }
-          openCountryPopup(country, region, null);
+          openCountryPopup(country, region);
         });
         var marker = new mapboxgl.Marker({ element: el, anchor: "center" })
           .setLngLat(country.coordinates)
@@ -2283,7 +2275,6 @@
       });
     });
 
-    markerLevel = "region+country";
 
     if (animate !== false) fitGeography(regions, activeCountryNames || []);
 
@@ -2489,9 +2480,9 @@
     var subHtml = opts.sub ? '<div class="nwx-popup-sub">' + opts.sub + '</div>' : "";
 
     return (
-      '<div class="nwx-popup-header"><div class="nwx-popup-title">' + popupEscapeHtml(opts.title) + '</div>' + (opts.countryAction ? '' : actionHtml) + '</div>' +
+      '<div class="nwx-popup-header"><div class="nwx-popup-title">' + popupEscapeHtml(opts.title) + '</div>' + (opts.actionBelowTitle ? '' : actionHtml) + '</div>' +
       subHtml +
-      (opts.countryAction ? '<div class="nwx-popup-actions"><button class="nwx-popup-action" type="button" data-action="country">View Country</button>' + actionHtml + '</div>' : '') +
+      (opts.actionBelowTitle ? '<div class="nwx-popup-actions">' + actionHtml + '</div>' : '') +
       (opts.partnersOnly ? "" :
         '<div class="nwx-popup-headline"><span class="n">' + (typeof opts.headlineNum === 'number' ? opts.headlineNum : '—') + '</span><span class="l">' + opts.headlineLabel + '</span></div>' +
         '<div class="nwx-popup-grid">' + rowsHtml + '</div>') +
@@ -2502,7 +2493,7 @@
   // Anchors to the region's real geographic coordinate (never a DOM/page
   // offset) so the popup opens over the actual marker, not a top-left
   // fallback. Also enforces the single-active-popup rule.
-  function openRegionPopup(region, anchorEl) {
+  function openRegionPopup(region) {
     closeActivePopup();
 
     var html = popupHTML({
@@ -2550,14 +2541,14 @@
 
   // Anchors to the country's real geographic coordinate — same rule as
   // the region popup above.
-  function openCountryPopup(country, region, anchorEl) {
+  function openCountryPopup(country, region) {
     closeActivePopup();
 
     var html = popupHTML({
       title: country.name,
       sub: region.name,
       partnersOnly: true,
-      countryAction: true,
+      actionBelowTitle: true,
       partnersHtml: popupPartnersHTML(region.name, country.name),
       actionLabel: "View Region"
     });
@@ -2571,10 +2562,6 @@
 
     popup.getElement().addEventListener("click", function (e) { e.stopPropagation(); });
     wirePopupPartnerCarousel(popup.getElement(), "country_popup");
-    popup.getElement().querySelector('[data-action="country"]').addEventListener("click", function () {
-      popup.remove();
-      window.nwxFocusDirectoryCountry(country.name, region.name);
-    });
     popup.getElement().querySelector('[data-action="drill"]').addEventListener("click", function () {
       popup.remove();
       window.nwxReturnToDirectoryRegion(region.name);
@@ -3183,11 +3170,11 @@
   // the two datasets separate while allowing a region popup to list matching
   // Partner Directory companies beneath the account summary.
   window.nwxPartnerDirectoryForMapContext = function (regionName, countryName) {
-    return sortPartnersByName(getFilteredPartners(true).filter(function (p) {
+    return getFilteredPartners(true).filter(function (p) {
       if (countryName) return partnerCoversCountry(p, countryName);
       if (regionName && !partnerCoversRegion(p, regionName)) return false;
       return true;
-    }));
+    });
   };
 
   window.nwxPartnerCategoryIconSrc = function (category) {
@@ -3217,7 +3204,7 @@
     if (value && arr.indexOf(value) === -1) arr.push(value);
   }
 
-  // Map clicks add geographic filters rather than replacing existing ones.
+  // View Region adds its region and clears country filters.
   window.nwxSetDirectoryRegionFilter = function (regionName) {
     if (!regionName) {
       filters.regions = [];
@@ -3232,14 +3219,14 @@
     renderAll();
   };
 
-  // Single entry point for "select a Country" (dropdown or map pin): adds
+  // Country dropdown selection adds
   // the Country, then resolves its Region from the authoritative
   // Region->Country mapping (countryToRegionName) and adds that Region too
   // if it isn't already active — Region selections already active are left
   // untouched (addUniqueFilterValue no-ops on a duplicate, so no duplicate
   // chip is possible). regionNameHint is a fallback only for a Country the
   // authoritative mapping doesn't cover (e.g. one not in
-  // options.regionCountries), so a map click still ends up in the right
+  // options.regionCountries), so external callers still receive the right
   // Region context.
   function applyCountryFilter(countryName, regionNameHint) {
     var regionName = (countryName && countryToRegionName[countryName]) || regionNameHint || "";
@@ -3250,13 +3237,6 @@
     populateCountryOptions();
     renderAll();
   }
-
-  // Explicit popup focus replaces prior country selections, avoiding an
-  // accumulating trail while browsing. Dropdowns retain multi-select behavior.
-  window.nwxFocusDirectoryCountry = function (countryName, regionName) {
-    filters.countries = [];
-    applyCountryFilter(countryName, regionName);
-  };
 
   window.nwxSetDirectoryCountryFilter = function (countryName, regionName) {
     applyCountryFilter(countryName, regionName);
