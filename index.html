@@ -8,37 +8,6 @@
 <link href="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.css" rel="stylesheet" />
 <script src="https://api.mapbox.com/mapbox-gl-js/v3.6.0/mapbox-gl.js"></script>
 
-<!-- Partner Program analytics: preserves the existing GA4 event model and
-     relays events to the Nauticworx WordPress parent when embedded. -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-LG8CBXS558"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag() { dataLayer.push(arguments); }
-  gtag("js", new Date());
-  gtag("config", "G-LG8CBXS558");
-
-  window.nwxTrackEvent = function (name, params) {
-    var payload = params || {};
-    if (window.self !== window.top) {
-      try {
-        window.parent.postMessage({ type: "partner_event", event: name, params: payload }, "https://www.nauticworx.com");
-      } catch (e) {}
-      return;
-    }
-    if (typeof window.gtag !== "function") return;
-    window.gtag("event", name, payload);
-  };
-
-  window.nwxTrackPartnerImpression = function (partner, source) {
-    if (!partner || !partner.name) return;
-    window.nwxTrackEvent("partner_impression", {
-      partner_name: partner.name,
-      partner_page_url: partner.partnerPageUrl || "",
-      source: source || ""
-    });
-  };
-</script>
-
 <style>
   :root {
     --nwx-navy: #021229;
@@ -61,7 +30,7 @@
     height: 100%;
     overflow: hidden;
     background: var(--nwx-navy);
-    font-family: Gotham, Helvetica, Arial, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
     color: var(--nwx-name);
   }
 
@@ -107,14 +76,13 @@
 }
 
 .partner-program-logo-desktop {
-  height: 48px;
-  width: auto;
-  align-self: flex-start;
+  width: 230px;
+  max-width: 100%;
 }
 
 .partner-program-logo-mobile {
-  height: 30px;
-  width: auto;
+  width: 145px;
+  max-width: 55vw;
 }
 
   .rail-section-title {
@@ -177,7 +145,7 @@
     outline: none;
     color: var(--nwx-name);
     font-size: 12.5px;
-    font-family: Gotham;
+    font-family: inherit;
   }
   .rail-search input::placeholder { color: rgba(206,226,235,0.4); }
 
@@ -205,6 +173,31 @@
   }
   .filter-pill .chev { opacity: 0.5; font-size: 9px; flex: 0 0 auto; }
 
+  .rail-result-row {
+    font-size: 10.5px;
+    color: rgba(206,226,235,0.45);
+    letter-spacing: 0.2px;
+  }
+
+  /* ---------- RAIL: partner-card area ----------
+     Layout shell only. No Partner Directory data is connected this pass,
+     so this renders an explicit empty state rather than fabricated
+     partner records. */
+  .partner-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 4px;
+    padding: 16px 14px;
+    border: 1px dashed var(--nwx-border);
+    border-radius: 10px;
+    color: rgba(206,226,235,0.4);
+    font-size: 11px;
+    line-height: 1.5;
+  }
+  .partner-empty-state .t1 { color: rgba(206,226,235,0.6); font-weight: 700; font-size: 11.5px; }
+
   /* ---------- PARTNER DIRECTORY (Batch 3) ----------
      Real data, wired separately from Network Coverage. Reuses the existing
      dark/navy/orange visual language (filter-pill borders, rail-search
@@ -217,7 +210,7 @@
     border-radius: 7px;
     padding: 7px 9px;
     font-size: 11px;
-    font-family: Gotham;
+    font-family: inherit;
     color: rgba(206,226,235,0.85);
     cursor: pointer;
   }
@@ -225,7 +218,6 @@
   .filter-select option { background: var(--nwx-navy-soft); color: var(--nwx-name); }
 
   .partner-card-list { display: flex; flex-direction: column; gap: 8px; }
-  .partner-card-list:empty { display: none; }
 
   .partner-card {
     display: flex;
@@ -373,115 +365,73 @@
     position: absolute;
     left: 50%; top: 50%;
     transform: translate(-50%, -50%);
-    width: min(640px, calc(100% - 32px));
+    width: min(560px, calc(100% - 32px));
     max-height: calc(100% - 48px);
     overflow-y: auto;
-    background: #ffffff;
-    border: 1px solid rgba(2,18,41,0.12);
+    background: var(--nwx-navy-soft);
+    border: 1px solid var(--nwx-border);
     border-radius: 14px;
     box-shadow: 0 30px 80px rgba(0,0,0,0.55);
   }
   .ppo-header {
     position: sticky;
     top: 0;
-    z-index: 2;
     display: flex;
     align-items: center;
-    gap: 14px;
-    background: #ffffff;
-    padding: 18px 20px;
-    border-bottom: 1px solid rgba(2,18,41,0.1);
+    justify-content: space-between;
+    gap: 12px;
+    background: var(--nwx-navy);
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--nwx-border);
     border-radius: 14px 14px 0 0;
   }
-  .ppo-logo {
-    display: block;
-    flex: 0 1 auto;
-    max-width: 140px;
-    max-height: 48px;
-    width: auto;
-    height: auto;
-    object-fit: contain;
-    align-self: center;
-  }
-  .ppo-header-text { min-width: 0; flex: 1 1 auto; }
+  .ppo-header-text { min-width: 0; }
+  .ppo-eyebrow { font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px; color: var(--nwx-orange); font-weight: 800; }
   .ppo-title-link, .ppo-title-plain {
     display: block;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 800;
-    color: var(--nwx-navy);
+    color: var(--nwx-name);
     text-decoration: none;
+    margin-top: 3px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
   }
   .ppo-title-link:hover { text-decoration: underline; }
-  .ppo-header-meta { font-size: 12.5px; color: rgba(2,18,41,0.6); margin-top: 4px; }
+  .ppo-header-actions { display: flex; align-items: center; gap: 8px; flex: 0 0 auto; }
+  .ppo-open-full {
+    background: var(--nwx-orange);
+    border: 1px solid var(--nwx-orange);
+    color: #fff;
+    font-weight: 800;
+    font-size: 11.5px;
+    padding: 8px 11px;
+    border-radius: 7px;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .ppo-open-full:hover { background: var(--nwx-orange-dim); }
   .ppo-close {
-    flex: 0 0 auto;
-    align-self: flex-start;
-    background: rgba(2,18,41,0.05);
-    border: 1px solid rgba(2,18,41,0.14);
-    color: var(--nwx-navy);
+    background: rgba(255,255,255,0.06);
+    border: 1px solid var(--nwx-border);
+    color: var(--nwx-name);
     font-size: 16px;
     line-height: 1;
     padding: 7px 10px;
     border-radius: 7px;
     cursor: pointer;
   }
-  .ppo-close:hover { background: rgba(2,18,41,0.1); }
-  .ppo-body { padding: 4px 22px 8px; }
-  .ppo-section-heading {
-    font-size: 12px;
-    font-weight: 800;
-    color: var(--nwx-orange);
-    text-transform: uppercase;
-    letter-spacing: 0.6px;
-    margin: 20px 0 10px;
-  }
-  .ppo-desc-section:first-child .ppo-section-heading { margin-top: 20px; }
-  .ppo-divider { border: none; border-top: 1px solid rgba(2,18,41,0.1); margin: 20px 0 0; }
-  .ppo-desc { font-size: 13.5px; color: rgba(2,18,41,0.82); line-height: 1.6; white-space: pre-wrap; }
-  .ppo-services { display: flex; flex-direction: column; }
-  .ppo-service-item {
-    padding: 10px 0 10px 14px;
-    border-left: 2px solid var(--nwx-orange);
-    font-size: 13.5px;
-    color: rgba(2,18,41,0.82);
-    line-height: 1.6;
-    white-space: pre-wrap;
-  }
-  .ppo-service-item + .ppo-service-item { border-top: 1px solid rgba(2,18,41,0.08); margin-top: 2px; }
-  .ppo-service-label { font-weight: 700; color: var(--nwx-navy); }
-  .ppo-details { display: flex; flex-direction: column; gap: 10px; }
-  .ppo-row { display: flex; align-items: flex-start; gap: 8px; font-size: 12.5px; color: rgba(2,18,41,0.72); line-height: 1.4; }
-  .ppo-row svg { width: 17px; height: 17px; flex: 0 0 17px; color: var(--nwx-orange); margin-top: 1px; } .ppo-row img.ppo-icon-office { width: 17px; height: 17px; flex: 0 0 17px; margin-top: 1px; object-fit: contain; }
-  .ppo-actions {
-    position: sticky;
-    bottom: 0;
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 8px;
-    padding: 14px 22px;
-    margin-top: 20px;
-    background: #ffffff;
-    border-top: 1px solid rgba(2,18,41,0.1);
-    border-radius: 0 0 14px 14px;
-  }
-  .ppo-actions .pc-btn {
-    padding: 10px 10px;
-    font-size: 12px;
-    text-align: center;
-    background: #021229;
-    border: 1px solid rgba(2,18,41,0.18);
-    color: #ffffff;
-  }
-  .ppo-actions .pc-btn:hover { background: #021229; }
-  .ppo-actions .pc-btn.pc-btn-primary { background: var(--nwx-orange); border-color: var(--nwx-orange); color: #fff; }
-  .ppo-actions .pc-btn.pc-btn-primary:hover { background: var(--nwx-orange-dim); }
-  @media (max-width: 640px) {
-    .ppo-actions { grid-template-columns: 1fr; }
-    .ppo-logo { max-width: 84px; max-height: 34px; }
-  }
+  .ppo-close:hover { background: rgba(255,255,255,0.12); }
+  .ppo-body { padding: 18px 20px 22px; }
+  .ppo-category { font-size: 12px; font-weight: 800; color: var(--nwx-orange); text-transform: uppercase; letter-spacing: 0.3px; }
+  .ppo-subcats { font-size: 12px; color: var(--nwx-name); margin-top: 3px; }
+  .ppo-row { display: flex; align-items: flex-start; gap: 8px; margin-top: 12px; font-size: 12.5px; color: rgba(206,226,235,0.75); line-height: 1.4; }
+  .ppo-row svg { width: 17px; height: 17px; flex: 0 0 17px; color: rgba(206,226,235,0.6); margin-top: 1px; }
+  .ppo-desc { font-size: 12.5px; color: rgba(206,226,235,0.7); line-height: 1.55; margin-top: 14px; }
+  .ppo-testimonial { font-size: 12.5px; color: rgba(206,226,235,0.6); line-height: 1.55; margin-top: 10px; font-style: italic; border-left: 2px solid var(--nwx-orange); padding-left: 10px; }
+  .ppo-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 18px; }
+  .ppo-actions .pc-btn { padding: 10px 10px; font-size: 12px; }
   .pc-meta-row.has-icon { display: flex; align-items: flex-start; gap: 6px; }
   .pc-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
   .pc-btn {
@@ -501,6 +451,8 @@
   .pc-btn.pc-btn-primary { background: var(--nwx-orange); border-color: var(--nwx-orange); color: #fff; }
   .pc-btn.pc-btn-primary:hover { background: var(--nwx-orange-dim); }
 
+  .partner-empty-state.pd-no-results { cursor: default; }
+
   /* ---------- PARTNER LIST VIEW (main panel — the "List" half of the
      Map/List toggle). Absolutely positioned over #map-wrap, shown only
      when the toggle is set to List; the map itself is untouched
@@ -515,6 +467,22 @@
     padding: 24px clamp(16px, 4vw, 48px);
   }
   #partner-list-view.visible { display: block; }
+  /* Explicit 3/2/1 responsive grid (redesign, Task 3) — was auto-fill. */
+  .plv-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .plv-grid .partner-card { height: 100%; }
+  @media (max-width: 1100px) {
+    .plv-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  @media (max-width: 640px) {
+    .plv-grid { grid-template-columns: 1fr; }
+  }
+
   /* ---------- RAIL: region/country browse (de-emphasized — the mockup's
      search/filter/result-card hierarchy is the primary rail content now;
      this is the same functional region drill-down as before, collapsed
@@ -541,7 +509,7 @@
     padding: 0;
     margin: 0;
     cursor: pointer;
-    font-family: Gotham;
+    font-family: inherit;
   }
   .rail-browse-toggle .rail-section-title { margin: 0; }
   .rail-browse-toggle .browse-chev {
@@ -741,7 +709,7 @@
     outline: none;
     color: var(--nwx-name);
     font-size: 12px;
-    font-family: Gotham;
+    font-family: inherit;
   }
   .mobile-search input::placeholder { color: rgba(206,226,235,0.45); }
 
@@ -786,7 +754,7 @@
     cursor: pointer;
     white-space: nowrap;
     transition: transform 0.12s ease, box-shadow 0.12s ease;
-    font-family: Gotham;
+    font-family: inherit;
   }
   .nwx-chip:hover {
     transform: scale(1.05);
@@ -823,7 +791,7 @@
     font-size: 14px;
     cursor: pointer;
     transition: transform 0.12s ease, box-shadow 0.12s ease;
-    font-family: Gotham;
+    font-family: inherit;
   }
   .nwx-marker:hover {
     transform: scale(1.08);
@@ -868,7 +836,7 @@
     border-radius: 10px;
     padding: 14px 16px 12px 16px;
     box-shadow: 0 8px 24px rgba(0,0,0,0.5);
-    font-family: Gotham;
+    font-family: inherit;
   }
   .mapboxgl-popup-tip { display: none; }
   .mapboxgl-popup-close-button {
@@ -1059,9 +1027,9 @@
     border: 1px solid rgba(232,100,44,0.55);
     border-radius: 999px;
     background: #e8642c;
-    color: #ffffff;
+    color: #102033;
     font-size: 9px;
-    font-weight: 600;
+    font-weight: 700;
     line-height: 1.15;
     cursor: pointer;
     white-space: normal;
@@ -1070,7 +1038,7 @@
   #rail .filter-chip:hover,
   #rail .filter-chip:focus {
     border-color: var(--nwx-orange);
-    background: #021229;
+    background: #fff7f2;
     outline: none;
   }
   #rail .filter-chip .filter-chip-x {
@@ -1155,160 +1123,54 @@
   }
   .mini-card .mc-chev { margin-left: auto; }
 
-
-  /* ---------- LIST VIEW: white table panel inside the dark List shell ----------
-     Header + rows share one column template. Breakpoints use the List
-     area's own width (container query), so the fixed rail is accounted for. */
-  #partner-list-view { container-type: inline-size; container-name: plv; }
-  .plv-table {
-    --plv-ink: #021229;
-    --plv-muted: #52667a;
-    --plv-line: #e3e9ef;
-    --plv-icon: #6b7f93;
-    --plv-cols: minmax(180px, 1.3fr) minmax(160px, 1.5fr) minmax(120px, 1fr) minmax(90px, 0.7fr) minmax(110px, 0.9fr) 256px;
-    max-width: 1400px;
-    margin: 0 auto;
-    background: #ffffff;
-    color: var(--plv-ink);
-    border-radius: 14px;
-    padding: 8px 18px 10px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.25);
-  }
-  .plv-table:has(.plv-body:empty) { display: none; }
-  .plv-head, .plv-row {
-    display: grid;
-    grid-template-columns: var(--plv-cols);
-    column-gap: 14px;
-    align-items: center;
-  }
-  .plv-head {
-    position: sticky;
-    top: -24px;
-    z-index: 1;
-    background: #eef3f8;
-    margin: 0 -18px;
-    padding: 11px 18px;
-    border-radius: 10px 10px 0 0;
-    border-bottom: 1px solid var(--plv-line);
-    font-size: 12px;
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    text-transform: uppercase;
-    color: #3d5064;
-  }
-  .plv-h-suffix { display: none; }
-  .plv-row {
-    padding: 13px 0;
-    border-bottom: 1px solid var(--plv-line);
-    cursor: pointer;
-    font-size: 13.5px;
-    font-weight: 400;
-    line-height: 1.4;
-    transition: background 0.12s ease;
-  }
-  .plv-row:last-child { border-bottom: 0; }
-  .plv-row:hover, .plv-row.selected, .plv-row:focus-visible {
-    background: #f6f9fc;
-    box-shadow: inset 3px 0 0 var(--nwx-orange);
-    outline: none;
-  }
-  .plv-cell { min-width: 0; overflow-wrap: break-word; }
-  .plv-partner { display: flex; align-items: center; gap: 12px; }
-  .plv-visual {
-    flex: 0 0 56px;
-    width: 56px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  .plv-visual img.plv-logo { max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; display: block; }
-  .plv-class {
-    display: grid;
-    grid-template-columns: 26px minmax(0, 1fr);
-    column-gap: 9px;
-    align-items: center;
-  }
-  .plv-class .plv-cat-icon { width: 26px; height: 26px; object-fit: contain; display: block; grid-column: 1; grid-row: 1; }
-  .plv-class .plv-cat { grid-column: 2; grid-row: 1; }
-  .plv-class .plv-sub { grid-column: 2; grid-row: 2; }
-  .plv-name-wrap { min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 4px; }
-  .plv-name { font-size: 15.5px; font-weight: 800; line-height: 1.3; color: var(--plv-ink); }
-  .plv-cat { color: var(--nwx-orange); font-weight: 500; }
-  .plv-sub, .plv-muted { color: var(--plv-muted); }
-  .plv-with-icon { display: flex; align-items: flex-start; gap: 8px; }
-  .plv-with-icon + .plv-with-icon { margin-top: 3px; }
-  .plv-row .pc-icon-geo, .plv-row .pc-icon-contact {
-    width: 16px; height: 16px; flex: 0 0 16px; margin-top: 2px; color: var(--plv-icon);
-  }
-  .plv-row img.plv-office-icon { width: 16px; height: 16px; flex: 0 0 16px; margin-top: 2px; object-fit: contain; display: block; }
-  .plv-actions .pc-actions {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+  /* List cards borrow the current Partner page's icon-led, structured card feel. */
+  .plv-grid .partner-card {
+    background: rgba(255,255,255,0.045);
+    border: 1px solid rgba(206,226,235,0.22);
+    border-radius: 12px;
+    padding: 14px;
     gap: 8px;
-    margin: 0;
+    box-shadow: none;
   }
-  .plv-actions .pc-btn:only-child { grid-column: 1 / -1; }
-  .plv-actions .pc-btn {
-    font-size: 13px;
-    font-weight: 700;
-    padding: 9px 10px;
-    min-width: 0;
-    border-radius: 7px;
-    white-space: nowrap;
+  .plv-grid .partner-card:hover,
+  .plv-grid .partner-card.selected {
+    background: rgba(255,255,255,0.065);
+    border-color: rgba(232,100,44,0.62);
   }
-  .plv-actions .pc-btn:not(.pc-btn-primary) {
-    background: #ffffff;
-    color: var(--plv-ink);
-    border: 1px solid #c5d1dc;
+  .pc-heading {
+    display: grid;
+    grid-template-columns: 42px minmax(0,1fr) auto;
+    align-items: start;
+    gap: 10px;
   }
-  .plv-actions .pc-btn:not(.pc-btn-primary):hover { border-color: var(--nwx-orange); color: var(--nwx-orange); background: #fff; }
-
-  /* Mid width (860–1022px List area): buttons stack in a narrower Actions column. */
-  @container plv (max-width: 1022px) {
-    .plv-table { --plv-cols: minmax(160px, 1.3fr) minmax(140px, 1.4fr) minmax(110px, 1fr) minmax(85px, 0.7fr) minmax(100px, 0.9fr) 140px; }
-    .plv-head, .plv-row { column-gap: 14px; }
-    .plv-actions .pc-actions { grid-template-columns: 1fr; }
-    .plv-actions .pc-btn:only-child { grid-column: auto; }
+  .pc-heading-copy { min-width: 0; }
+  .pc-heading .pc-top { display: block; }
+  .pc-heading .pc-premier {
+    grid-column: 3;
+    grid-row: 1;
+    align-self: start;
   }
-  /* Tablet: Country + Regions share one Location column (still two lines). */
-  @container plv (max-width: 859px) {
-    .plv-table { --plv-cols: minmax(125px, 1.3fr) minmax(110px, 1.3fr) minmax(95px, 1fr) minmax(95px, 1fr) 125px; }
-    .plv-head, .plv-row { column-gap: 12px; }
-    .plv-head, .plv-row {
-      grid-template-areas:
-        "partner cls contact country actions"
-        "partner cls contact regions actions";
-    }
-    .plv-head { grid-template-areas: "partner cls contact country actions"; }
-    .plv-h-partner, .plv-partner { grid-area: partner; }
-    .plv-h-class, .plv-class { grid-area: cls; }
-    .plv-h-contact, .plv-contact { grid-area: contact; }
-    .plv-h-country, .plv-country { grid-area: country; }
-    .plv-regions { grid-area: regions; margin-top: 3px; }
-    .plv-h-regions { display: none; }
-    .plv-h-suffix { display: inline; }
-    .plv-h-actions, .plv-actions { grid-area: actions; }
-    .plv-country { align-self: end; }
-    .plv-regions { align-self: start; }
+  .pc-heading .pc-cat { margin-top: 3px; }
+  .plv-grid .pc-name {
+    display: inline;
+    font-size: 14px;
+    line-height: 1.25;
+    color: #ffffff;
   }
-  /* Mobile: each row becomes a stacked block in the same field order. */
-  @container plv (max-width: 639px) {
-    .plv-table { padding: 4px 14px; }
-    .plv-head { display: none; }
-    .plv-row {
-      grid-template-columns: 1fr;
-      grid-template-areas: none;
-      row-gap: 8px;
-      padding: 14px 0;
-    }
-    .plv-row > .plv-cell { grid-area: auto; margin-top: 0; }
-    .plv-row:hover, .plv-row.selected, .plv-row:focus-visible { box-shadow: none; }
-    .plv-contact:empty, .plv-visual.is-empty { display: none; }
-    .plv-actions { margin-top: 4px; }
-    .plv-actions .pc-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-    .plv-actions .pc-btn:only-child { grid-column: 1 / -1; }
+  .plv-grid .pc-cat {
+    color: var(--nwx-orange);
+    font-size: 10.5px;
+    line-height: 1.3;
   }
+  .plv-grid .pc-sub {
+    margin-left: 52px;
+    color: rgba(206,226,235,0.68);
+  }
+  .plv-grid .pc-contact,
+  .plv-grid .pc-meta-row {
+    color: rgba(206,226,235,0.68);
+  }
+  .plv-grid .pc-actions { margin-top: auto; padding-top: 4px; }
   #partner-list-view {
     scrollbar-color: rgba(206,226,235,0.24) transparent;
     scrollbar-width: thin;
@@ -1437,60 +1299,12 @@
   @media (max-width: 860px) {
     #rail { display: none; }
     #mobile-bar, #mobile-stats { display: flex; }
-      #partner-list-view {
-    font-family: Gotham, Helvetica, Arial, sans-serif;
-  }
     .nwx-marker { width: 38px; height: 38px; font-size: 13px; }
     .nwx-marker.country-marker { width: 26px; height: 26px; font-size: 10.5px; }
     .nwx-chip { padding: 5px 9px 5px 11px; gap: 6px; }
     .nwx-chip .chip-name { font-size: 10.5px; }
     .nwx-chip .chip-count { font-size: 12px; }
   }
-
-  /* ---------- DESKTOP RAIL: light theme (visual-only, scoped to #rail).
-     #rail is display:none at <=860px, so none of this reaches mobile.
-     Search/filter controls, filter chips and the reset icon keep their
-     existing #rail rules unchanged. ---------- */
-  #rail {
-    background: #ffffff;
-    color: #021229;
-    border-right: 1px solid rgba(2,18,41,0.12);
-    scrollbar-color: rgba(2,18,41,0.22) transparent;
-  }
-  #rail::-webkit-scrollbar-thumb { background: rgba(2,18,41,0.18); background-clip: padding-box; }
-  #rail::-webkit-scrollbar-thumb:hover { background: rgba(2,18,41,0.30); background-clip: padding-box; }
-  #rail .rail-section-title { color: rgba(2,18,41,0.55); }
-  #rail .view-toggle {
-    background: rgba(2,18,41,0.04);
-    border-color: rgba(2,18,41,0.12);
-  }
-  #rail .view-toggle button { color: rgba(2,18,41,0.65); }
-  #rail .view-toggle button.active { background: var(--nwx-orange); color: #fff; }
-  #rail .mini-card .mc-name { color: #021229; }
-  #rail .mini-card .mc-meta { color: rgba(2,18,41,0.55); }
-  #rail .mini-card:hover,
-  #rail .mini-card.selected {
-    background: rgba(2,18,41,0.04);
-    border-color: rgba(232,100,44,0.45);
-  }
-  #rail .rail-browse { border-top-color: rgba(2,18,41,0.12); }
-  #rail .rail-browse-toggle .browse-chev { color: rgba(2,18,41,0.45); }
-  #rail #breadcrumb { color: rgba(2,18,41,0.65); }
-  #rail #back-btn {
-    background: #ffffff;
-    border-color: rgba(2,18,41,0.16);
-    color: #021229;
-  }
-  #rail #back-btn:hover { background: rgba(2,18,41,0.04); }
-  #rail .region-row {
-    background: #ffffff;
-    border-color: rgba(2,18,41,0.12);
-  }
-  #rail .region-row:hover {
-    background: rgba(232,100,44,0.08);
-    border-color: rgba(232,100,44,0.35);
-  }
-  #rail .region-row .name { color: #021229; }
 </style>
 </head>
 <body>
@@ -1501,7 +1315,7 @@
 <div id="rail">
   <div class="rail-top">
     <img
-      src="assets/Partner Program (Horizontal).png"
+      src="assets/Partner Program White (Horizontal).png"
       alt="Nauticworx Partner Program"
       class="partner-program-logo partner-program-logo-desktop"
     >
@@ -1543,8 +1357,8 @@
   </div>
 
   <!-- Global filter reset -- same control, icon, and behavior as the
-       current live Partner Program, positioned directly after the last filter field.
-       Reset behavior is intentionally not tracked as an analytics event. -->
+       current live Partner Program ("Reset all filters" / map_reset_filters),
+       positioned directly after the last filter field. -->
   <div class="nwx-clear-filters-wrap">
     <button class="nwx-clear-filters-button" type="button" id="filter-reset-all" aria-label="Reset all filters" title="Reset all filters">
       <svg class="nwx-reset-filter-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -1554,14 +1368,22 @@
     </button>
   </div>
 
-  <div class="partner-card-list" id="partner-card-list"></div>
+  <div class="rail-result-row" id="partner-result-count">Loading Partner Directory…</div>
+
+  
+  <div class="partner-card-list" id="partner-card-list">
+    <div class="partner-empty-state">
+      <div class="t1">Loading…</div>
+      <div>Fetching the Partner Directory feed.</div>
+    </div>
+  </div>
 
   <!-- Region/Country browse — the same functional drill-down as before,
        de-emphasized per Section 3 (search/filter/result hierarchy above
        is now primary; this remains fully functional, just not dominant). -->
   <div class="rail-browse">
     <div class="rail-browse-header">
-      <button id="back-btn" type="button">&#8592; Global</button>
+      <button id="back-btn" type="button">&#8592; World view</button>
       <div id="breadcrumb"></div>
     </div>
     <button class="rail-browse-toggle" id="browse-toggle" type="button" aria-expanded="false" aria-controls="browse-body">
@@ -1584,7 +1406,7 @@
           alt="Nauticworx Partner Program"
           class="partner-program-logo partner-program-logo-mobile"
         >
-        <button id="mobile-back" type="button">&#8592; Global</button>
+        <button id="mobile-back" type="button">&#8592; World</button>
       </div>
       <div class="view-toggle view-toggle-mobile" role="tablist" aria-label="Map or List view">
         <button id="toggle-map-m" class="active" type="button">Map</button>
@@ -1599,17 +1421,7 @@
 
     
     <div id="partner-list-view">
-      <div class="plv-table" role="table" aria-label="Partner directory">
-        <div class="plv-head" role="row">
-          <div class="plv-h-partner" role="columnheader">Partner</div>
-          <div class="plv-h-class" role="columnheader">Category / Subcategories</div>
-          <div class="plv-h-contact" role="columnheader">Contact</div>
-          <div class="plv-h-country" role="columnheader">Country<span class="plv-h-suffix"> / Regions</span></div>
-          <div class="plv-h-regions" role="columnheader">Regions</div>
-          <div class="plv-h-actions" role="columnheader"></div>
-        </div>
-        <div class="plv-body" id="partner-list-grid" role="rowgroup"></div>
-      </div>
+      <div class="plv-grid" id="partner-list-grid"></div>
     </div>
 
     
@@ -1637,30 +1449,23 @@
   <div class="ppo-panel" role="dialog" aria-modal="true" aria-labelledby="ppo-name">
     <div class="ppo-header">
       <div class="ppo-header-text">
+        <div class="ppo-eyebrow">Partner Preview</div>
         <span id="ppo-name-wrap"></span>
-        <div class="ppo-header-meta" id="ppo-header-meta"></div>
       </div>
-      <img class="ppo-logo" id="ppo-logo" src="" alt="" aria-hidden="true">
-      <button type="button" class="ppo-close" id="ppo-close" aria-label="Close preview">&times;</button>
+      <div class="ppo-header-actions">
+        <a id="ppo-open-full" class="ppo-open-full" href="#" target="_blank" rel="noopener">Open Full Partner Page</a>
+        <button type="button" class="ppo-close" id="ppo-close" aria-label="Close preview">&times;</button>
+      </div>
     </div>
     <div class="ppo-body">
-      <div class="ppo-desc-section" id="ppo-desc-section">
-        <div class="ppo-section-heading">Description</div>
-        <div class="ppo-desc" id="ppo-desc"></div>
-      </div>
-      <div class="ppo-services-section" id="ppo-services-section">
-        <div class="ppo-section-heading">Services Offered</div>
-        <div class="ppo-services" id="ppo-services"></div>
-      </div>
-      <hr class="ppo-divider">
-      <div class="ppo-section-heading">Partner Details</div>
-      <div class="ppo-details">
-        <div class="ppo-row" id="ppo-contact-row"></div>
-        <div class="ppo-row" id="ppo-country-row"></div>
-        <div class="ppo-row" id="ppo-regions-row"></div>
-      </div>
+      <div class="ppo-category" id="ppo-category"></div>
+      <div class="ppo-subcats" id="ppo-subcats"></div>
+      <div class="ppo-row" id="ppo-contact-row"></div>
+      <div class="ppo-row" id="ppo-geo-row"></div>
+      <div class="ppo-desc" id="ppo-desc"></div>
+      <div class="ppo-testimonial" id="ppo-testimonial"></div>
+      <div class="ppo-actions" id="ppo-actions"></div>
     </div>
-    <div class="ppo-actions" id="ppo-actions"></div>
   </div>
 </div>
 
@@ -2008,19 +1813,12 @@
       el.addEventListener("click", function (e) {
         e.stopPropagation();
         closeFloatingPartnerCard();
-        if (typeof window.nwxTrackEvent === "function") {
-          var regionPartners = (typeof window.nwxPartnerDirectoryForMapContext === "function")
-            ? window.nwxPartnerDirectoryForMapContext(region.name, "") : [];
-          window.nwxTrackEvent("map_pin_click", {
-            pin_label: region.name,
-            pin_type: "region",
-            has_partners: !!(regionPartners && regionPartners.length)
-          });
+        if (typeof window.nwxSetDirectoryRegionFilter === "function") {
+          window.nwxSetDirectoryRegionFilter(region.name);
+          setTimeout(function () { openRegionPopup(region, null); }, 0);
+        } else {
+          openRegionPopup(region, el);
         }
-        // Region chip opens the region popup only; it never changes the
-        // Region/Country/Category/Subcategory filters (the Region filter
-        // control is the only way to filter by region).
-        setTimeout(function () { openRegionPopup(region, null); }, 0);
       });
       var marker = new mapboxgl.Marker({
         element: el,
@@ -2042,7 +1840,7 @@
     _lastIsMobile = isMobile();
 
     listTitle.textContent = "Regions";
-    breadcrumb.innerHTML = '<span class="crumb-current">Global</span>';
+    breadcrumb.innerHTML = '<span class="crumb-current">World view</span>';
     backBtn.classList.remove("visible");
     mobileBack.classList.remove("visible");
     renderContextStat();
@@ -2079,15 +1877,6 @@
       regionEl.addEventListener("click", function (e) {
         e.stopPropagation();
         closeFloatingPartnerCard();
-        if (typeof window.nwxTrackEvent === "function") {
-          var regionPartners = (typeof window.nwxPartnerDirectoryForMapContext === "function")
-            ? window.nwxPartnerDirectoryForMapContext(region.name, "") : [];
-          window.nwxTrackEvent("map_pin_click", {
-            pin_label: region.name,
-            pin_type: "region",
-            has_partners: !!(regionPartners && regionPartners.length)
-          });
-        }
         openRegionPopup(region, regionEl);
       });
       var regionMarker = new mapboxgl.Marker({
@@ -2106,16 +1895,6 @@
         el.addEventListener("click", function (e) {
           e.stopPropagation();
           closeFloatingPartnerCard();
-          if (typeof window.nwxTrackEvent === "function") {
-            var countryPartners = (typeof window.nwxPartnerDirectoryForMapContext === "function")
-              ? window.nwxPartnerDirectoryForMapContext(region.name, country.name) : [];
-            window.nwxTrackEvent("map_pin_click", {
-              pin_label: country.name,
-              pin_type: "country",
-              region_name: region.name,
-              has_partners: !!(countryPartners && countryPartners.length)
-            });
-          }
           if (typeof window.nwxSetDirectoryCountryFilter === "function") {
             window.nwxSetDirectoryCountryFilter(country.name, region.name);
           }
@@ -2154,7 +1933,7 @@
     }
 
     listTitle.textContent = regions.length === 1 ? (regions[0].name + " — Countries") : (regions.length + " Regions selected");
-    breadcrumb.innerHTML = '<span class="crumb-world" style="cursor:pointer;text-decoration:underline;">Global</span>' +
+    breadcrumb.innerHTML = '<span class="crumb-world" style="cursor:pointer;text-decoration:underline;">World</span>' +
       ' / <span class="crumb-current">' + (regions.length === 1 ? regions[0].name : regions.length + " regions") + "</span>";
     var worldCrumb = breadcrumb.querySelector(".crumb-world");
     if (worldCrumb) worldCrumb.addEventListener("click", clearMapGeoFilters);
@@ -2307,7 +2086,7 @@
     '</div>';
   }
 
-  function wirePopupPartnerCarousel(popupEl, source) {
+  function wirePopupPartnerCarousel(popupEl) {
     if (!popupEl) return;
     var track = popupEl.querySelector('[data-carousel-track]');
     var count = popupEl.querySelector('[data-carousel-count]');
@@ -2328,7 +2107,7 @@
       card.addEventListener('click', function (e) {
         e.stopPropagation();
         if (typeof window.nwxOpenPartnerPreviewById === 'function') {
-          window.nwxOpenPartnerPreviewById(card.getAttribute('data-partner-id'), source || '');
+          window.nwxOpenPartnerPreviewById(card.getAttribute('data-partner-id'));
         }
       });
     });
@@ -2389,12 +2168,7 @@
     // Mapbox wires internally) must not bubble to the map's background
     // click-to-close handler.
     el.addEventListener("click", function (e) { e.stopPropagation(); });
-    wirePopupPartnerCarousel(el, "region_popup");
-    if (typeof window.nwxPartnerDirectoryForMapContext === "function" && typeof window.nwxTrackPartnerImpression === "function") {
-      (window.nwxPartnerDirectoryForMapContext(region.name, "") || []).forEach(function (partner) {
-        window.nwxTrackPartnerImpression(partner, "region_popup");
-      });
-    }
+    wirePopupPartnerCarousel(el);
 
     var actionBtn = el.querySelector('[data-action="drill"]');
     if (actionBtn) {
@@ -2433,12 +2207,7 @@
     activePopup = popup;
 
     popup.getElement().addEventListener("click", function (e) { e.stopPropagation(); });
-    wirePopupPartnerCarousel(popup.getElement(), "country_popup");
-    if (typeof window.nwxPartnerDirectoryForMapContext === "function" && typeof window.nwxTrackPartnerImpression === "function") {
-      (window.nwxPartnerDirectoryForMapContext(region.name, country.name) || []).forEach(function (partner) {
-        window.nwxTrackPartnerImpression(partner, "country_popup");
-      });
-    }
+    wirePopupPartnerCarousel(popup.getElement());
   }
 
 
@@ -2493,9 +2262,6 @@
   var allPartners = [];
   var filters = { search: "", regions: [], countries: [], categories: [], subcategories: [] };
   var selectedId = null;
-  var currentDirectoryViewMode = "map";
-  var lastMainListImpressionSignature = null;
-  var searchTrackTimer = null;
   // Full Nauticworx country list, source: data/partners.json's own
   // options.countries block — the same authoritative reference list the
   // live production Partner Program frontend uses to populate its own
@@ -2628,6 +2394,7 @@
   var railList = document.getElementById("partner-card-list");
   var listGrid = document.getElementById("partner-list-grid");
   var listView = document.getElementById("partner-list-view");
+  var resultCount = document.getElementById("partner-result-count");
   var searchInputs = [document.getElementById("partner-search"), document.getElementById("partner-search-m")].filter(Boolean);
   var regionSelect = document.getElementById("filter-region");
   var countrySelect = document.getElementById("filter-country");
@@ -2764,18 +2531,9 @@
   }
 
   // ---- filtering (Task 3): search + all four filters combine (AND) ----
-  // Shared A–Z ordering for every rendered partner collection (List,
-  // sidebar, search results, region/country popups). Frontend only — the
-  // source feed and allPartners keep their original order and __id values.
-  function sortPartnersByName(list) {
-    return list.slice().sort(function (a, b) {
-      return String(a.name || "").localeCompare(String(b.name || ""), undefined, { sensitivity: "base" });
-    });
-  }
-
   function getFilteredPartners() {
     var q = filters.search.trim().toLowerCase();
-    return sortPartnersByName(allPartners.filter(function (p) {
+    return allPartners.filter(function (p) {
       if (filters.regions.length && !partnerRegions(p).some(function (v) { return filters.regions.indexOf(v) !== -1; })) return false;
       if (filters.countries.length && filters.countries.indexOf(p.country) === -1) return false;
       if (filters.categories.length && filters.categories.indexOf(p.category) === -1) return false;
@@ -2791,7 +2549,7 @@
         if (haystack.indexOf(q) === -1) return false;
       }
       return true;
-    }));
+    });
   }
 
   // ---- icon helpers (redesign pass) — inline SVG, matching the approved
@@ -2799,7 +2557,7 @@
   // partner-contact-name.png, visit-partner.PNG) that were failing to
   // render. No new asset files; icons are pure inline markup + CSS. ----
   var ICON_GEO = '<svg class="pc-icon-geo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="12" r="9"></circle><path d="M3 12h18M12 3c3 3.2 3 14.8 0 18M12 3c-3 3.2-3 14.8 0 18"></path></svg>';
-  var ICON_CONTACT = '<svg class="pc-icon-contact" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c.8-4.2 3.5-6 8-6s7.2 1.8 8 6"></path></svg>'; var ICON_OFFICE = '<img class="ppo-icon-office" src="assets/Office.png" alt="" aria-hidden="true">';
+  var ICON_CONTACT = '<svg class="pc-icon-contact" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c.8-4.2 3.5-6 8-6s7.2 1.8 8 6"></path></svg>';
   var ICON_WEBSITE = '<svg class="pc-icon-website" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 4h6v6"></path><path d="M10 14 20 4"></path><path d="M18 13v5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h5"></path></svg>';
   var ICON_CHEVRON = '<svg class="mc-chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" aria-hidden="true"><path d="m9 6 6 6-6 6"></path></svg>';
   var CATEGORY_ICON_FILES = {
@@ -2816,16 +2574,6 @@
     "Technology, Digital & Innovation": "Technology, Digital & Innovation.png"
   };
 
-  // Dark variants (assets/icons-dark/, same filenames) for the white List
-  // table only; categoryIconHTML keeps the light icons for dark contexts.
-  function categoryIconDarkHTML(p, cssClass) {
-    var fileName = CATEGORY_ICON_FILES[p.category];
-    if (!fileName) return "";
-    return '<img class="' + cssClass + '" src="assets/icons-dark/' +
-      encodeURIComponent(fileName).replace(/%2F/g, "/") +
-      '" alt="" aria-hidden="true">';
-  }
-
   function categoryIconHTML(p, cssClass) {
     var fileName = CATEGORY_ICON_FILES[p.category];
     if (!fileName) return "";
@@ -2835,51 +2583,28 @@
   }
 
 
+  function contactLineHTML(p) {
+    if (!p.contactName && !p.contactTitle) return "";
+    return '<div class="pc-contact">' + ICON_CONTACT +
+      '<span>' + escapeHtml([p.contactName, p.contactTitle].filter(Boolean).join(" · ")) + "</span></div>";
+  }
   function actionsHTML(p) {
     var contactHref = p.contactUrl ? escapeAttr(p.contactUrl) : "";
     var websiteHref = p.websiteUrl ? escapeAttr(p.websiteUrl) : "";
     if (!contactHref && !websiteHref) return "";
-    var analyticsAttrs = ' data-nwx-partner-name="' + escapeAttr(p.name || "") + '" data-nwx-partner-page-url="' + escapeAttr(p.partnerPageUrl || "") + '"';
     return '<div class="pc-actions">' +
-      (contactHref ? '<a class="pc-btn nwx-contact-cta" data-nwx-action="partner_contact_click"' + analyticsAttrs + ' href="' + contactHref + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">' + escapeHtml(p.contactCtaLabel || "Contact Partner") + "</a>" : "") +
-      (websiteHref ? '<a class="pc-btn pc-btn-primary nwx-profile-cta" data-nwx-action="partner_website_click"' + analyticsAttrs + ' href="' + websiteHref + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">' + escapeHtml(p.ctaLabel || "Visit Website") + ICON_WEBSITE + "</a>" : "") +
+      (contactHref ? '<a class="pc-btn" href="' + contactHref + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">' + escapeHtml(p.contactCtaLabel || "Contact Partner") + "</a>" : "") +
+      (websiteHref ? '<a class="pc-btn pc-btn-primary" href="' + websiteHref + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">' + escapeHtml(p.ctaLabel || "Visit Website") + ICON_WEBSITE + "</a>" : "") +
       "</div>";
   }
-  // Partner Preview overlay actions row (redesign) — same Contact Partner /
-  // Visit Website markup and analytics attributes as actionsHTML(), plus a
-  // third "Open Full Partner Page" button (the same partner_page_click
-  // tracking previously wired to the header's #ppo-open-full link, now
-  // living in the sticky actions row instead). Kept separate from
-  // actionsHTML() so the main grid card's two-button row stays untouched.
-  // Services Offered readability aid: if an item starts with a short lead
-  // label followed by ":" or an em dash, render just that label in
-  // semibold navy and the rest as normal body copy. Text itself is never
-  // altered — only which span wraps which characters.
-  function serviceItemHTML(s) {
-    var text = String(s == null ? "" : s);
-    var m = /^([^:—]{1,40})(:|—)\s*/.exec(text);
-    if (m) {
-      var label = m[1] + m[2];
-      var rest = text.slice(m[0].length);
-      if (rest) {
-        return '<span class="ppo-service-label">' + escapeHtml(label) + '</span> ' + escapeHtml(rest);
-      }
-    }
-    return escapeHtml(text);
+  function geoLineHTML(p) {
+    var regions = partnerRegions(p);
+    var regionsLabel = p.regionsDisplay || regions.join(", ");
+    var text = [p.country, regionsLabel].filter(Boolean).join(" · ");
+    if (!text) return "";
+    return '<div class="pc-meta-row has-icon">' + ICON_GEO + "<span>" + escapeHtml(text) + "</span></div>";
   }
 
-  function ppoActionsHTML(p) {
-    var contactHref = p.contactUrl ? escapeAttr(p.contactUrl) : "";
-    var websiteHref = p.websiteUrl ? escapeAttr(p.websiteUrl) : "";
-    var pageHref = p.partnerPageUrl ? escapeAttr(p.partnerPageUrl) : "";
-    if (!contactHref && !websiteHref && !pageHref) return "";
-    var analyticsAttrs = ' data-nwx-partner-name="' + escapeAttr(p.name || "") + '" data-nwx-partner-page-url="' + escapeAttr(p.partnerPageUrl || "") + '"';
-    return (
-      (contactHref ? '<a class="pc-btn nwx-contact-cta" data-nwx-action="partner_contact_click"' + analyticsAttrs + ' href="' + contactHref + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">' + escapeHtml(p.contactCtaLabel || "Contact Partner") + "</a>" : "") +
-      (websiteHref ? '<a class="pc-btn pc-btn-primary nwx-profile-cta" data-nwx-action="partner_website_click"' + analyticsAttrs + ' href="' + websiteHref + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">' + escapeHtml(p.ctaLabel || "Visit Website") + ICON_WEBSITE + "</a>" : "") +
-      (pageHref ? '<a class="pc-btn" data-nwx-action="partner_page_click"' + analyticsAttrs + ' href="' + pageHref + '" target="_blank" rel="noopener" onclick="event.stopPropagation()">Open Full Partner Page</a>' : "")
-    );
-  }
   // Partner name: link to partnerPageUrl, same tab, when present; plain
   // text when missing (Task 5). Used by both the full grid card and the
   // floating/preview panels. stopPropagation so clicking the name link
@@ -2887,78 +2612,39 @@
   function nameHTML(p, cssClass) {
     var text = escapeHtml(p.name);
     if (p.partnerPageUrl) {
-      return '<a class="' + cssClass + ' nwx-partner-name" data-nwx-action="partner_page_click" data-nwx-partner-name="' + escapeAttr(p.name || "") + '" data-nwx-partner-page-url="' + escapeAttr(p.partnerPageUrl || "") + '" href="' + escapeAttr(p.partnerPageUrl) + '" onclick="event.stopPropagation()">' + text + "</a>";
+      return '<a class="' + cssClass + '" href="' + escapeAttr(p.partnerPageUrl) + '" onclick="event.stopPropagation()">' + text + "</a>";
     }
     return '<span class="' + cssClass + '">' + text + "</span>";
   }
 
-  // ---- List view table rows. Partner | Category/Subcategories | Contact |
-  // Country | Regions | Actions. Name is plain text so a click anywhere in
-  // the informational cells opens the Partner Preview; CTAs stop
-  // propagation (actionsHTML) and keep their analytics attributes.
-  var ICON_OFFICE_TABLE = '<img class="plv-office-icon" src="assets/Office.png" alt="" aria-hidden="true">';
-
-  // Partner visual: logo only (no tile/border). No logo -> empty spacer so
-  // names stay aligned in the table (hidden in the stacked mobile layout).
-  function rowLogoHTML(p) {
-    if (!p.logoUrl) return '<div class="plv-visual is-empty" aria-hidden="true"></div>';
-    return '<div class="plv-visual"><img class="plv-logo" src="' + escapeAttr(p.logoUrl) + '" alt="" loading="lazy"></div>';
-  }
-
-  function rowHTML(p) {
+  // ---- full card rendering (List-mode grid only — Task 3/4). Approved
+  // field order: name -> category -> subcategories -> contact name/title ->
+  // Contact Partner button -> Visit Website button -> Country/Regions last.
+  function cardHTML(p) {
     var subs = partnerSubcats(p);
-    var regionLines = (p.regionsDisplay ? String(p.regionsDisplay).split(/\s*,\s*/) : partnerRegions(p)).filter(Boolean);
-    var hasContact = p.contactName || p.contactTitle;
     return (
-      '<div class="plv-cell plv-partner" role="cell">' +
-        rowLogoHTML(p) +
-        '<div class="plv-name-wrap"><span class="plv-name">' + escapeHtml(p.name) + "</span>" +
-          (isPremier(p) ? '<span class="pc-premier">Premier</span>' : "") +
+      '<div class="pc-heading">' +
+        categoryIconHTML(p, "pc-category-icon") +
+        '<div class="pc-heading-copy">' +
+          '<div class="pc-top">' + nameHTML(p, "pc-name") + "</div>" +
+          '<div class="pc-cat">' + escapeHtml(p.category || "") + "</div>" +
         "</div>" +
+        (isPremier(p) ? '<span class="pc-premier">Premier</span>' : "") +
       "</div>" +
-      '<div class="plv-cell plv-class" role="cell">' +
-        categoryIconDarkHTML(p, "plv-cat-icon") +
-        (p.category ? '<div class="plv-cat">' + escapeHtml(p.category) + "</div>" : "") +
-        (subs.length ? '<div class="plv-sub">' + escapeHtml(subs.join(", ")) + "</div>" : "") +
-      "</div>" +
-      '<div class="plv-cell plv-contact" role="cell">' +
-        (hasContact
-          ? '<div class="plv-with-icon">' + ICON_CONTACT + "<div>" +
-              (p.contactName ? "<div>" + escapeHtml(p.contactName) + "</div>" : "") +
-              (p.contactTitle ? '<div class="plv-muted">' + escapeHtml(p.contactTitle) + "</div>" : "") +
-            "</div></div>"
-          : "") +
-      "</div>" +
-      '<div class="plv-cell plv-country" role="cell">' +
-        (p.country ? '<div class="plv-with-icon">' + ICON_OFFICE_TABLE + "<span>" + escapeHtml(p.country) + "</span></div>" : "") +
-      "</div>" +
-      '<div class="plv-cell plv-regions" role="cell">' +
-        (regionLines.length ? '<div class="plv-with-icon">' + ICON_GEO + "<div>" +
-          regionLines.map(function (r) { return "<div>" + escapeHtml(r) + "</div>"; }).join("") + "</div></div>" : "") +
-      "</div>" +
-      '<div class="plv-cell plv-actions" role="cell">' + actionsHTML(p) + "</div>"
+      (subs.length ? '<div class="pc-sub">' + escapeHtml(subs.join(", ")) + "</div>" : "") +
+      contactLineHTML(p) +
+      actionsHTML(p) +
+      geoLineHTML(p)
     );
   }
 
-  function buildRowEl(p) {
+  function buildCardEl(p) {
     var el = document.createElement("div");
-    el.className = "plv-row" + (p.__id === selectedId ? " selected" : "");
-    el.setAttribute("role", "row");
-    el.setAttribute("tabindex", "0");
+    el.className = "partner-card" + (p.__id === selectedId ? " selected" : "");
     el.setAttribute("data-partner-id", p.__id);
-    el.innerHTML = rowHTML(p);
-    // Broken/blocked logo -> empty spacer; the company name stands alone.
-    var logo = el.querySelector("img.plv-logo");
-    if (logo) {
-      logo.onerror = function () {
-        var visual = logo.closest(".plv-visual");
-        if (visual) { visual.innerHTML = ""; visual.className = "plv-visual is-empty"; }
-      };
-    }
-    el.addEventListener("click", function () { openPreviewOverlay(p, "main_list"); });
-    el.addEventListener("keydown", function (e) {
-      if ((e.key === "Enter" || e.key === " ") && e.target === el) { e.preventDefault(); openPreviewOverlay(p, "main_list"); }
-    });
+    el.innerHTML = cardHTML(p);
+    // Grid cards open the full Preview Overlay directly (Task 6).
+    el.addEventListener("click", function () { openPreviewOverlay(p); });
     return el;
   }
 
@@ -2966,7 +2652,7 @@
   // contact/actions/geo, so the rail never duplicates the full card. ----
   function compactCardHTML(p) {
     return (
-      categoryIconDarkHTML(p, "mc-category-icon") +
+      categoryIconHTML(p, "mc-category-icon") +
       '<div class="mc-text">' + nameHTML(p, "mc-name") +
       '<div class="mc-meta">' + escapeHtml(p.category || "") + "</div></div>" +
       ICON_CHEVRON
@@ -2978,51 +2664,42 @@
     el.className = "mini-card" + (p.__id === selectedId ? " selected" : "");
     el.setAttribute("data-partner-id", p.__id);
     el.innerHTML = compactCardHTML(p);
-    // Sidebar entries open the full Preview Overlay directly (mini
-    // floating card removed — Partner Preview is now a single click away
-    // from anywhere in the directory).
-    el.addEventListener("click", function (e) {
-      e.stopPropagation();
-      selectedId = p.__id;
-      syncSelectedHighlight();
-      openPreviewOverlay(p, "sidebar");
-    });
+    // Sidebar entries show the compact floating panel (Task 2).
+    el.addEventListener("click", function (e) { e.stopPropagation(); selectPartner(p); });
     return el;
   }
 
-  // Zero results render an empty container — no empty-state message.
-  function renderInto(container, list, builder) {
+  function renderInto(container, list, emptyMsg, builder) {
     container.innerHTML = "";
+    if (!list.length) {
+      var empty = document.createElement("div");
+      empty.className = "partner-empty-state pd-no-results";
+      empty.innerHTML = '<div class="t1">No partners found</div><div>' + escapeHtml(emptyMsg) + "</div>";
+      container.appendChild(empty);
+      return;
+    }
     list.forEach(function (p) { container.appendChild(builder(p)); });
-  }
-
-  function trackMainListImpressions(filtered) {
-    if (typeof window.nwxTrackPartnerImpression !== "function") return;
-    var signature = currentDirectoryViewMode + ":" + filtered.map(function (p) {
-      return p.partnerPageUrl || p.name || p.__id;
-    }).join("|");
-    if (signature === lastMainListImpressionSignature) return;
-    lastMainListImpressionSignature = signature;
-    filtered.forEach(function (p) { window.nwxTrackPartnerImpression(p, "main_list"); });
   }
 
   function renderAll() {
     var filtered = getFilteredPartners();
     renderSelectedFilterChips();
-    renderInto(railList, filtered, buildCompactCardEl);
-    renderInto(listGrid, filtered, buildRowEl);
-    trackMainListImpressions(filtered);
+    renderInto(railList, filtered, "Try adjusting search or filters.", buildCompactCardEl);
+    renderInto(listGrid, filtered, "Try adjusting search or filters.", buildCardEl);
+    resultCount.textContent = filtered.length + (filtered.length === 1 ? " partner" : " partners") + " found";
     dispatchPartnerFilterState();
   }
   // Read-only bridge used by the Network Coverage region popup. It keeps
   // the two datasets separate while allowing a region popup to list matching
   // Partner Directory companies beneath the account summary.
   window.nwxPartnerDirectoryForMapContext = function (regionName, countryName) {
-    return sortPartnersByName(getFilteredPartners().filter(function (p) {
+    return getFilteredPartners().filter(function (p) {
       if (regionName && partnerRegions(p).indexOf(regionName) === -1) return false;
       if (countryName && p.country !== countryName) return false;
       return true;
-    }));
+    }).sort(function (a, b) {
+      return String(a.name || "").localeCompare(String(b.name || ""));
+    });
   };
 
   window.nwxPartnerCategoryIconSrc = function (category) {
@@ -3030,10 +2707,10 @@
     return fileName ? ("assets/" + encodeURIComponent(fileName).replace(/%2F/g, "/")) : "";
   };
 
-  window.nwxOpenPartnerPreviewById = function (partnerId, source) {
+  window.nwxOpenPartnerPreviewById = function (partnerId) {
     var id = String(partnerId);
     var partner = allPartners.find(function (p) { return String(p.__id) === id; });
-    if (partner) openPreviewOverlay(partner, source || "");
+    if (partner) openPreviewOverlay(partner);
   };
 
   function dispatchPartnerFilterState() {
@@ -3099,9 +2776,48 @@
   };
 
   function syncSelectedHighlight() {
-    document.querySelectorAll(".partner-card, .plv-row, .mini-card").forEach(function (el) {
+    document.querySelectorAll(".partner-card, .mini-card").forEach(function (el) {
       el.classList.toggle("selected", el.getAttribute("data-partner-id") === String(selectedId));
     });
+  }
+
+  // ---- floating panel / drawer (Task 2) — compact preview shown over the
+  // map when a partner is selected from the sidebar. Full detail lives in
+  // the Preview Overlay (Task 6), reached via "View full profile" below. ----
+  function selectPartner(p) {
+    selectedId = p.__id;
+    syncSelectedHighlight();
+
+    document.getElementById("ppc-name-wrap").innerHTML = nameHTML(p, "ppc-name");
+    var subs = partnerSubcats(p);
+    var subBits = [p.category].concat(subs.length ? [subs.join(", ")] : []).filter(Boolean);
+    document.getElementById("ppc-sub").textContent = subBits.join(" · ");
+
+    document.getElementById("ppc-contact-line").innerHTML = contactLineHTML(p);
+
+    var contactBtn = document.getElementById("ppc-contact-btn");
+    if (p.contactUrl) {
+      contactBtn.href = p.contactUrl;
+      contactBtn.innerHTML = escapeHtml(p.contactCtaLabel || "Contact Partner");
+      contactBtn.style.display = "";
+    } else {
+      contactBtn.style.display = "none";
+    }
+
+    var websiteBtn = document.getElementById("ppc-website-btn");
+    if (p.websiteUrl) {
+      websiteBtn.href = p.websiteUrl;
+      websiteBtn.innerHTML = escapeHtml(p.ctaLabel || "Visit Website") + ICON_WEBSITE;
+      websiteBtn.style.display = "";
+    } else {
+      websiteBtn.style.display = "none";
+    }
+
+    document.getElementById("ppc-geo-line").innerHTML = geoLineHTML(p);
+
+    document.getElementById("ppc-more").onclick = function () { openPreviewOverlay(p); };
+
+    profileCard.classList.add("visible");
   }
 
   function closePartnerProfileCard() {
@@ -3142,71 +2858,41 @@
   // Contact Partner, Visit Website, Open Full Partner Page. Opening/
   // closing this never mutates filters, search, view mode, or the
   // selected-partner state underneath it — that state is untouched here. ----
-  function openPreviewOverlay(p, source) {
-    source = source || "";
-    if (typeof window.nwxTrackEvent === "function") {
-      var previewPayload = {
-        partner_name: p.name || "",
-        partner_page_url: p.partnerPageUrl || "",
-        source: source
-      };
-      // Keep the existing profile-view event for continuity, and add the
-      // Mapbox-specific preview event for the new full popup preview.
-      window.nwxTrackEvent("partner_profile_view", previewPayload);
-      window.nwxTrackEvent("partner_preview_open", previewPayload);
-    }
-
+  function openPreviewOverlay(p) {
     document.getElementById("ppo-name-wrap").innerHTML = nameHTML(p, "ppo-title-link ppo-title-plain");
 
-    var logoEl = document.getElementById("ppo-logo");
-    if (p.logoUrl) {
-      logoEl.onerror = function () { logoEl.style.display = "none"; };
-      logoEl.src = p.logoUrl;
-      logoEl.alt = p.name || "";
-      logoEl.style.display = "";
+    var openFullBtn = document.getElementById("ppo-open-full");
+    if (p.partnerPageUrl) {
+      openFullBtn.href = p.partnerPageUrl;
+      openFullBtn.style.display = "";
     } else {
-      logoEl.removeAttribute("src");
-      logoEl.style.display = "none";
+      openFullBtn.style.display = "none";
     }
 
+    document.getElementById("ppo-category").textContent = p.category || "";
     var subs = partnerSubcats(p);
-    var metaBits = [p.category].concat(subs.length ? [subs.join(", ")] : []).filter(Boolean);
-    document.getElementById("ppo-header-meta").textContent = metaBits.join(" · ");
-
-    var descSection = document.getElementById("ppo-desc-section");
-    if (p.description) {
-      document.getElementById("ppo-desc").textContent = p.description;
-      descSection.style.display = "";
-    } else {
-      descSection.style.display = "none";
-    }
-
-    var servicesSection = document.getElementById("ppo-services-section");
-    var services = Array.isArray(p.servicesOffered) ? p.servicesOffered.filter(Boolean) : [];
-    if (services.length) {
-      document.getElementById("ppo-services").innerHTML = services.map(function (s) {
-        return '<div class="ppo-service-item">' + serviceItemHTML(s) + "</div>";
-      }).join("");
-      servicesSection.style.display = "";
-    } else {
-      servicesSection.style.display = "none";
-    }
+    document.getElementById("ppo-subcats").textContent = subs.join(", ");
 
     document.getElementById("ppo-contact-row").innerHTML = (p.contactName || p.contactTitle)
       ? ICON_CONTACT + "<span>" + escapeHtml([p.contactName, p.contactTitle].filter(Boolean).join(" · ")) + "</span>"
       : "";
 
-    document.getElementById("ppo-country-row").innerHTML = p.country
-      ? ICON_OFFICE + "<span>" + escapeHtml(p.country) + "</span>"
-      : "";
-
     var regions = partnerRegions(p);
     var regionsLabel = p.regionsDisplay || regions.join(", ");
-    document.getElementById("ppo-regions-row").innerHTML = regionsLabel
-      ? ICON_GEO + "<span>" + escapeHtml(regionsLabel) + "</span>"
+    var geoText = [p.country, regionsLabel].filter(Boolean).join(" · ");
+    document.getElementById("ppo-geo-row").innerHTML = geoText
+      ? ICON_GEO + "<span>" + escapeHtml(geoText) + "</span>"
       : "";
 
-    document.getElementById("ppo-actions").innerHTML = ppoActionsHTML(p);
+    var descEl = document.getElementById("ppo-desc");
+    if (p.description) { descEl.textContent = p.description; descEl.style.display = ""; }
+    else { descEl.style.display = "none"; }
+
+    var testimonialEl = document.getElementById("ppo-testimonial");
+    if (p.testimonial) { testimonialEl.textContent = '"' + p.testimonial + '"'; testimonialEl.style.display = ""; }
+    else { testimonialEl.style.display = "none"; }
+
+    document.getElementById("ppo-actions").innerHTML = actionsHTML(p);
 
     previewOverlay.classList.add("visible");
     previewOverlay.setAttribute("aria-hidden", "false");
@@ -3228,23 +2914,9 @@
   // ---- Map/List toggle coexistence (Task 5) — listens for the event the
   // Network Coverage script dispatches; never touches the map itself. ----
   window.addEventListener("nwxviewmode", function (e) {
-    currentDirectoryViewMode = (e.detail && e.detail.mode === "list") ? "list" : "map";
-    listView.classList.toggle("visible", currentDirectoryViewMode === "list");
+    listView.classList.toggle("visible", e.detail && e.detail.mode === "list");
     closePartnerProfileCard();
-    trackMainListImpressions(getFilteredPartners());
   });
-
-  function trackFilterSelection(filterName, value) {
-    if (!value || typeof window.nwxTrackEvent !== "function") return;
-    window.nwxTrackEvent("map_filter_select", {
-      filter_name: filterName,
-      filter_value: value,
-      active_categories: filters.categories.join("|"),
-      active_subcategories: filters.subcategories.join("|"),
-      active_regions: filters.regions.join("|"),
-      active_countries: filters.countries.join("|")
-    });
-  }
 
   // ---- search + filter wiring (Task 3) ----
   searchInputs.forEach(function (input) {
@@ -3252,62 +2924,28 @@
       filters.search = input.value || "";
       searchInputs.forEach(function (other) { if (other !== input) other.value = filters.search; });
       renderAll();
-      clearTimeout(searchTrackTimer);
-      searchTrackTimer = setTimeout(function () {
-        if (filters.search && typeof window.nwxTrackEvent === "function") {
-          window.nwxTrackEvent("map_search", { search_term: filters.search });
-        }
-      }, 600);
     });
   });
   regionSelect.addEventListener("change", function () {
-    var value = regionSelect.value;
-    addUniqueFilterValue(filters.regions, value);
+    addUniqueFilterValue(filters.regions, regionSelect.value);
     regionSelect.value = "";
     populateCountryOptions();
     renderAll();
-    trackFilterSelection("region", value);
   });
   countrySelect.addEventListener("change", function () {
-    var value = countrySelect.value;
-    applyCountryFilter(value);
-    trackFilterSelection("country", value);
+    applyCountryFilter(countrySelect.value);
   });
   categorySelect.addEventListener("change", function () {
-    var value = categorySelect.value;
-    addUniqueFilterValue(filters.categories, value);
+    addUniqueFilterValue(filters.categories, categorySelect.value);
     categorySelect.value = "";
     populateSubcategoryOptions();
     renderAll();
-    trackFilterSelection("category", value);
   });
   subcategorySelect.addEventListener("change", function () {
-    var value = subcategorySelect.value;
-    addUniqueFilterValue(filters.subcategories, value);
+    addUniqueFilterValue(filters.subcategories, subcategorySelect.value);
     subcategorySelect.value = "";
     renderAll();
-    trackFilterSelection("subcategory", value);
   });
-
-  // Partner CTA/name analytics. Capture phase is intentional: generated
-  // links stop propagation so the card itself does not open underneath the
-  // click, but analytics still needs to see the interaction.
-  document.addEventListener("click", function (e) {
-    var link = e.target.closest && e.target.closest("[data-nwx-action]");
-    if (!link) return;
-    var action = link.getAttribute("data-nwx-action");
-    if (!action || typeof window.nwxTrackEvent !== "function") return;
-    var source = "";
-    if (link.closest("#partner-preview-overlay")) source = "detail_modal";
-    else if (link.closest("#partner-profile-card")) source = "sidebar";
-    else if (link.closest(".partner-card, .plv-row")) source = "main_list";
-    else if (link.closest(".mini-card")) source = "sidebar";
-    window.nwxTrackEvent(action, {
-      partner_name: link.getAttribute("data-nwx-partner-name") || "",
-      partner_page_url: link.getAttribute("data-nwx-partner-page-url") || "",
-      source: source
-    });
-  }, true);
 
   // Global "Reset all filters" control (matches the current live Partner
   // Program's control/behavior). Clears every filter dimension this script
@@ -3371,8 +3009,9 @@
     })
     .catch(function (err) {
       console.error("Failed to load Partner Directory (data/partners.json):", err);
-      renderInto(railList, [], buildCompactCardEl);
-      renderInto(listGrid, [], buildRowEl);
+      resultCount.textContent = "Partner Directory failed to load";
+      renderInto(railList, [], "Could not load the Partner Directory feed.");
+      renderInto(listGrid, [], "Could not load the Partner Directory feed.");
     });
 
 })();
